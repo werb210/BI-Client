@@ -1,0 +1,7 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/assets/*", "/icons/*", "/*.png", "/*.jpg", "/*.svg", "/*.ico", "/robots.txt"]
+  },
+  "responseOverrides": { "404": { "rewrite": "/index.html" } }
+}
