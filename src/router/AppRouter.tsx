@@ -2,6 +2,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import SignInPage from "@/pages/SignInPage";
 import HomePage from "@/pages/HomePage";
+// BI_CLIENT_CONTRACT_UPLOAD_v1
+import UploadContractPage from "@/pages/UploadContractPage";
+import RequirementsPage from "@/pages/RequirementsPage";
 import { getToken } from "@/auth/token";
 
 function RequireApplicant({ children }: { children: React.ReactNode }) {
@@ -13,6 +16,8 @@ export default function AppRouter() {
     <Routes>
       <Route path="/" element={<SignInPage />} />
       <Route path="/home" element={<RequireApplicant><HomePage /></RequireApplicant>} />
+      <Route path="/upload" element={<RequireApplicant><UploadContractPage /></RequireApplicant>} />
+      <Route path="/requirements/:applicationId" element={<RequireApplicant><RequirementsPage /></RequireApplicant>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
