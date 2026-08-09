@@ -43,7 +43,8 @@ export default function SignInPage() {
     setError(null);
     try {
       await verifyOtp(phone, code);
-      navigate("/home");
+      // BI_CLIENT_STEP1_PROFILE_v3 - sign-in lands on step 1, not the stub home.
+      navigate("/start");
     } catch (err) {
       setError(message(err));
     } finally {

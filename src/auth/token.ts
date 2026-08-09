@@ -20,7 +20,32 @@ export function setToken(token: string): void {
   }
 }
 
+// BI_CLIENT_STEP1_PROFILE_v3 - the OTP-verified phone is the one field we never
+// ask for again. Kept beside the token and cleared with it.
+const PHONE_KEY = "boreal_bi_applicant_phone";
+
+export function getPhone(): string | null {
+  try {
+    return localStorage.getItem(PHONE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function setPhone(phone: string): void {
+  try {
+    localStorage.setItem(PHONE_KEY, phone);
+  } catch {
+    // private browsing
+  }
+}
+
 export function clearToken(): void {
+  try {
+    localStorage.removeItem(PHONE_KEY);
+  } catch {
+    // nothing to do
+  }
   try {
     localStorage.removeItem(KEY);
   } catch {
