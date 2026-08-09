@@ -2,6 +2,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import SignInPage from "@/pages/SignInPage";
 import HomePage from "@/pages/HomePage";
+// BI_CLIENT_STEP1_PROFILE_v3
+import StartPage from "@/pages/StartPage";
 // BI_CLIENT_CONTRACT_UPLOAD_v1
 import UploadContractPage from "@/pages/UploadContractPage";
 import RequirementsPage from "@/pages/RequirementsPage";
@@ -15,6 +17,7 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/" element={<SignInPage />} />
+      <Route path="/start" element={<RequireApplicant><StartPage /></RequireApplicant>} />
       <Route path="/home" element={<RequireApplicant><HomePage /></RequireApplicant>} />
       <Route path="/upload" element={<RequireApplicant><UploadContractPage /></RequireApplicant>} />
       <Route path="/requirements/:applicationId" element={<RequireApplicant><RequirementsPage /></RequireApplicant>} />

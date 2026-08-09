@@ -1,6 +1,6 @@
 // BI_CLIENT_SCAFFOLD_v1 - wired to the routes bi-server already exposes.
 import { api } from "@/api/client";
-import { setToken } from "@/auth/token";
+import { setPhone, setToken } from "@/auth/token";
 
 export type VerifyResult = { token: string; phone: string; contactId: string | null };
 
@@ -25,5 +25,7 @@ export async function verifyOtp(phone: string, code: string): Promise<VerifyResu
   });
   if (!r?.token) throw new Error("verify_failed");
   setToken(r.token);
+  // BI_CLIENT_STEP1_PROFILE_v3
+  setPhone(r.phone || toE164(phone));
   return r;
 }
