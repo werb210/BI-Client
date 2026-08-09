@@ -1,0 +1,126 @@
+// BI_CLIENT_COVERAGE_v4 - step 2, the path taken when there is no subcontract
+// to read. The list is whatever bi_products holds for the applicant's country,
+// in sort_order, so PGI leads and the ordering is data rather than code.
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getSelection, listProducts, saveSelection, type Product, type Selected } from "@/api/products";
+
+const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24, paddingBottom: 104 };
+const card: React.CSSProperties = {
+  border: "1px solid #cbd5e1", borderRadius: 12, padding: 16, marginBottom: 12,
+  background: "#fff", display: "flex", gap: 12, alignItems: "flex-start",
+  minHeight: 56, cursor: "pointer",
+};
+const picked: React.CSSProperties = { ...card, border: "2px solid #1E3A8A", background: "#f8fafc" };
+const bar: React.CSSProperties = {
+  position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
+  background: "#fff", borderTop: "1px solid #e2e8f0",
+};
+const cta: React.CSSProperties = {
+  width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
+  border: "none", background: "#1E3A8A", color: "#fff", cursor: "pointer",
+};
+const tag: React.CSSProperties = {
+  fontSize: 11, fontWeight: 600, color: "#1E3A8A", background: "#e0e7ff",
+  borderRadius: 999, padding: "2px 8px", marginLeft: 8, whiteSpace: "nowrap",
+};
+
+export default function CoveragePage() {
+  const { applicationId = "" } = useParams();
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<Product[]>([]);
+  // The route may carry the literal "me"; the server hands back the real id.
+  const [resolvedId, setResolvedId] = useState("");
+  const [chosen, setChosen] = useState<Set<string>>(new Set());
+  // A coverage the subcontract demands is not the applicant's to untick, so it
+  // renders locked rather than as a checkbox they can clear.
+  const [required, setRequired] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      const sel = await getSelection(applicationId);
+      const rows: Selected[] = sel.selected ?? [];
+      setResolvedId(sel.applicationId || applicationId);
+      const list = await listProducts(sel.country === "US" ? "US" : "CA");
+      setProducts(list.products ?? []);
+      setRequired(new Set(rows.filter((r) => r.source === "contract").map((r) => r.code)));
+      setChosen(new Set(rows.filter((r) => r.source !== "contract").map((r) => r.code)));
+    } catch {
+      setError("We could not load the coverage list. Please refresh.");
+    } finally {
+      setLoading(false);
+    }
+  }, [applicationId]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  function toggle(code: string) {
+    if (required.has(code)) return;
+    setChosen((prev) => {
+      const next = new Set(prev);
+      if (next.has(code)) next.delete(code); else next.add(code);
+      return next;
+    });
+  }
+
+  async function submit() {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const id = resolvedId || applicationId;
+      await saveSelection(id, Array.from(chosen));
+      navigate(`/requirements/${encodeURIComponent(id)}`);
+    } catch {
+      setError("That did not save. Please try again.");
+      setBusy(false);
+    }
+  }
+
+  const total = chosen.size + required.size;
+
+  if (loading) return <div style={wrap}>Loading…</div>;
+
+  return (
+    <div style={wrap}>
+      <h1 style={{ fontSize: 22, marginBottom: 4 }}>What do you need covered?</h1>
+      <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
+        Pick everything that applies. You can change this later.
+      </p>
+
+      {error && <div style={{ color: "#b91c1c", fontSize: 14, marginBottom: 12 }}>{error}</div>}
+
+      {products.map((p) => {
+        const isRequired = required.has(p.code);
+        const isOn = isRequired || chosen.has(p.code);
+        return (
+          <div key={p.code} style={isOn ? picked : card} onClick={() => toggle(p.code)}
+            role="checkbox" aria-checked={isOn} aria-disabled={isRequired} tabIndex={0}
+            onKeyDown={(e) => { if (e.key === " " || e.key === "Enter") { e.preventDefault(); toggle(p.code); } }}>
+            <input type="checkbox" checked={isOn} readOnly disabled={isRequired}
+              style={{ width: 22, height: 22, marginTop: 2, flexShrink: 0 }} />
+            <div>
+              <div style={{ fontWeight: 600, fontSize: 15 }}>
+                {p.display_name}
+                {isRequired && <span style={tag}>Required by your contract</span>}
+              </div>
+              {p.description && (
+                <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>{p.description}</div>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      <div style={bar}>
+        <button type="button" style={{ ...cta, opacity: total > 0 && !busy ? 1 : 0.5 }}
+          disabled={total === 0 || busy} onClick={() => void submit()}>
+          {busy ? "Saving..." : total === 0 ? "Select at least one" : `Continue with ${total}`}
+        </button>
+      </div>
+    </div>
+  );
+}

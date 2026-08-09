@@ -92,6 +92,15 @@ export default function UploadContractPage() {
           {busy ? "Reading…" : "Choose file"}
         </button>
       </div>
+      {/* BI_CLIENT_COVERAGE_v4 - plenty of subcontractors are quoting before
+          they hold a signed contract. Without this the flow dead-ends for them. */}
+      <div style={{ marginTop: 20 }}>
+        <button type="button" disabled={busy} onClick={() => navigate("/coverage/me")}
+          style={{ background: "none", border: "none", color: "#1E3A8A", cursor: "pointer",
+                   padding: 0, fontSize: 14, textDecoration: "underline", minHeight: 44 }}>
+          I do not have a subcontract yet
+        </button>
+      </div>
     </div>
   );
 }
