@@ -10,6 +10,9 @@ export type Requirement = {
   clauseText: string;
   confidence: number;
   confirmedByClient: boolean | null;
+  // BI_CLIENT_REFERRAL_v8 - false when the contract demands a coverage we
+  // cannot place in this country.
+  available?: boolean;
 };
 
 export type UploadResult = {

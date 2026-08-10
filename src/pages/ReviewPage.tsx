@@ -84,6 +84,12 @@ export default function ReviewPage() {
         <div style={card}>
           <div style={h2}>Coverage requested</div>
           {s.coverages.map((c) => <div key={c.code} style={line}>{c.display_name}</div>)}
+          {s.referrals.length > 0 && (
+            <>
+              <div style={{ ...h2, marginTop: 12 }}>Being referred out</div>
+              {s.referrals.map((r) => <div key={r.coverage_code} style={line}>{r.display_name}</div>)}
+            </>
+          )}
         </div>
       </div>
     );
@@ -103,6 +109,22 @@ export default function ReviewPage() {
         <div style={line}>{s.email ?? "—"}</div>
         <div style={line}>{s.country === "US" ? "United States" : "Canada"}</div>
       </div>
+
+      {/* BI_CLIENT_REFERRAL_v8 - keep coverages we cannot place separate from
+          quoted lines so the applicant knows what will happen next. */}
+      {s.referrals.length > 0 && (
+        <div style={{ ...card, borderColor: "#fde68a", background: "#fffbeb" }}>
+          <div style={h2}>Being referred out ({s.referrals.length})</div>
+          <div style={{ ...line, color: "#78350f" }}>
+            Your contract asks for these and we do not place them in
+            {s.country === "US" ? " the United States" : " Canada"} ourselves.
+            Our team will find you a market and come back to you.
+          </div>
+          {s.referrals.map((r) => (
+            <div key={r.coverage_code} style={line}>{r.display_name}</div>
+          ))}
+        </div>
+      )}
 
       <div style={card}>
         <div style={h2}>Coverage requested ({s.coverages.length})</div>
