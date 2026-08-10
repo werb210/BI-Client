@@ -7,11 +7,17 @@ import {
   getRequirements,
   type Requirement,
 } from "@/api/contract";
+import { getSelection } from "@/api/products";
 
 const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24 };
 const card: React.CSSProperties = {
   border: "1px solid #cbd5e1", borderRadius: 12, padding: 16,
   marginBottom: 12, background: "#fff",
+};
+// BI_CLIENT_REFERRAL_v8
+const notice: React.CSSProperties = {
+  background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8,
+  padding: "10px 12px", margin: "10px 0", fontSize: 13, color: "#78350f",
 };
 const quote: React.CSSProperties = {
   borderLeft: "3px solid #cbd5e1", paddingLeft: 12, margin: "10px 0",
@@ -30,6 +36,9 @@ export default function RequirementsPage() {
   const { applicationId = "" } = useParams();
   const navigate = useNavigate();
   const [items, setItems] = useState<Requirement[]>([]);
+  // Named in the notice so "we cannot place this in Canada" reads as a fact
+  // about the market rather than a fault of the applicant.
+  const [country, setCountry] = useState("your country");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
@@ -38,6 +47,13 @@ export default function RequirementsPage() {
     try {
       const r = await getRequirements(applicationId);
       setItems(r.requirements ?? []);
+      // BI_CLIENT_REFERRAL_v8
+      try {
+        const sel = await getSelection(applicationId);
+        setCountry(sel.country === "US" ? "the United States" : "Canada");
+      } catch {
+        // The notice falls back to "your country".
+      }
     } catch {
       setError("We could not load what we read from your contract. Please refresh.");
     } finally {
@@ -94,6 +110,14 @@ export default function RequirementsPage() {
               </span>
             </div>
             <div style={quote}>&ldquo;{req.clauseText}&rdquo;</div>
+            {/* BI_CLIENT_REFERRAL_v8 - say plainly what happens when a
+                requested coverage cannot be placed in this country. */}
+            {req.available === false && (
+              <div style={notice}>
+                We cannot place this one in {country} ourselves. Confirm it and we will
+                refer it to a market that can write it.
+              </div>
+            )}
             {req.confirmedByClient === null ? (
               <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                 <button
@@ -117,7 +141,9 @@ export default function RequirementsPage() {
             ) : (
               <div style={{ fontSize: 13, color: req.confirmedByClient ? "#15803d" : "#b91c1c" }}>
                 {req.confirmedByClient
-                  ? "Confirmed"
+                  ? req.available === false
+                    ? "Confirmed. We will refer this one out and come back to you."
+                    : "Confirmed"
                   : "Marked as not required. We will leave it off."}
               </div>
             )}

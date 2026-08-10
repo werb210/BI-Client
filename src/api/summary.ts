@@ -4,6 +4,13 @@ import { api } from "@/api/client";
 export type Coverage = { code: string; display_name: string; source: string };
 export type Doc = { original_filename: string; doc_type: string };
 export type Outstanding = { questionKey: string; prompt: string };
+// BI_CLIENT_REFERRAL_v8
+export type Referral = {
+  coverage_code: string;
+  display_name: string;
+  requested_limit: string | null;
+  status: string;
+};
 
 export type Summary = {
   applicationId: string;
@@ -16,6 +23,7 @@ export type Summary = {
   documents: Doc[];
   answered: number;
   outstanding: Outstanding[];
+  referrals: Referral[];
   canSubmit: boolean;
   alreadySubmitted?: boolean;
 };
