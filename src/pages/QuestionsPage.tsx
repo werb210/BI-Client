@@ -30,24 +30,59 @@ const pill = (on: boolean): React.CSSProperties => ({
   border: on ? "2px solid #1E3A8A" : "1px solid #cbd5e1",
   background: on ? "#eef2ff" : "#fff", color: "#0f172a",
 });
+// BI_CLIENT_FIELD_INPUTS_v9 - text, date, number and select. Everything is
+// 56px tall and 16px type, because iOS zooms the page on any input under 16px.
+const field: React.CSSProperties = {
+  width: "100%", minHeight: 56, fontSize: 16, padding: "0 14px", marginTop: 12,
+  border: "1px solid #cbd5e1", borderRadius: 10, background: "#fff",
+  color: "#0f172a", boxSizing: "border-box",
+};
 const area: React.CSSProperties = {
   width: "100%", minHeight: 92, fontSize: 16, padding: 12, borderRadius: 10,
   border: "1px solid #cbd5e1", boxSizing: "border-box", marginTop: 12,
 };
 
 const GROUP_TITLES: Record<string, string> = {
+  // BI_CLIENT_FIELD_INPUTS_v9
+  guarantor: "About you",
+  business: "About the business",
+  loan: "About the loan",
   declarations: "A few disclosures",
   consents: "Consents",
   general: "A few more questions",
 };
 const GROUP_BLURBS: Record<string, string> = {
+  guarantor: "The carrier needs this to confirm who you are.",
+  business: "The company the guarantee is being given for.",
+  loan: "The borrowing the personal guarantee sits behind.",
   declarations: "Answer honestly. A yes does not disqualify you; it just needs a short explanation.",
   consents: "The last step before we can place your coverage.",
 };
 
+const CHOICE_TYPES = new Set(["yes_no", "agree_disagree"]);
+
 function optionsFor(q: Question): string[] {
   if (q.inputType === "agree_disagree") return ["Agree", "Disagree"];
   return ["yes", "no"];
+}
+
+// Cross-field rules the BI-Website form enforced. The carrier will not write
+// cover above 80% of the loan, so catching it here saves a rejection later.
+function fieldError(q: Question, raw: string | null, all: Record<string, { value: string | null }>): string | null {
+  if (!raw || !raw.trim()) return null;
+  if (q.inputType === "number") {
+    const n = Number(raw);
+    if (!Number.isFinite(n)) return "Please enter a number.";
+    if (q.minValue !== null && n < q.minValue) return `Must be at least $${q.minValue.toLocaleString()}.`;
+    if (q.maxValue !== null && n > q.maxValue) return `Cannot be more than $${q.maxValue.toLocaleString()}.`;
+    if (q.questionKey === "pgi_limit") {
+      const loan = Number(all["loan_amount"]?.value ?? 0);
+      if (loan > 0 && n > loan * 0.8) {
+        return `Cannot be more than 80% of the loan, so $${Math.floor(loan * 0.8).toLocaleString()} maximum.`;
+      }
+    }
+  }
+  return null;
 }
 const optionLabel = (v: string) => (v === "yes" ? "Yes" : v === "no" ? "No" : v);
 
@@ -102,8 +137,10 @@ export default function QuestionsPage() {
 
   function isComplete(q: Question): boolean {
     const a = answers[q.questionKey];
+    // BI_CLIENT_FIELD_INPUTS_v9 - an out-of-range number is not an answer.
+    if (fieldError(q, a?.value ?? null, answers)) return false;
     if (!q.required) return true;
-    if (!a?.value) return false;
+    if (!a?.value || !a.value.trim()) return false;
     if (q.adverseAnswer && a.value === q.adverseAnswer) return !!a.reason?.trim();
     return true;
   }
@@ -184,21 +221,49 @@ export default function QuestionsPage() {
             {q.helpText && (
               <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>{q.helpText}</div>
             )}
-            <div style={row}>
-              {optionsFor(q).map((opt) => (
-                <button key={opt} type="button" style={pill(a?.value === opt)}
-                  aria-pressed={a?.value === opt} onClick={() => answer(q, opt)}>
-                  {optionLabel(opt)}
-                </button>
-              ))}
-            </div>
+            {CHOICE_TYPES.has(q.inputType) ? (
+              <div style={row}>
+                {optionsFor(q).map((opt) => (
+                  <button key={opt} type="button" style={pill(a?.value === opt)}
+                    aria-pressed={a?.value === opt} onClick={() => answer(q, opt)}>
+                    {optionLabel(opt)}
+                  </button>
+                ))}
+              </div>
+            ) : q.inputType === "select" ? (
+              <select style={field} value={a?.value ?? ""} aria-label={q.prompt}
+                onChange={(e) => answer(q, e.target.value)}>
+                <option value="">Choose one…</option>
+                {(q.options ?? []).map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+              </select>
+            ) : q.inputType === "textarea" ? (
+              <textarea style={{ ...area, marginTop: 12 }} rows={3} aria-label={q.prompt}
+                placeholder={q.placeholder ?? ""} value={a?.value ?? ""}
+                onChange={(e) => answer(q, e.target.value)} />
+            ) : (
+              <input style={field} aria-label={q.prompt}
+                type={q.inputType === "date" ? "date" : q.inputType === "number" ? "number" : "text"}
+                inputMode={q.inputType === "number" ? "decimal" : undefined}
+                min={q.minValue ?? undefined} max={q.maxValue ?? undefined}
+                placeholder={q.placeholder ?? ""} value={a?.value ?? ""}
+                onChange={(e) => answer(q, e.target.value)} />
+            )}
+            {fieldError(q, a?.value ?? null, answers) && (
+              <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 8 }}>
+                {fieldError(q, a?.value ?? null, answers)}
+              </div>
+            )}
             {needsReason && (
               <textarea style={area} rows={2} placeholder="Please explain…"
                 value={a?.reason ?? ""} onChange={(e) => setReason(q, e.target.value)} />
             )}
             {gap && (
               <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 8 }}>
-                {a?.value ? "Please add a short explanation." : "Please answer this one."}
+                {!a?.value
+                  ? "Please answer this one."
+                  : fieldError(q, a.value, answers)
+                    ? "Please correct this one."
+                    : "Please add a short explanation."}
               </div>
             )}
           </div>
