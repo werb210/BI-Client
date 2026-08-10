@@ -5,7 +5,8 @@ export type Question = {
   questionKey: string;
   prompt: string;
   helpText: string | null;
-  inputType: "yes_no" | "agree_disagree" | "text" | "textarea" | "number" | "date";
+  // BI_CLIENT_FIELD_INPUTS_v9 - "select" is driven by the options array.
+  inputType: "yes_no" | "agree_disagree" | "text" | "textarea" | "number" | "date" | "select";
   group: string;
   adverseAnswer: string | null;
   required: boolean;
@@ -15,6 +16,11 @@ export type Question = {
   askedBy: string[];
   value: string | null;
   reason: string | null;
+  // BI_CLIENT_FIELD_INPUTS_v9
+  options: string[] | null;
+  minValue: number | null;
+  maxValue: number | null;
+  placeholder: string | null;
 };
 
 export type QuestionSet = {
