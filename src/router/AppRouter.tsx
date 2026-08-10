@@ -8,6 +8,8 @@ import StartPage from "@/pages/StartPage";
 import CoveragePage from "@/pages/CoveragePage";
 // BI_CLIENT_QUESTIONS_v5
 import QuestionsPage from "@/pages/QuestionsPage";
+// BI_CLIENT_REVIEW_v7
+import ReviewPage from "@/pages/ReviewPage";
 // BI_CLIENT_CONTRACT_UPLOAD_v1
 import UploadContractPage from "@/pages/UploadContractPage";
 import RequirementsPage from "@/pages/RequirementsPage";
@@ -26,6 +28,7 @@ export default function AppRouter() {
       <Route path="/upload" element={<RequireApplicant><UploadContractPage /></RequireApplicant>} />
       <Route path="/coverage/:applicationId" element={<RequireApplicant><CoveragePage /></RequireApplicant>} />
       <Route path="/questions/:applicationId" element={<RequireApplicant><QuestionsPage /></RequireApplicant>} />
+      <Route path="/review/:applicationId" element={<RequireApplicant><ReviewPage /></RequireApplicant>} />
       <Route path="/requirements/:applicationId" element={<RequireApplicant><RequirementsPage /></RequireApplicant>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

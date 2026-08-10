@@ -1,6 +1,6 @@
 // BI_CLIENT_CONTRACT_UPLOAD_v1
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   confirmRequirement,
   formatLimit,
@@ -28,6 +28,7 @@ const no: React.CSSProperties = {
 
 export default function RequirementsPage() {
   const { applicationId = "" } = useParams();
+  const navigate = useNavigate();
   const [items, setItems] = useState<Requirement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -130,6 +131,19 @@ export default function RequirementsPage() {
             : "All checked. We will show you what is available next."}
         </div>
       )}
+      {/* BI_CLIENT_REVIEW_v7 - this page had no way forward. An applicant whose
+          contract held no insurance clauses read "we did not find any" and had
+          nowhere to go. */}
+      <div style={{ marginTop: 24, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <button type="button" style={{ ...yes, minHeight: 56, padding: "0 24px", fontSize: 16 }}
+          onClick={() => navigate(`/coverage/${encodeURIComponent(applicationId)}`)}>
+          {items.length > 0 ? "Choose your coverage" : "Choose coverage yourself"}
+        </button>
+        <button type="button" style={{ ...no, minHeight: 56, padding: "0 24px", fontSize: 16 }}
+          onClick={() => navigate(`/review/${encodeURIComponent(applicationId)}`)}>
+          Review my application
+        </button>
+      </div>
     </div>
   );
 }
