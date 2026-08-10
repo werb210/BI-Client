@@ -73,7 +73,9 @@ export default function CoveragePage() {
     try {
       const id = resolvedId || applicationId;
       await saveSelection(id, Array.from(chosen));
-      navigate(`/requirements/${encodeURIComponent(id)}`);
+      // BI_CLIENT_QUESTIONS_v5 - step 2 leads into step 3, not back to the
+      // requirements summary.
+      navigate(`/questions/${encodeURIComponent(id)}`);
     } catch {
       setError("That did not save. Please try again.");
       setBusy(false);
