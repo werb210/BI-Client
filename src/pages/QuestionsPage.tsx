@@ -136,7 +136,9 @@ export default function QuestionsPage() {
         }));
       const id = resolvedId || applicationId;
       await saveAnswers(id, payload);
-      navigate(`/requirements/${encodeURIComponent(id)}`);
+      // BI_CLIENT_REVIEW_v7 - step 3 leads to review, not to the contract
+      // requirements page, which is meaningless without an uploaded contract.
+      navigate(`/review/${encodeURIComponent(id)}`);
     } catch {
       setError("We could not save your answers. Please try again.");
       setBusy(false);
