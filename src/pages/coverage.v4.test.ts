@@ -32,6 +32,9 @@ describe("the list comes from the server, not the client", () => {
     expect(page).toContain("setResolvedId(sel.applicationId || applicationId)");
     expect(page).toContain("const id = resolvedId || applicationId;");
   });
+  it("leads into step 3 once coverage is chosen", () => {
+    expect(page).toContain("navigate(`/questions/${encodeURIComponent(id)}`)");
+  });
 });
 
 describe("contract-required lines cannot be unticked", () => {
