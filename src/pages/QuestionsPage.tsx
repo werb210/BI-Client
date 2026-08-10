@@ -1,11 +1,13 @@
-// BI_CLIENT_QUESTIONS_v5 - step 3. One question per screen: the union across
-// every selected coverage can run to fifty-odd questions, and a single long
-// scrolling form on a phone is how applications get abandoned halfway.
+// BI_CLIENT_QUESTION_GROUPS_v6 - step 3, one screen per group rather than one
+// per question. v5 paged every question separately and PGI alone produced
+// sixteen taps of Yes/No/Next, which reads as an interrogation. The bank
+// already carries group_key, so the declarations answer as one block and the
+// consents as another.
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuestions, saveAnswers, type AnswerInput, type Question } from "@/api/questions";
 
-const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24, paddingBottom: 120 };
+const wrap: React.CSSProperties = { maxWidth: 680, margin: "0 auto", padding: 24, paddingBottom: 120 };
 const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
   background: "#fff", borderTop: "1px solid #e2e8f0", display: "flex", gap: 12,
@@ -18,15 +20,29 @@ const back: React.CSSProperties = {
   minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 10,
   border: "1px solid #cbd5e1", background: "#fff", color: "#334155", cursor: "pointer",
 };
-const choice = (on: boolean): React.CSSProperties => ({
-  width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
-  marginBottom: 12, cursor: "pointer",
+const block: React.CSSProperties = {
+  padding: "18px 0", borderBottom: "1px solid #e2e8f0",
+};
+const row: React.CSSProperties = { display: "flex", gap: 10, marginTop: 12 };
+// Side-by-side keeps a long list scannable; still 56px tall for thumbs.
+const pill = (on: boolean): React.CSSProperties => ({
+  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10, cursor: "pointer",
   border: on ? "2px solid #1E3A8A" : "1px solid #cbd5e1",
   background: on ? "#eef2ff" : "#fff", color: "#0f172a",
 });
 const area: React.CSSProperties = {
-  width: "100%", minHeight: 110, fontSize: 16, padding: 12, borderRadius: 10,
+  width: "100%", minHeight: 92, fontSize: 16, padding: 12, borderRadius: 10,
   border: "1px solid #cbd5e1", boxSizing: "border-box", marginTop: 12,
+};
+
+const GROUP_TITLES: Record<string, string> = {
+  declarations: "A few disclosures",
+  consents: "Consents",
+  general: "A few more questions",
+};
+const GROUP_BLURBS: Record<string, string> = {
+  declarations: "Answer honestly. A yes does not disqualify you; it just needs a short explanation.",
+  consents: "The last step before we can place your coverage.",
 };
 
 function optionsFor(q: Question): string[] {
@@ -35,30 +51,31 @@ function optionsFor(q: Question): string[] {
 }
 const optionLabel = (v: string) => (v === "yes" ? "Yes" : v === "no" ? "No" : v);
 
+type Answer = { value: string | null; reason: string | null };
+
 export default function QuestionsPage() {
   const { applicationId = "" } = useParams();
   const navigate = useNavigate();
   const [all, setAll] = useState<Question[]>([]);
-  const [answers, setAnswers] = useState<Record<string, { value: string | null; reason: string | null }>>({});
+  const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [resolvedId, setResolvedId] = useState("");
-  const [index, setIndex] = useState(0);
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Only nag about missing answers after they have tried to move on.
+  const [showGaps, setShowGaps] = useState(false);
 
   const load = useCallback(async () => {
     try {
       const set = await getQuestions(applicationId);
       setResolvedId(set.applicationId || applicationId);
       setAll(set.questions ?? []);
-      const seeded: Record<string, { value: string | null; reason: string | null }> = {};
+      const seeded: Record<string, Answer> = {};
       for (const q of set.questions ?? []) {
         if (q.value !== null) seeded[q.questionKey] = { value: q.value, reason: q.reason };
       }
       setAnswers(seeded);
-      // Resume where they stopped rather than at question one.
-      const firstUnanswered = (set.questions ?? []).findIndex((q) => q.value === null);
-      setIndex(firstUnanswered === -1 ? 0 : firstUnanswered);
     } catch {
       setError("We could not load your questions. Please refresh.");
     } finally {
@@ -68,30 +85,45 @@ export default function QuestionsPage() {
 
   useEffect(() => { void load(); }, [load]);
 
-  // A question whose dependency is unmet is not asked at all, so it can never
-  // block completion.
   const visible = useMemo(
     () => all.filter((q) => !q.dependsOnKey || answers[q.dependsOnKey]?.value === q.dependsOnValue),
     [all, answers],
   );
 
-  const q = visible[index];
-  const current = q ? answers[q.questionKey] : undefined;
-  const needsReason = !!q && !!q.adverseAnswer && current?.value === q.adverseAnswer;
-  const canAdvance = !!q && (!q.required || (!!current?.value && (!needsReason || !!current?.reason?.trim())));
+  // Groups keep the server's sort_order; the first question of a group decides
+  // where that group sits, so ordering stays data.
+  const groups = useMemo(() => {
+    const seen: string[] = [];
+    for (const q of visible) if (!seen.includes(q.group)) seen.push(q.group);
+    return seen.map((key) => ({ key, questions: visible.filter((q) => q.group === key) }));
+  }, [visible]);
 
-  function answer(value: string) {
-    if (!q) return;
+  const group = groups[step];
+
+  function isComplete(q: Question): boolean {
+    const a = answers[q.questionKey];
+    if (!q.required) return true;
+    if (!a?.value) return false;
+    if (q.adverseAnswer && a.value === q.adverseAnswer) return !!a.reason?.trim();
+    return true;
+  }
+  const missing = group ? group.questions.filter((q) => !isComplete(q)) : [];
+
+  function answer(q: Question, value: string) {
     setAnswers((prev) => ({ ...prev, [q.questionKey]: { value, reason: prev[q.questionKey]?.reason ?? null } }));
   }
-  function setReason(reason: string) {
-    if (!q) return;
+  function setReason(q: Question, reason: string) {
     setAnswers((prev) => ({ ...prev, [q.questionKey]: { value: prev[q.questionKey]?.value ?? null, reason } }));
   }
 
   async function next() {
-    if (!canAdvance || busy) return;
-    if (index < visible.length - 1) { setIndex(index + 1); return; }
+    if (busy) return;
+    if (missing.length > 0) {
+      setShowGaps(true);
+      return;
+    }
+    setShowGaps(false);
+    if (step < groups.length - 1) { setStep(step + 1); window.scrollTo(0, 0); return; }
     setBusy(true);
     setError(null);
     try {
@@ -112,7 +144,7 @@ export default function QuestionsPage() {
   }
 
   if (loading) return <div style={wrap}>Loading…</div>;
-  if (!q) {
+  if (!group) {
     return (
       <div style={wrap}>
         <h1 style={{ fontSize: 22 }}>Nothing to answer yet</h1>
@@ -126,42 +158,68 @@ export default function QuestionsPage() {
   return (
     <div style={wrap}>
       <div style={{ fontSize: 12, color: "#64748b", marginBottom: 8 }}>
-        Question {index + 1} of {visible.length}
+        Step {step + 1} of {groups.length}
       </div>
-      <div style={{ height: 4, background: "#e2e8f0", borderRadius: 999, marginBottom: 24 }}>
+      <div style={{ height: 4, background: "#e2e8f0", borderRadius: 999, marginBottom: 20 }}>
         <div style={{ height: 4, borderRadius: 999, background: "#1E3A8A",
-          width: `${Math.round(((index + 1) / visible.length) * 100)}%` }} />
+          width: `${Math.round(((step + 1) / groups.length) * 100)}%` }} />
       </div>
 
-      <h1 style={{ fontSize: 19, lineHeight: 1.4, marginTop: 0, marginBottom: 8 }}>{q.prompt}</h1>
-      {q.helpText && <p style={{ color: "#475569", fontSize: 14, marginTop: 0 }}>{q.helpText}</p>}
-      {q.askedBy.length > 0 && (
-        <p style={{ color: "#64748b", fontSize: 12, marginTop: 0, marginBottom: 20 }}>
-          Asked for {q.askedBy.join(", ")}
-        </p>
+      <h1 style={{ fontSize: 22, marginTop: 0, marginBottom: 4 }}>
+        {GROUP_TITLES[group.key] ?? "A few more questions"}
+      </h1>
+      <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 8 }}>
+        {GROUP_BLURBS[group.key] ?? ""}
+      </p>
+
+      {group.questions.map((q) => {
+        const a = answers[q.questionKey];
+        const needsReason = !!q.adverseAnswer && a?.value === q.adverseAnswer;
+        const gap = showGaps && !isComplete(q);
+        return (
+          <div key={q.questionKey} style={block}>
+            <div style={{ fontSize: 15, lineHeight: 1.45, fontWeight: 500 }}>{q.prompt}</div>
+            {q.helpText && (
+              <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>{q.helpText}</div>
+            )}
+            <div style={row}>
+              {optionsFor(q).map((opt) => (
+                <button key={opt} type="button" style={pill(a?.value === opt)}
+                  aria-pressed={a?.value === opt} onClick={() => answer(q, opt)}>
+                  {optionLabel(opt)}
+                </button>
+              ))}
+            </div>
+            {needsReason && (
+              <textarea style={area} rows={2} placeholder="Please explain…"
+                value={a?.reason ?? ""} onChange={(e) => setReason(q, e.target.value)} />
+            )}
+            {gap && (
+              <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 8 }}>
+                {a?.value ? "Please add a short explanation." : "Please answer this one."}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {showGaps && missing.length > 0 && (
+        <div style={{ color: "#b91c1c", fontSize: 14, marginTop: 16 }}>
+          {missing.length} question{missing.length === 1 ? "" : "s"} still needs an answer.
+        </div>
       )}
-
-      {optionsFor(q).map((opt) => (
-        <button key={opt} type="button" style={choice(current?.value === opt)}
-          aria-pressed={current?.value === opt} onClick={() => answer(opt)}>
-          {optionLabel(opt)}
-        </button>
-      ))}
-
-      {needsReason && (
-        <textarea style={area} rows={3} placeholder="Please explain…"
-          value={current?.reason ?? ""} onChange={(e) => setReason(e.target.value)} />
-      )}
-
       {error && <div style={{ color: "#b91c1c", fontSize: 14, marginTop: 12 }}>{error}</div>}
 
       <div style={bar}>
-        {index > 0 && (
-          <button type="button" style={back} onClick={() => setIndex(index - 1)}>Back</button>
+        {step > 0 && (
+          <button type="button" style={back}
+            onClick={() => { setShowGaps(false); setStep(step - 1); window.scrollTo(0, 0); }}>
+            Back
+          </button>
         )}
-        <button type="button" style={{ ...cta, opacity: canAdvance && !busy ? 1 : 0.5 }}
-          disabled={!canAdvance || busy} onClick={() => void next()}>
-          {busy ? "Saving..." : index < visible.length - 1 ? "Next" : "Finish"}
+        <button type="button" style={{ ...cta, opacity: busy ? 0.5 : 1 }} disabled={busy}
+          onClick={() => void next()}>
+          {busy ? "Saving..." : step < groups.length - 1 ? "Continue" : "Finish"}
         </button>
       </div>
     </div>
