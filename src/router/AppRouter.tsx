@@ -13,6 +13,8 @@ import ReviewPage from "@/pages/ReviewPage";
 // BI_CLIENT_CONTRACT_UPLOAD_v1
 import UploadContractPage from "@/pages/UploadContractPage";
 import RequirementsPage from "@/pages/RequirementsPage";
+// BI_CLIENT_MISSING_SCHEDULE_v10
+import MissingSchedulePage from "@/pages/MissingSchedulePage";
 import { getToken } from "@/auth/token";
 
 function RequireApplicant({ children }: { children: React.ReactNode }) {
@@ -30,6 +32,7 @@ export default function AppRouter() {
       <Route path="/questions/:applicationId" element={<RequireApplicant><QuestionsPage /></RequireApplicant>} />
       <Route path="/review/:applicationId" element={<RequireApplicant><ReviewPage /></RequireApplicant>} />
       <Route path="/requirements/:applicationId" element={<RequireApplicant><RequirementsPage /></RequireApplicant>} />
+      <Route path="/schedule/:applicationId" element={<RequireApplicant><MissingSchedulePage /></RequireApplicant>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

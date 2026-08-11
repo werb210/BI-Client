@@ -15,10 +15,17 @@ export type Requirement = {
   available?: boolean;
 };
 
+// BI_CLIENT_MISSING_SCHEDULE_v10 - a subcontract that defers its coverage list
+// to a separate schedule reports that schedule here rather than returning an
+// empty requirement set and letting the applicant assume there is nothing.
+export type MissingSchedule = { ref: string; title: string };
+
 export type UploadResult = {
   applicationId: string;
   documentId: string;
   requirements: Requirement[];
+  documentKind?: "requirements" | "agreement_only";
+  missingSchedules?: MissingSchedule[];
 };
 
 export function uploadContract(file: File): Promise<UploadResult> {
@@ -30,7 +37,11 @@ export function uploadContract(file: File): Promise<UploadResult> {
 }
 
 export function getRequirements(applicationId: string) {
-  return api.get<{ requirements: Requirement[] }>(
+  return api.get<{
+    requirements: Requirement[];
+    documentKind?: "requirements" | "agreement_only";
+    missingSchedules?: MissingSchedule[];
+  }>(
     `/applicants/applications/${encodeURIComponent(applicationId)}/requirements`,
   );
 }

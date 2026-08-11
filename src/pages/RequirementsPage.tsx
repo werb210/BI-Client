@@ -5,6 +5,7 @@ import {
   confirmRequirement,
   formatLimit,
   getRequirements,
+  type MissingSchedule,
   type Requirement,
 } from "@/api/contract";
 import { getSelection } from "@/api/products";
@@ -36,6 +37,8 @@ export default function RequirementsPage() {
   const { applicationId = "" } = useParams();
   const navigate = useNavigate();
   const [items, setItems] = useState<Requirement[]>([]);
+  // BI_CLIENT_MISSING_SCHEDULE_v10
+  const [missing, setMissing] = useState<MissingSchedule[]>([]);
   // Named in the notice so "we cannot place this in Canada" reads as a fact
   // about the market rather than a fault of the applicant.
   const [country, setCountry] = useState("your country");
@@ -47,6 +50,7 @@ export default function RequirementsPage() {
     try {
       const r = await getRequirements(applicationId);
       setItems(r.requirements ?? []);
+      setMissing(r.missingSchedules ?? []); // BI_CLIENT_MISSING_SCHEDULE_v10
       // BI_CLIENT_REFERRAL_v8
       try {
         const sel = await getSelection(applicationId);
@@ -92,12 +96,25 @@ export default function RequirementsPage() {
       {error && <div style={{ color: "#b91c1c", fontSize: 13, marginBottom: 12 }}>{error}</div>}
       {items.length === 0 ? (
         <div style={card}>
-          <div style={{ fontWeight: 600, marginBottom: 6 }}>We did not find any insurance clauses</div>
-          <div style={{ fontSize: 14, color: "#475569" }}>
-            That can happen when the requirements are in a separate schedule or an
-            exhibit. If you have that document, upload it too. Otherwise we can go
-            through it with you.
+          {/* BI_CLIENT_MISSING_SCHEDULE_v10 - when the contract names the
+              schedule it relies on, say which one rather than speculating. */}
+          <div style={{ fontWeight: 600, marginBottom: 6 }}>
+            {missing.length > 0
+              ? `Your contract puts the insurance in ${missing[0].ref}`
+              : "We did not find any insurance clauses"}
           </div>
+          <div style={{ fontSize: 14, color: "#475569" }}>
+            {missing.length > 0
+              ? `The agreement points to ${missing[0].ref}: ${missing[0].title}, which is a separate file. Upload it and we will read the coverages and limits from it.`
+              : "That can happen when the requirements are in a separate schedule or an exhibit. If you have that document, upload it too. Otherwise we can go through it with you."}
+          </div>
+          {missing.length > 0 && (
+            <button type="button" data-testid="upload-missing-schedule"
+              style={{ ...yes, minHeight: 56, padding: "0 24px", fontSize: 16, marginTop: 12 }}
+              onClick={() => navigate(`/schedule/${encodeURIComponent(applicationId)}`, { state: { missingSchedules: missing } })}>
+              Upload {missing[0].ref}
+            </button>
+          )}
         </div>
       ) : (
         items.map((req) => (
