@@ -1,10 +1,11 @@
 // BI_CLIENT_STEP1_PROFILE_v3 - step 1. Three fields, because the fourth (the
 // mobile number) is already known from the OTP and asking for it again is the
 // fastest way to make someone think the sign-in did not work.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { saveProfile } from "@/api/profile";
+import { listIndustries, saveProfile, type Industry } from "@/api/profile";
 import { getPhone } from "@/auth/token";
+import { getEntryIndustry, getEntrySource, setChosenIndustry } from "@/entry/entryContext";
 
 // Mobile-first: one field per row, 56px targets, sticky CTA. 88% of applicants
 // are on a phone.
@@ -35,18 +36,27 @@ export default function StartPage() {
   const [applicantName, setApplicantName] = useState("");
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState<"CA" | "US">("CA");
+  const [industries, setIndustries] = useState<Industry[]>([]);
+  const [industry, setIndustry] = useState(getEntryIndustry());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const ready = businessName.trim().length > 1 && applicantName.trim().length > 1 && looksLikeEmail(email);
+  useEffect(() => {
+    let alive = true;
+    void listIndustries().then((r) => { if (alive) setIndustries(r.industries ?? []); }).catch(() => undefined);
+    return () => { alive = false; };
+  }, []);
+
+  const ready = industry.trim().length > 0 && businessName.trim().length > 1 && applicantName.trim().length > 1 && looksLikeEmail(email);
 
   async function submit() {
     if (!ready || busy) return;
     setBusy(true);
     setError(null);
     try {
-      await saveProfile({ businessName: businessName.trim(), applicantName: applicantName.trim(), email: email.trim(), country });
-      navigate("/upload");
+      const result = await saveProfile({ businessName: businessName.trim(), applicantName: applicantName.trim(), email: email.trim(), country, industry, src: getEntrySource() || undefined });
+      setChosenIndustry(result.industry || industry);
+      navigate(result.wantsContract ? "/upload" : "/coverage/me");
     } catch {
       setError("That did not save. Please check your details and try again.");
       setBusy(false);
@@ -56,7 +66,14 @@ export default function StartPage() {
   return (
     <div style={wrap}>
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>Tell us who you are</h1>
-      <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 24 }}>Four details and we can read your subcontract.</p>
+      <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 24 }}>A few details and we can tell you what cover you need.</p>
+      <div style={field}>
+        <label style={label} htmlFor="industry">What industry are you in?</label>
+        <select id="industry" data-testid="industry-select" style={input} value={industry} onChange={(e) => setIndustry(e.target.value)}>
+          <option value="">Choose your industry</option>
+          {industries.map((item) => <option key={item.code} value={item.code}>{item.display_name}</option>)}
+        </select>
+      </div>
       <div style={field}>
         <label style={label} htmlFor="businessName">Business name</label>
         <input id="businessName" style={input} value={businessName} autoComplete="organization" onChange={(e) => setBusinessName(e.target.value)} placeholder="Legal name of your company" />

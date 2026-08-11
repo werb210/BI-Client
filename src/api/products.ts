@@ -18,9 +18,11 @@ export type SelectionResult = {
   selected: Selected[];
 };
 
-export function listProducts(country: "CA" | "US") {
-  return api.get<{ country: string; products: Product[] }>(
-    `/applicants/products?country=${encodeURIComponent(country)}`,
+export function listProducts(country: "CA" | "US", industry?: string) {
+  const query = new URLSearchParams({ country });
+  if (industry) query.set("industry", industry);
+  return api.get<{ country: string; industry?: string; kind?: "products" | "categories"; products: Product[] }>(
+    `/applicants/products?${query.toString()}`,
   );
 }
 
