@@ -43,6 +43,13 @@ export default function UploadContractPage() {
     setError(null);
     try {
       const result = await uploadContract(file);
+      // BI_CLIENT_MISSING_SCHEDULE_v10 - the agreement alone carries no limits.
+      if (result.documentKind === "agreement_only" && (result.missingSchedules?.length ?? 0) > 0) {
+        navigate(`/schedule/${encodeURIComponent(result.applicationId)}`, {
+          state: { missingSchedules: result.missingSchedules },
+        });
+        return;
+      }
       navigate(`/requirements/${result.applicationId}`);
     } catch (err) {
       setError(message(err));
