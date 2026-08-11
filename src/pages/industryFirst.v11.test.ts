@@ -18,7 +18,7 @@ describe("industry is asked first and decides the path", () => {
 describe("entry link", () => {
   it("captures at boot", () => expect(app).toContain('captureEntryParams(typeof window === "undefined" ? "" : window.location.search);'));
   it("reads sanitized params", () => { expect(entry).toContain('params.get("industry")'); expect(entry).toContain('params.get("src")'); expect(entry).toContain('replace(/[^a-z0-9_-]/g, "")'); });
-  it("preselects and passes source", () => { expect(start).toContain("useState(getEntryIndustry())"); expect(start).toContain("getEntrySource() || undefined"); });
+  it("preselects and passes source", () => { expect(start).toContain("useState(getEntryIndustry() || initial.industry)"); expect(start).toContain("getEntrySource() || undefined"); });
 });
 describe("industry coverage", () => {
   it("queries industry", () => { expect(productsApi).toContain('query.set("industry", industry)'); expect(coverage).toContain("getChosenIndustry() || undefined"); });

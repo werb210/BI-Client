@@ -1,3 +1,4 @@
+import BackBar from "@/components/BackBar"; // BI_CLIENT_FLOW_v12
 // BI_CLIENT_REVIEW_v7 - step 4. Finishing the questions used to land on the
 // contract-requirements page, which says "we did not find any insurance
 // clauses" to anyone who never uploaded a contract and offers nothing to do
@@ -97,6 +98,7 @@ export default function ReviewPage() {
 
   return (
     <div style={wrap}>
+      <BackBar />
       <h1 style={{ fontSize: 24, marginBottom: 4 }}>Check this over</h1>
       <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
         Nothing is sent until you press submit.

@@ -1,5 +1,5 @@
 // BI_CLIENT_SCAFFOLD_v1
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { startOtp, verifyOtp } from "@/api/otp";
 import { ApiError } from "@/api/client";
@@ -24,6 +24,27 @@ export default function SignInPage() {
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const sentFor = useRef("");
+  const checkedFor = useRef("");
+  const digits = (value: string) => value.replace(/\D/g, "");
+
+  useEffect(() => {
+    if (phase !== "phone" || busy) return;
+    const d = digits(phone);
+    if (d.length < 10 || d.length > 15) return;
+    if (sentFor.current === d) return;
+    sentFor.current = d;
+    void send();
+  }, [phone, phase, busy]);
+
+  useEffect(() => {
+    if (phase !== "code" || busy) return;
+    const d = digits(code);
+    if (d.length !== 6) return;
+    if (checkedFor.current === d) return;
+    checkedFor.current = d;
+    void check();
+  }, [code, phase, busy]);
 
   async function send() {
     setBusy(true);
@@ -32,6 +53,7 @@ export default function SignInPage() {
       await startOtp(phone);
       setPhase("code");
     } catch (err) {
+      sentFor.current = ""; // let a corrected number try again
       setError(message(err));
     } finally {
       setBusy(false);
@@ -46,6 +68,7 @@ export default function SignInPage() {
       // BI_CLIENT_STEP1_PROFILE_v3 - sign-in lands on step 1, not the stub home.
       navigate("/start");
     } catch (err) {
+      checkedFor.current = ""; // a mistyped code must be retryable
       setError(message(err));
     } finally {
       setBusy(false);
@@ -80,7 +103,7 @@ export default function SignInPage() {
           <button type="button" style={button} disabled={busy || code.trim().length < 6} onClick={() => void check()}>
             {busy ? "Checking\u2026" : "Sign in"}
           </button>
-          <button type="button" onClick={() => { setPhase("phone"); setCode(""); setError(null); }}
+          <button type="button" onClick={() => { setPhase("phone"); setCode(""); setError(null); sentFor.current = ""; checkedFor.current = ""; }}
             style={{ marginTop: 12, background: "none", border: "none", color: "#1E3A8A", cursor: "pointer", padding: 0, fontSize: 14 }}>
             Use a different number
           </button>
