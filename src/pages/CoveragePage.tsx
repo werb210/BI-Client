@@ -1,3 +1,4 @@
+import BackBar from "@/components/BackBar"; // BI_CLIENT_FLOW_v12
 // BI_CLIENT_COVERAGE_v4 - step 2, the path taken when there is no subcontract
 // to read. The list is whatever bi_products holds for the applicant's country,
 // in sort_order, so PGI leads and the ordering is data rather than code.
@@ -91,6 +92,7 @@ export default function CoveragePage() {
 
   return (
     <div style={wrap}>
+      <BackBar />
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>What do you need covered?</h1>
       <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
         Pick everything that applies. You can change this later.

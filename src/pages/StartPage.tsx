@@ -6,6 +6,10 @@ import { useNavigate } from "react-router-dom";
 import { listIndustries, saveProfile, type Industry } from "@/api/profile";
 import { getPhone } from "@/auth/token";
 import { getEntryIndustry, getEntrySource, setChosenIndustry } from "@/entry/entryContext";
+import BackBar from "@/components/BackBar";
+import { clearDraft, loadDraft, saveDraft } from "@/entry/draft";
+
+const DRAFT = { businessName: "", applicantName: "", email: "", country: "CA", industry: "" };
 
 // Mobile-first: one field per row, 56px targets, sticky CTA. 88% of applicants
 // are on a phone.
@@ -32,12 +36,13 @@ const looksLikeEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()
 export default function StartPage() {
   const navigate = useNavigate();
   const phone = getPhone();
-  const [businessName, setBusinessName] = useState("");
-  const [applicantName, setApplicantName] = useState("");
-  const [email, setEmail] = useState("");
-  const [country, setCountry] = useState<"CA" | "US">("CA");
+  const initial = loadDraft(DRAFT);
+  const [businessName, setBusinessName] = useState(initial.businessName);
+  const [applicantName, setApplicantName] = useState(initial.applicantName);
+  const [email, setEmail] = useState(initial.email);
+  const [country, setCountry] = useState<"CA" | "US">(initial.country === "US" ? "US" : "CA");
   const [industries, setIndustries] = useState<Industry[]>([]);
-  const [industry, setIndustry] = useState(getEntryIndustry());
+  const [industry, setIndustry] = useState(getEntryIndustry() || initial.industry);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -46,6 +51,10 @@ export default function StartPage() {
     void listIndustries().then((r) => { if (alive) setIndustries(r.industries ?? []); }).catch(() => undefined);
     return () => { alive = false; };
   }, []);
+
+  useEffect(() => {
+    saveDraft({ businessName, applicantName, email, country, industry });
+  }, [businessName, applicantName, email, country, industry]);
 
   const ready = industry.trim().length > 0 && businessName.trim().length > 1 && applicantName.trim().length > 1 && looksLikeEmail(email);
 
@@ -56,6 +65,7 @@ export default function StartPage() {
     try {
       const result = await saveProfile({ businessName: businessName.trim(), applicantName: applicantName.trim(), email: email.trim(), country, industry, src: getEntrySource() || undefined });
       setChosenIndustry(result.industry || industry);
+      clearDraft();
       navigate(result.wantsContract ? "/upload" : "/coverage/me");
     } catch {
       setError("That did not save. Please check your details and try again.");
@@ -65,30 +75,31 @@ export default function StartPage() {
 
   return (
     <div style={wrap}>
+      <BackBar to="/" />
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>Tell us who you are</h1>
       <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 24 }}>A few details and we can tell you what cover you need.</p>
       <div style={field}>
         <label style={label} htmlFor="industry">What industry are you in?</label>
-        <select id="industry" data-testid="industry-select" style={input} value={industry} onChange={(e) => setIndustry(e.target.value)}>
+        <select id="industry" data-testid="industry-select" autoComplete="organization-title" style={input} value={industry} onChange={(e) => setIndustry(e.target.value)}>
           <option value="">Choose your industry</option>
           {industries.map((item) => <option key={item.code} value={item.code}>{item.display_name}</option>)}
         </select>
       </div>
       <div style={field}>
         <label style={label} htmlFor="businessName">Business name</label>
-        <input id="businessName" style={input} value={businessName} autoComplete="organization" onChange={(e) => setBusinessName(e.target.value)} placeholder="Legal name of your company" />
+        <input id="businessName" name="organization" style={input} value={businessName} autoComplete="organization" onChange={(e) => setBusinessName(e.target.value)} placeholder="Legal name of your company" />
       </div>
       <div style={field}>
         <label style={label} htmlFor="applicantName">Your name</label>
-        <input id="applicantName" style={input} value={applicantName} autoComplete="name" onChange={(e) => setApplicantName(e.target.value)} placeholder="First and last name" />
+        <input id="applicantName" name="name" style={input} value={applicantName} autoComplete="name" onChange={(e) => setApplicantName(e.target.value)} placeholder="First and last name" />
       </div>
       <div style={field}>
         <label style={label} htmlFor="email">Email</label>
-        <input id="email" style={input} value={email} type="email" inputMode="email" autoComplete="email" autoCapitalize="off" autoCorrect="off" onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
+        <input id="email" name="email" style={input} value={email} type="email" inputMode="email" autoComplete="email" autoCapitalize="off" autoCorrect="off" onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
       </div>
       <div style={field}>
         <label style={label} htmlFor="country">Where do you work?</label>
-        <select id="country" style={input} value={country} onChange={(e) => setCountry(e.target.value === "US" ? "US" : "CA")}>
+        <select id="country" name="country" autoComplete="country" style={input} value={country} onChange={(e) => setCountry(e.target.value === "US" ? "US" : "CA")}>
           <option value="CA">Canada</option>
           <option value="US">United States</option>
         </select>

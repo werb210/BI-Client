@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadContract } from "@/api/contract";
 import { ApiError } from "@/api/client";
+import BackBar from "@/components/BackBar";
 
 const ACCEPT = ".pdf,.doc,.docx,.png,.jpg,.jpeg";
 const MAX_BYTES = 25 * 1024 * 1024;
@@ -43,13 +44,7 @@ export default function UploadContractPage() {
     setError(null);
     try {
       const result = await uploadContract(file);
-      // BI_CLIENT_MISSING_SCHEDULE_v10 - the agreement alone carries no limits.
-      if (result.documentKind === "agreement_only" && (result.missingSchedules?.length ?? 0) > 0) {
-        navigate(`/schedule/${encodeURIComponent(result.applicationId)}`, {
-          state: { missingSchedules: result.missingSchedules },
-        });
-        return;
-      }
+      // BI_CLIENT_FLOW_v12 - the subcontract is the only document we ask for.
       navigate(`/requirements/${result.applicationId}`);
     } catch (err) {
       setError(message(err));
@@ -60,6 +55,7 @@ export default function UploadContractPage() {
 
   return (
     <div style={wrap}>
+      <BackBar to="/start" />
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>Upload your subcontract</h1>
       <p style={{ color: "#475569", fontSize: 14, marginTop: 0 }}>
         We will read the insurance and bonding clauses and show you what the contract

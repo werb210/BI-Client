@@ -1,3 +1,4 @@
+import BackBar from "@/components/BackBar"; // BI_CLIENT_FLOW_v12
 // BI_CLIENT_QUESTION_GROUPS_v6 - step 3, one screen per group rather than one
 // per question. v5 paged every question separately and PGI alone produced
 // sixteen taps of Yes/No/Next, which reads as an interrogation. The bank
@@ -196,6 +197,7 @@ export default function QuestionsPage() {
 
   return (
     <div style={wrap}>
+      <BackBar />
       <div style={{ fontSize: 12, color: "#64748b", marginBottom: 8 }}>
         Step {step + 1} of {groups.length}
       </div>
