@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSelection, listProducts, saveSelection, type Product, type Selected } from "@/api/products";
+import { getChosenIndustry } from "@/entry/entryContext";
 
 const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24, paddingBottom: 104 };
 const card: React.CSSProperties = {
@@ -35,6 +36,7 @@ export default function CoveragePage() {
   // A coverage the subcontract demands is not the applicant's to untick, so it
   // renders locked rather than as a checkbox they can clear.
   const [required, setRequired] = useState<Set<string>>(new Set());
+  const [categories, setCategories] = useState(false);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +46,8 @@ export default function CoveragePage() {
       const sel = await getSelection(applicationId);
       const rows: Selected[] = sel.selected ?? [];
       setResolvedId(sel.applicationId || applicationId);
-      const list = await listProducts(sel.country === "US" ? "US" : "CA");
+      const list = await listProducts(sel.country === "US" ? "US" : "CA", getChosenIndustry() || undefined);
+      setCategories(list.kind === "categories");
       setProducts(list.products ?? []);
       setRequired(new Set(rows.filter((r) => r.source === "contract").map((r) => r.code)));
       setChosen(new Set(rows.filter((r) => r.source !== "contract").map((r) => r.code)));
@@ -92,6 +95,15 @@ export default function CoveragePage() {
       <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
         Pick everything that applies. You can change this later.
       </p>
+
+      {categories && (
+        <div style={{ fontSize: 14, color: "#475569", margin: "4px 0 16px" }}>
+          These are the coverages we most often place for your industry. If a lease, supplier agreement or other contract sets out what you must carry,{" "}
+          <button type="button" data-testid="upload-other-contract" onClick={() => navigate("/upload")} style={{ background: "none", border: "none", color: "#1E3A8A", cursor: "pointer", padding: 0, fontSize: 14, textDecoration: "underline", minHeight: 44 }}>
+            upload it and we will read it
+          </button>.
+        </div>
+      )}
 
       {error && <div style={{ color: "#b91c1c", fontSize: 14, marginBottom: 12 }}>{error}</div>}
 
