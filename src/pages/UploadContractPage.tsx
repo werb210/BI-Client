@@ -26,7 +26,7 @@ const drop: React.CSSProperties = {
 };
 const button: React.CSSProperties = {
   padding: "12px 20px", fontSize: 16, fontWeight: 600, borderRadius: 8,
-  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
 };
 
 export default function UploadContractPage() {

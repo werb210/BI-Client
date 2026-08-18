@@ -27,6 +27,23 @@ h3 {
 
 /* The application flow is a sequence of forms. Anything focusable gets the
    same gold ring the marketing site uses, so tabbing through is visible. */
+/* BI_CLIENT_DESIGN_v16 - the buttons are inline-styled, so hover and active
+   have to come from a stylesheet. Matched to bf-client's button.css and
+   bi-website's .bf-btn so all three properties feel the same under the
+   pointer. */
+button[style*="rgb(191, 155, 73)"]:hover:not(:disabled),
+button[style*="#BF9B49"]:hover:not(:disabled) {
+  background: #cfa953 !important;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 :where(input, select, textarea, button, a):focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(191, 155, 73, 0.45);

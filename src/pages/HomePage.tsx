@@ -14,7 +14,7 @@ export default function HomePage() {
       <button
         type="button"
         onClick={() => navigate("/upload")}
-        style={{ padding: "12px 20px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer", marginBottom: 16 }}
+        style={{ padding: "12px 20px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer", marginBottom: 16 }}
       >
         Upload my subcontract
       </button>

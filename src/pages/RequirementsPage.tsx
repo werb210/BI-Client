@@ -26,7 +26,7 @@ const quote: React.CSSProperties = {
 };
 const yes: React.CSSProperties = {
   padding: "8px 16px", borderRadius: 8, border: "none",
-  background: "#0B1F3A", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600,
+  background: "#BF9B49", color: "#0B1F3A", cursor: "pointer", fontSize: 14, fontWeight: 600,
 };
 const no: React.CSSProperties = {
   padding: "8px 16px", borderRadius: 8, border: "1px solid #E4EAF2",

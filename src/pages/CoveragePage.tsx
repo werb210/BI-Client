@@ -20,7 +20,7 @@ const bar: React.CSSProperties = {
 };
 const cta: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
-  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
 };
 const tag: React.CSSProperties = {
   fontSize: 11, fontWeight: 600, color: "#0B1F3A", background: "#e0e7ff",

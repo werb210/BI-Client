@@ -28,7 +28,7 @@ const bar: React.CSSProperties = {
 };
 const cta: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
-  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
 };
 
 const looksLikeEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
