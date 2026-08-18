@@ -16,7 +16,9 @@ function message(err: unknown): string {
 // BI_CLIENT_SHELL_v18 - layout comes from chrome.css now, so the width matches
 // every other page in the flow instead of being the narrowest of four.
 const wrap: React.CSSProperties = {};
-const input: React.CSSProperties = { width: "100%", padding: "12px 14px", fontSize: 16, borderRadius: 8, border: "1px solid #E4EAF2", boxSizing: "border-box", marginTop: 6 };
+// BI_CLIENT_FIELD_v22 - was ~44px where every later field is 56. Now the
+// shared class, so the first field a user touches matches the rest.
+const input: React.CSSProperties = { marginTop: 6 };
 const button: React.CSSProperties = { width: "100%", marginTop: 14, padding: "12px 16px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer" };
 
 export default function SignInPage() {
@@ -91,7 +93,7 @@ export default function SignInPage() {
           <label style={{ fontSize: 13 }}>
             Mobile number
             <input type="tel" name="tel" inputMode="tel" autoComplete="tel" value={phone}
-              onChange={(e) => setPhone(e.target.value)} style={input} />
+              onChange={(e) => setPhone(e.target.value)} className="bi-field" style={input} />
           </label>
           <button type="button" style={button} disabled={busy || !phone.trim()} onClick={() => void send()}>
             {busy ? "Sending\u2026" : "Send code"}
@@ -102,7 +104,7 @@ export default function SignInPage() {
           <label style={{ fontSize: 13 }}>
             6-digit code
             <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code}
-              onChange={(e) => setCode(e.target.value)} style={input} />
+              onChange={(e) => setCode(e.target.value)} className="bi-field" style={input} />
           </label>
           <button type="button" style={button} disabled={busy || code.trim().length < 6} onClick={() => void check()}>
             {busy ? "Checking\u2026" : "Sign in"}

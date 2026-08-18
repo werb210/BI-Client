@@ -18,11 +18,9 @@ const DRAFT = { businessName: "", applicantName: "", email: "", country: "CA", i
 // the last field.
 const wrap: React.CSSProperties = { paddingBottom: 104 };
 const label: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 600, color: "#0B1F3A", marginBottom: 6 };
-const input: React.CSSProperties = {
-  width: "100%", minHeight: 56, fontSize: 16, padding: "0 14px",
-  border: "1px solid #E4EAF2", borderRadius: 8, background: "#fff",
-  color: "#0B1F3A", boxSizing: "border-box",
-};
+// BI_CLIENT_FIELD_v22 - geometry moved to .bi-field. This page already had
+// the right height; it gains the gold focus ring the others have.
+const input: React.CSSProperties = {};
 const field: React.CSSProperties = { marginBottom: 18 };
 const readOnly: React.CSSProperties = { ...input, background: "#f1f5f9", color: "#51617D", lineHeight: "56px" };
 const bar: React.CSSProperties = {
@@ -85,33 +83,33 @@ export default function StartPage() {
       <p style={{ color: "#51617D", fontSize: 14, marginTop: 0, marginBottom: 24 }}>A few details and we can tell you what cover you need.</p>
       <div style={field}>
         <label style={label} htmlFor="industry">What industry are you in?</label>
-        <select id="industry" data-testid="industry-select" autoComplete="organization-title" style={input} value={industry} onChange={(e) => setIndustry(e.target.value)}>
+        <select id="industry" data-testid="industry-select" autoComplete="organization-title" className="bi-field" style={input} value={industry} onChange={(e) => setIndustry(e.target.value)}>
           <option value="">Choose your industry</option>
           {industries.map((item) => <option key={item.code} value={item.code}>{item.display_name}</option>)}
         </select>
       </div>
       <div style={field}>
         <label style={label} htmlFor="businessName">Business name</label>
-        <input id="businessName" name="organization" style={input} value={businessName} autoComplete="organization" onChange={(e) => setBusinessName(e.target.value)} placeholder="Legal name of your company" />
+        <input id="businessName" name="organization" className="bi-field" style={input} value={businessName} autoComplete="organization" onChange={(e) => setBusinessName(e.target.value)} placeholder="Legal name of your company" />
       </div>
       <div style={field}>
         <label style={label} htmlFor="applicantName">Your name</label>
-        <input id="applicantName" name="name" style={input} value={applicantName} autoComplete="name" onChange={(e) => setApplicantName(e.target.value)} placeholder="First and last name" />
+        <input id="applicantName" name="name" className="bi-field" style={input} value={applicantName} autoComplete="name" onChange={(e) => setApplicantName(e.target.value)} placeholder="First and last name" />
       </div>
       <div style={field}>
         <label style={label} htmlFor="email">Email</label>
-        <input id="email" name="email" style={input} value={email} type="email" inputMode="email" autoComplete="email" autoCapitalize="off" autoCorrect="off" onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
+        <input id="email" name="email" className="bi-field" style={input} value={email} type="email" inputMode="email" autoComplete="email" autoCapitalize="off" autoCorrect="off" onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" />
       </div>
       <div style={field}>
         <label style={label} htmlFor="country">Where do you work?</label>
-        <select id="country" name="country" autoComplete="country" style={input} value={country} onChange={(e) => setCountry(e.target.value === "US" ? "US" : "CA")}>
+        <select id="country" name="country" autoComplete="country" className="bi-field" style={input} value={country} onChange={(e) => setCountry(e.target.value === "US" ? "US" : "CA")}>
           <option value="CA">Canada</option>
           <option value="US">United States</option>
         </select>
       </div>
       <div style={field}>
         <label style={label}>Mobile</label>
-        <div style={readOnly}>{phone ?? "Verified"}</div>
+        <div className="bi-field" style={readOnly}>{phone ?? "Verified"}</div>
         <div style={{ fontSize: 12, color: "#8593aa", marginTop: 6 }}>Already confirmed by the code you entered.</div>
       </div>
       {error && <div style={{ color: "#b91c1c", fontSize: 14, marginBottom: 12 }}>{error}</div>}
