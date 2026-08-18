@@ -9,7 +9,7 @@ import { getSummary, submitApplication, type Summary } from "@/api/summary";
 
 const wrap: React.CSSProperties = { maxWidth: 680, margin: "0 auto", padding: 24, paddingBottom: 120 };
 const card: React.CSSProperties = {
-  border: "1px solid #E4EAF2", borderRadius: 12, padding: 18, marginBottom: 16, background: "#fff",
+  border: "1px solid #E4EAF2", borderRadius: 8, padding: 18, marginBottom: 16, background: "#fff",
 };
 const h2: React.CSSProperties = { fontSize: 15, fontWeight: 600, margin: "0 0 12px", color: "#0B1F3A" };
 const line: React.CSSProperties = { fontSize: 14, color: "#0B1F3A", padding: "6px 0" };
@@ -18,11 +18,11 @@ const bar: React.CSSProperties = {
   background: "#fff", borderTop: "1px solid #E4EAF2", display: "flex", gap: 12,
 };
 const cta: React.CSSProperties = {
-  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
+  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 8,
   border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
 };
 const ghost: React.CSSProperties = {
-  minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 10,
+  minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 8,
   border: "1px solid #E4EAF2", background: "#fff", color: "#0B1F3A", cursor: "pointer",
 };
 

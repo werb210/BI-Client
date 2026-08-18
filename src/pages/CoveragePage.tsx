@@ -9,7 +9,7 @@ import { getChosenIndustry } from "@/entry/entryContext";
 
 const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24, paddingBottom: 104 };
 const card: React.CSSProperties = {
-  border: "1px solid #E4EAF2", borderRadius: 12, padding: 16, marginBottom: 12,
+  border: "1px solid #E4EAF2", borderRadius: 8, padding: 16, marginBottom: 12,
   background: "#fff", display: "flex", gap: 12, alignItems: "flex-start",
   minHeight: 56, cursor: "pointer",
 };
@@ -19,12 +19,12 @@ const bar: React.CSSProperties = {
   background: "#fff", borderTop: "1px solid #E4EAF2",
 };
 const cta: React.CSSProperties = {
-  width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
+  width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 8,
   border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
 };
 const tag: React.CSSProperties = {
   fontSize: 11, fontWeight: 600, color: "#0B1F3A", background: "#e0e7ff",
-  borderRadius: 999, padding: "2px 8px", marginLeft: 8, whiteSpace: "nowrap",
+  borderRadius: 8, padding: "2px 8px", marginLeft: 8, whiteSpace: "nowrap",
 };
 
 export default function CoveragePage() {

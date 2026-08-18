@@ -12,7 +12,7 @@ import { getSelection } from "@/api/products";
 
 const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24 };
 const card: React.CSSProperties = {
-  border: "1px solid #E4EAF2", borderRadius: 12, padding: 16,
+  border: "1px solid #E4EAF2", borderRadius: 8, padding: 16,
   marginBottom: 12, background: "#fff",
 };
 // BI_CLIENT_REFERRAL_v8

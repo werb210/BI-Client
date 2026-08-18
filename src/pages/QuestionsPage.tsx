@@ -14,11 +14,11 @@ const bar: React.CSSProperties = {
   background: "#fff", borderTop: "1px solid #E4EAF2", display: "flex", gap: 12,
 };
 const cta: React.CSSProperties = {
-  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
+  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 8,
   border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
 };
 const back: React.CSSProperties = {
-  minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 10,
+  minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 8,
   border: "1px solid #E4EAF2", background: "#fff", color: "#0B1F3A", cursor: "pointer",
 };
 const block: React.CSSProperties = {
@@ -27,7 +27,7 @@ const block: React.CSSProperties = {
 const row: React.CSSProperties = { display: "flex", gap: 10, marginTop: 12 };
 // Side-by-side keeps a long list scannable; still 56px tall for thumbs.
 const pill = (on: boolean): React.CSSProperties => ({
-  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10, cursor: "pointer",
+  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 8, cursor: "pointer",
   border: on ? "2px solid #0B1F3A" : "1px solid #E4EAF2",
   background: on ? "#eef2ff" : "#fff", color: "#0B1F3A",
 });
@@ -35,11 +35,11 @@ const pill = (on: boolean): React.CSSProperties => ({
 // 56px tall and 16px type, because iOS zooms the page on any input under 16px.
 const field: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, padding: "0 14px", marginTop: 12,
-  border: "1px solid #E4EAF2", borderRadius: 10, background: "#fff",
+  border: "1px solid #E4EAF2", borderRadius: 8, background: "#fff",
   color: "#0B1F3A", boxSizing: "border-box",
 };
 const area: React.CSSProperties = {
-  width: "100%", minHeight: 92, fontSize: 16, padding: 12, borderRadius: 10,
+  width: "100%", minHeight: 92, fontSize: 16, padding: 12, borderRadius: 8,
   border: "1px solid #E4EAF2", boxSizing: "border-box", marginTop: 12,
 };
 
@@ -201,8 +201,8 @@ export default function QuestionsPage() {
       <div style={{ fontSize: 12, color: "#8593aa", marginBottom: 8 }}>
         Step {step + 1} of {groups.length}
       </div>
-      <div style={{ height: 4, background: "#E4EAF2", borderRadius: 999, marginBottom: 20 }}>
-        <div style={{ height: 4, borderRadius: 999, background: "#0B1F3A",
+      <div style={{ height: 4, background: "#E4EAF2", borderRadius: 8, marginBottom: 20 }}>
+        <div style={{ height: 4, borderRadius: 8, background: "#0B1F3A",
           width: `${Math.round(((step + 1) / groups.length) * 100)}%` }} />
       </div>
 
