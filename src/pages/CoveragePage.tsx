@@ -9,21 +9,21 @@ import { getChosenIndustry } from "@/entry/entryContext";
 
 const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24, paddingBottom: 104 };
 const card: React.CSSProperties = {
-  border: "1px solid #cbd5e1", borderRadius: 12, padding: 16, marginBottom: 12,
+  border: "1px solid #E4EAF2", borderRadius: 12, padding: 16, marginBottom: 12,
   background: "#fff", display: "flex", gap: 12, alignItems: "flex-start",
   minHeight: 56, cursor: "pointer",
 };
-const picked: React.CSSProperties = { ...card, border: "2px solid #1E3A8A", background: "#f8fafc" };
+const picked: React.CSSProperties = { ...card, border: "2px solid #0B1F3A", background: "#F5F8FC" };
 const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
-  background: "#fff", borderTop: "1px solid #e2e8f0",
+  background: "#fff", borderTop: "1px solid #E4EAF2",
 };
 const cta: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
-  border: "none", background: "#1E3A8A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
 };
 const tag: React.CSSProperties = {
-  fontSize: 11, fontWeight: 600, color: "#1E3A8A", background: "#e0e7ff",
+  fontSize: 11, fontWeight: 600, color: "#0B1F3A", background: "#e0e7ff",
   borderRadius: 999, padding: "2px 8px", marginLeft: 8, whiteSpace: "nowrap",
 };
 
@@ -94,14 +94,14 @@ export default function CoveragePage() {
     <div style={wrap}>
       <BackBar />
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>What do you need covered?</h1>
-      <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
+      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
         Pick everything that applies. You can change this later.
       </p>
 
       {categories && (
-        <div style={{ fontSize: 14, color: "#475569", margin: "4px 0 16px" }}>
+        <div style={{ fontSize: 14, color: "#51617D", margin: "4px 0 16px" }}>
           These are the coverages we most often place for your industry. If a lease, supplier agreement or other contract sets out what you must carry,{" "}
-          <button type="button" data-testid="upload-other-contract" onClick={() => navigate("/upload")} style={{ background: "none", border: "none", color: "#1E3A8A", cursor: "pointer", padding: 0, fontSize: 14, textDecoration: "underline", minHeight: 44 }}>
+          <button type="button" data-testid="upload-other-contract" onClick={() => navigate("/upload")} style={{ background: "none", border: "none", color: "#0B1F3A", cursor: "pointer", padding: 0, fontSize: 14, textDecoration: "underline", minHeight: 44 }}>
             upload it and we will read it
           </button>.
         </div>
@@ -124,7 +124,7 @@ export default function CoveragePage() {
                 {isRequired && <span style={tag}>Required by your contract</span>}
               </div>
               {p.description && (
-                <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>{p.description}</div>
+                <div style={{ color: "#51617D", fontSize: 13, marginTop: 4 }}>{p.description}</div>
               )}
             </div>
           </div>
