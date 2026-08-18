@@ -8,7 +8,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuestions, saveAnswers, type AnswerInput, type Question } from "@/api/questions";
 
-const wrap: React.CSSProperties = { maxWidth: 680, margin: "0 auto", padding: 24, paddingBottom: 120 };
+// BI_CLIENT_SHELL_v21 - width, ground and padding come from chrome.css. The
+// 120px bottom padding stays because the CTA bar below is position:fixed and
+// would otherwise sit over the last control.
+const wrap: React.CSSProperties = { paddingBottom: 120 };
 const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
   background: "#fff", borderTop: "1px solid #E4EAF2", display: "flex", gap: 12,
@@ -183,11 +186,11 @@ export default function QuestionsPage() {
     }
   }
 
-  if (loading) return <div style={wrap}>Loading…</div>;
+  if (loading) return <div className="bi-page" style={wrap}>Loading…</div>;
   if (!group) {
     return (
-      <div style={wrap}>
-        <h1 style={{ fontSize: 22 }}>Nothing to answer yet</h1>
+      <div className="bi-page" style={wrap}>
+        <h1>Nothing to answer yet</h1>
         <p style={{ color: "#51617D", fontSize: 14 }}>
           Choose your coverage first and we will ask only what those policies require.
         </p>
@@ -196,7 +199,7 @@ export default function QuestionsPage() {
   }
 
   return (
-    <div style={wrap}>
+    <div className="bi-page" style={wrap}>
       <BackBar />
       <div style={{ fontSize: 12, color: "#8593aa", marginBottom: 8 }}>
         Step {step + 1} of {groups.length}

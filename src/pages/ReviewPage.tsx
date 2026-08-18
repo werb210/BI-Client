@@ -7,7 +7,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSummary, submitApplication, type Summary } from "@/api/summary";
 
-const wrap: React.CSSProperties = { maxWidth: 680, margin: "0 auto", padding: 24, paddingBottom: 120 };
+// BI_CLIENT_SHELL_v21 - width, ground and padding come from chrome.css. The
+// 120px bottom padding stays because the CTA bar below is position:fixed and
+// would otherwise sit over the last control.
+const wrap: React.CSSProperties = { paddingBottom: 120 };
 const card: React.CSSProperties = {
   border: "1px solid #E4EAF2", borderRadius: 8, padding: 18, marginBottom: 16, background: "#fff",
 };
@@ -67,12 +70,12 @@ export default function ReviewPage() {
     }
   }
 
-  if (loading) return <div style={wrap}>Loading…</div>;
-  if (!s) return <div style={wrap}>{error ?? "Not found."}</div>;
+  if (loading) return <div className="bi-page" style={wrap}>Loading…</div>;
+  if (!s) return <div className="bi-page" style={wrap}>{error ?? "Not found."}</div>;
 
   if (done) {
     return (
-      <div style={wrap}>
+      <div className="bi-page" style={wrap}>
         <h1 style={{ fontSize: 24, marginBottom: 8 }}>That's everything we need</h1>
         <p style={{ color: "#51617D", fontSize: 15, marginTop: 0 }}>
           Your application is with our team. We will text you at the number you verified
@@ -97,7 +100,7 @@ export default function ReviewPage() {
   }
 
   return (
-    <div style={wrap}>
+    <div className="bi-page" style={wrap}>
       <BackBar />
       <h1 style={{ fontSize: 24, marginBottom: 4 }}>Check this over</h1>
       <p style={{ color: "#51617D", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
