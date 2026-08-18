@@ -15,7 +15,7 @@ function message(err: unknown): string {
 
 const wrap: React.CSSProperties = { maxWidth: 420, margin: "0 auto", padding: 24 };
 const input: React.CSSProperties = { width: "100%", padding: "12px 14px", fontSize: 16, borderRadius: 8, border: "1px solid #E4EAF2", boxSizing: "border-box", marginTop: 6 };
-const button: React.CSSProperties = { width: "100%", marginTop: 14, padding: "12px 16px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer" };
+const button: React.CSSProperties = { width: "100%", marginTop: 14, padding: "12px 16px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer" };
 
 export default function SignInPage() {
   const navigate = useNavigate();

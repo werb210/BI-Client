@@ -19,7 +19,7 @@ const bar: React.CSSProperties = {
 };
 const cta: React.CSSProperties = {
   flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
-  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
 };
 const ghost: React.CSSProperties = {
   minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 10,
