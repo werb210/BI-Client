@@ -13,7 +13,9 @@ function message(err: unknown): string {
   return "Something went wrong. Please try again.";
 }
 
-const wrap: React.CSSProperties = { maxWidth: 420, margin: "0 auto", padding: 24 };
+// BI_CLIENT_SHELL_v18 - layout comes from chrome.css now, so the width matches
+// every other page in the flow instead of being the narrowest of four.
+const wrap: React.CSSProperties = {};
 const input: React.CSSProperties = { width: "100%", padding: "12px 14px", fontSize: 16, borderRadius: 8, border: "1px solid #E4EAF2", boxSizing: "border-box", marginTop: 6 };
 const button: React.CSSProperties = { width: "100%", marginTop: 14, padding: "12px 16px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer" };
 
@@ -76,7 +78,9 @@ export default function SignInPage() {
   }
 
   return (
-    <div style={wrap}>
+    <div className="bi-page">
+      <div className="bi-page__inner bi-page__inner--narrow">
+        <div className="bi-card" style={wrap}>
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>Boreal Risk Management</h1>
       <p style={{ color: "#51617D", fontSize: 14, marginTop: 0 }}>
         Sign in with your mobile number. We will text you a code.
@@ -110,7 +114,9 @@ export default function SignInPage() {
         </>
       )}
 
-      {error && <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 12 }}>{error}</div>}
+          {error && <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 12 }}>{error}</div>}
+        </div>
+      </div>
     </div>
   );
 }
