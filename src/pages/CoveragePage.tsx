@@ -7,7 +7,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getSelection, listProducts, saveSelection, type Product, type Selected } from "@/api/products";
 import { getChosenIndustry } from "@/entry/entryContext";
 
-const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24, paddingBottom: 104 };
+// BI_CLIENT_SHELL_v21 - width, ground and padding come from chrome.css. The
+// 104px bottom padding stays because the CTA bar below is position:fixed and
+// would otherwise sit over the last control.
+const wrap: React.CSSProperties = { paddingBottom: 104 };
 const card: React.CSSProperties = {
   border: "1px solid #E4EAF2", borderRadius: 8, padding: 16, marginBottom: 12,
   background: "#fff", display: "flex", gap: 12, alignItems: "flex-start",
@@ -88,12 +91,12 @@ export default function CoveragePage() {
 
   const total = chosen.size + required.size;
 
-  if (loading) return <div style={wrap}>Loading…</div>;
+  if (loading) return <div className="bi-page" style={wrap}>Loading…</div>;
 
   return (
-    <div style={wrap}>
+    <div className="bi-page" style={wrap}>
       <BackBar />
-      <h1 style={{ fontSize: 22, marginBottom: 4 }}>What do you need covered?</h1>
+      <h1>What do you need covered?</h1>
       <p style={{ color: "#51617D", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
         Pick everything that applies. You can change this later.
       </p>

@@ -66,6 +66,16 @@ button:disabled {
   padding: 32px 16px 48px;
 }
 
+/* BI_CLIENT_SHELL_v21 - pages with several early-return states (loading,
+   empty, error, done) render the shell directly rather than nesting an inner
+   column in each branch. Centring the content here means every one of those
+   states lands on the same width as the main view. */
+.bi-page > *:not(.bi-page__inner) {
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .bi-page__inner {
   max-width: 620px;
   margin: 0 auto;
