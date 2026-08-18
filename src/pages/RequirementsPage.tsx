@@ -10,7 +10,9 @@ import {
 import BackBar from "@/components/BackBar";
 import { getSelection } from "@/api/products";
 
-const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24 };
+// BI_CLIENT_SHELL_v20 - width and ground come from chrome.css. No outer card
+// here: this page composes its own panels, and nesting them reads badly.
+const wrap: React.CSSProperties = {};
 const card: React.CSSProperties = {
   border: "1px solid #E4EAF2", borderRadius: 8, padding: 16,
   marginBottom: 12, background: "#fff",
@@ -83,10 +85,11 @@ export default function RequirementsPage() {
   const outstanding = items.filter((x) => x.confirmedByClient === null).length;
 
   return (
-    <div style={wrap}>
+    <div className="bi-page" style={wrap}>
+      <div className="bi-page__inner">
       <BackBar to="/upload" />
-      <h1 style={{ fontSize: 22, marginBottom: 4 }}>What your contract asks for</h1>
-      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0 }}>
+      <h1>What your contract asks for</h1>
+      <p className="bi-page__lede">
         This is what we read in your subcontract. Please check each one against your
         own copy and tell us whether we read it correctly. We have quoted the exact
         wording so you can compare.
@@ -170,6 +173,7 @@ export default function RequirementsPage() {
           Review my application
         </button>
       </div>
+    </div>
     </div>
   );
 }

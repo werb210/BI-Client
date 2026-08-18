@@ -19,7 +19,9 @@ function message(err: unknown): string {
   return "That upload did not go through. Please try again.";
 }
 
-const wrap: React.CSSProperties = { maxWidth: 560, margin: "0 auto", padding: 24 };
+// BI_CLIENT_SHELL_v20 - width and ground come from chrome.css. No outer card
+// here: this page composes its own panels, and nesting them reads badly.
+const wrap: React.CSSProperties = {};
 const drop: React.CSSProperties = {
   border: "2px dashed #E4EAF2", borderRadius: 8, padding: 32,
   textAlign: "center", cursor: "pointer", background: "#F5F8FC", marginTop: 16,
@@ -54,10 +56,11 @@ export default function UploadContractPage() {
   }
 
   return (
-    <div style={wrap}>
+    <div className="bi-page" style={wrap}>
+      <div className="bi-page__inner">
       <BackBar to="/start" />
-      <h1 style={{ fontSize: 22, marginBottom: 4 }}>Upload your subcontract</h1>
-      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0 }}>
+      <h1>Upload your subcontract</h1>
+      <p className="bi-page__lede">
         We will read the insurance and bonding clauses and show you what the contract
         asks for. You will get a chance to check each one before anything happens.
       </p>
@@ -104,6 +107,7 @@ export default function UploadContractPage() {
           I do not have a subcontract yet
         </button>
       </div>
+    </div>
     </div>
   );
 }
