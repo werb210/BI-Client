@@ -57,6 +57,50 @@ button:disabled {
   box-shadow: 0 0 0 3px rgba(191, 155, 73, 0.45);
 }
 
+/* BI_CLIENT_SHELL_v19 - a consistent canvas and card for the application
+   flow. Page variants preserve the widths chosen for each step while the
+   outer padding keeps cards clear of the viewport edge on small screens. */
+.bi-page {
+  min-height: 100%;
+  padding: 48px 24px;
+  background: var(--boreal-mist);
+  box-sizing: border-box;
+}
+
+.bi-page__inner {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.bi-page__inner--signin { max-width: 420px; }
+.bi-page__inner--narrow { max-width: 560px; }
+.bi-page__inner--medium { max-width: 620px; }
+.bi-page__inner--wide { max-width: 680px; }
+
+.bi-card {
+  padding: 32px;
+  border: 1px solid var(--boreal-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(11, 31, 58, 0.08);
+  box-sizing: border-box;
+}
+
+.bi-card h1 {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+.bi-page__lede {
+  color: var(--boreal-body);
+  font-size: 14px;
+}
+
+@media (max-width: 639px) {
+  .bi-page { padding: 24px 16px; }
+  .bi-card { padding: 24px; }
+}
+
 /* BI_CLIENT_CHROME_v14
    Mirrors BF-Website's Header.tsx and footer.tsx. */
 .bi-chrome-header {
