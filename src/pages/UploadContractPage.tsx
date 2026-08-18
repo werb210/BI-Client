@@ -21,7 +21,7 @@ function message(err: unknown): string {
 
 const wrap: React.CSSProperties = { maxWidth: 560, margin: "0 auto", padding: 24 };
 const drop: React.CSSProperties = {
-  border: "2px dashed #E4EAF2", borderRadius: 12, padding: 32,
+  border: "2px dashed #E4EAF2", borderRadius: 8, padding: 32,
   textAlign: "center", cursor: "pointer", background: "#F5F8FC", marginTop: 16,
 };
 const button: React.CSSProperties = {

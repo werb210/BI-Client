@@ -17,7 +17,7 @@ const wrap: React.CSSProperties = { maxWidth: 560, margin: "0 auto", padding: 24
 const label: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 600, color: "#0B1F3A", marginBottom: 6 };
 const input: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, padding: "0 14px",
-  border: "1px solid #E4EAF2", borderRadius: 10, background: "#fff",
+  border: "1px solid #E4EAF2", borderRadius: 8, background: "#fff",
   color: "#0B1F3A", boxSizing: "border-box",
 };
 const field: React.CSSProperties = { marginBottom: 18 };
@@ -27,7 +27,7 @@ const bar: React.CSSProperties = {
   background: "#fff", borderTop: "1px solid #E4EAF2",
 };
 const cta: React.CSSProperties = {
-  width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
+  width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 8,
   border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
 };
 

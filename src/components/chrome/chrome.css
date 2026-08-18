@@ -36,6 +36,14 @@ button[style*="#BF9B49"]:hover:not(:disabled) {
   background: #cfa953 !important;
 }
 
+/* BI_CLIENT_DESIGN_v17 - the same easing bf-client and bi-website use, so a
+   button feels identical under the pointer across all three. */
+button,
+a[role="button"] {
+  transition: background-color 120ms ease, border-color 120ms ease,
+    box-shadow 120ms ease, transform 60ms ease;
+}
+
 button:active:not(:disabled) {
   transform: translateY(1px);
 }
