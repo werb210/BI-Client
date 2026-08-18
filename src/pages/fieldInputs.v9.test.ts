@@ -21,9 +21,13 @@ describe("step 3 renders every input type the bank can hold", () => {
     expect(page).toContain('inputMode={q.inputType === "number" ? "decimal" : undefined}');
   });
   it("keeps inputs at 16px so iOS does not zoom the page", () => {
-    const f = page.slice(page.indexOf("const field: React.CSSProperties"));
-    expect(f).toContain("fontSize: 16");
-    expect(f).toContain("minHeight: 56");
+    // BI_CLIENT_CTA_v23 - ruling 23 still enforced, now from chrome.css where
+    // the field geometry lives for every page rather than per page.
+    const css = readFileSync(path.join(process.cwd(), "src/components/chrome/chrome.css"), "utf8");
+    const f = css.slice(css.indexOf(".bi-field {"), css.indexOf(".bi-field::placeholder"));
+    expect(f).toContain("font-size: 16px");
+    expect(f).toContain("min-height: 56px");
+    expect(page).toContain('className="bi-field"');
   });
 });
 

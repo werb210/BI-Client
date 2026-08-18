@@ -21,10 +21,7 @@ const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
   background: "#fff", borderTop: "1px solid #E4EAF2",
 };
-const cta: React.CSSProperties = {
-  width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 8,
-  border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
-};
+// BI_CLIENT_CTA_v23 - the primary button is .bi-cta in chrome.css now.
 const tag: React.CSSProperties = {
   fontSize: 11, fontWeight: 600, color: "#0B1F3A", background: "#e0e7ff",
   borderRadius: 8, padding: "2px 8px", marginLeft: 8, whiteSpace: "nowrap",
@@ -135,7 +132,7 @@ export default function CoveragePage() {
       })}
 
       <div style={bar}>
-        <button type="button" style={{ ...cta, opacity: total > 0 && !busy ? 1 : 0.5 }}
+        <button type="button" className="bi-cta"
           disabled={total === 0 || busy} onClick={() => void submit()}>
           {busy ? "Saving..." : total === 0 ? "Select at least one" : `Continue with ${total}`}
         </button>

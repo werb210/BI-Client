@@ -20,10 +20,7 @@ const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
   background: "#fff", borderTop: "1px solid #E4EAF2", display: "flex", gap: 12,
 };
-const cta: React.CSSProperties = {
-  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 8,
-  border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
-};
+// BI_CLIENT_CTA_v23 - the primary button is .bi-cta in chrome.css now.
 const ghost: React.CSSProperties = {
   minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 8,
   border: "1px solid #E4EAF2", background: "#fff", color: "#0B1F3A", cursor: "pointer",
@@ -177,7 +174,7 @@ export default function ReviewPage() {
 
       {error && <div style={{ color: "#b91c1c", fontSize: 14 }}>{error}</div>}
       <div style={bar}>
-        <button type="button" style={{ ...cta, opacity: s.canSubmit && !busy ? 1 : 0.5 }}
+        <button type="button" className="bi-cta bi-cta--inline"
           disabled={!s.canSubmit || busy} onClick={() => void submit()}>
           {busy ? "Submitting..." : s.canSubmit ? "Submit my application" : "Finish the items above"}
         </button>

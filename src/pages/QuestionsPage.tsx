@@ -16,10 +16,7 @@ const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
   background: "#fff", borderTop: "1px solid #E4EAF2", display: "flex", gap: 12,
 };
-const cta: React.CSSProperties = {
-  flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 8,
-  border: "none", background: "#BF9B49", color: "#0B1F3A", cursor: "pointer",
-};
+// BI_CLIENT_CTA_v23 - the primary button is .bi-cta in chrome.css now.
 const back: React.CSSProperties = {
   minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 8,
   border: "1px solid #E4EAF2", background: "#fff", color: "#0B1F3A", cursor: "pointer",
@@ -36,11 +33,8 @@ const pill = (on: boolean): React.CSSProperties => ({
 });
 // BI_CLIENT_FIELD_INPUTS_v9 - text, date, number and select. Everything is
 // 56px tall and 16px type, because iOS zooms the page on any input under 16px.
-const field: React.CSSProperties = {
-  width: "100%", minHeight: 56, fontSize: 16, padding: "0 14px", marginTop: 12,
-  border: "1px solid #E4EAF2", borderRadius: 8, background: "#fff",
-  color: "#0B1F3A", boxSizing: "border-box",
-};
+// BI_CLIENT_CTA_v23 - identical to .bi-field apart from the top margin.
+const field: React.CSSProperties = { marginTop: 12 };
 const area: React.CSSProperties = {
   width: "100%", minHeight: 92, fontSize: 16, padding: 12, borderRadius: 8,
   border: "1px solid #E4EAF2", boxSizing: "border-box", marginTop: 12,
@@ -236,7 +230,7 @@ export default function QuestionsPage() {
                 ))}
               </div>
             ) : q.inputType === "select" ? (
-              <select style={field} value={a?.value ?? ""} aria-label={q.prompt}
+              <select className="bi-field" style={field} value={a?.value ?? ""} aria-label={q.prompt}
                 onChange={(e) => answer(q, e.target.value)}>
                 <option value="">Choose one…</option>
                 {(q.options ?? []).map((opt) => <option key={opt} value={opt}>{opt}</option>)}
@@ -246,7 +240,7 @@ export default function QuestionsPage() {
                 placeholder={q.placeholder ?? ""} value={a?.value ?? ""}
                 onChange={(e) => answer(q, e.target.value)} />
             ) : (
-              <input style={field} aria-label={q.prompt}
+              <input className="bi-field" style={field} aria-label={q.prompt}
                 type={q.inputType === "date" ? "date" : q.inputType === "number" ? "number" : "text"}
                 inputMode={q.inputType === "number" ? "decimal" : undefined}
                 min={q.minValue ?? undefined} max={q.maxValue ?? undefined}
@@ -289,7 +283,7 @@ export default function QuestionsPage() {
             Back
           </button>
         )}
-        <button type="button" style={{ ...cta, opacity: busy ? 0.5 : 1 }} disabled={busy}
+        <button type="button" className="bi-cta bi-cta--inline" disabled={busy}
           onClick={() => void next()}>
           {busy ? "Saving..." : step < groups.length - 1 ? "Continue" : "Finish"}
         </button>
