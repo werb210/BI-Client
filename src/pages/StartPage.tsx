@@ -13,7 +13,10 @@ const DRAFT = { businessName: "", applicantName: "", email: "", country: "CA", i
 
 // Mobile-first: one field per row, 56px targets, sticky CTA. 88% of applicants
 // are on a phone.
-const wrap: React.CSSProperties = { maxWidth: 560, margin: "0 auto", padding: 24, paddingBottom: 104 };
+// BI_CLIENT_SHELL_v19 - width and card come from chrome.css. The 104px bottom
+// padding stays: the CTA bar below is position:fixed and would otherwise cover
+// the last field.
+const wrap: React.CSSProperties = { paddingBottom: 104 };
 const label: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 600, color: "#0B1F3A", marginBottom: 6 };
 const input: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, padding: "0 14px",
@@ -74,7 +77,9 @@ export default function StartPage() {
   }
 
   return (
-    <div style={wrap}>
+    <div className="bi-page">
+      <div className="bi-page__inner bi-page__inner--narrow">
+        <div className="bi-card" style={wrap}>
       <BackBar to="/" />
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>Tell us who you are</h1>
       <p style={{ color: "#51617D", fontSize: 14, marginTop: 0, marginBottom: 24 }}>A few details and we can tell you what cover you need.</p>
@@ -114,6 +119,8 @@ export default function StartPage() {
         <button type="button" style={{ ...cta, opacity: ready && !busy ? 1 : 0.5 }} disabled={!ready || busy} onClick={() => void submit()}>
           {busy ? "Saving..." : "Continue"}
         </button>
+      </div>
+        </div>
       </div>
     </div>
   );
