@@ -14,21 +14,21 @@ const DRAFT = { businessName: "", applicantName: "", email: "", country: "CA", i
 // Mobile-first: one field per row, 56px targets, sticky CTA. 88% of applicants
 // are on a phone.
 const wrap: React.CSSProperties = { maxWidth: 560, margin: "0 auto", padding: 24, paddingBottom: 104 };
-const label: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 600, color: "#334155", marginBottom: 6 };
+const label: React.CSSProperties = { display: "block", fontSize: 13, fontWeight: 600, color: "#0B1F3A", marginBottom: 6 };
 const input: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, padding: "0 14px",
-  border: "1px solid #cbd5e1", borderRadius: 10, background: "#fff",
-  color: "#0f172a", boxSizing: "border-box",
+  border: "1px solid #E4EAF2", borderRadius: 10, background: "#fff",
+  color: "#0B1F3A", boxSizing: "border-box",
 };
 const field: React.CSSProperties = { marginBottom: 18 };
-const readOnly: React.CSSProperties = { ...input, background: "#f1f5f9", color: "#475569", lineHeight: "56px" };
+const readOnly: React.CSSProperties = { ...input, background: "#f1f5f9", color: "#51617D", lineHeight: "56px" };
 const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
-  background: "#fff", borderTop: "1px solid #e2e8f0",
+  background: "#fff", borderTop: "1px solid #E4EAF2",
 };
 const cta: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
-  border: "none", background: "#1E3A8A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
 };
 
 const looksLikeEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
@@ -77,7 +77,7 @@ export default function StartPage() {
     <div style={wrap}>
       <BackBar to="/" />
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>Tell us who you are</h1>
-      <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 24 }}>A few details and we can tell you what cover you need.</p>
+      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0, marginBottom: 24 }}>A few details and we can tell you what cover you need.</p>
       <div style={field}>
         <label style={label} htmlFor="industry">What industry are you in?</label>
         <select id="industry" data-testid="industry-select" autoComplete="organization-title" style={input} value={industry} onChange={(e) => setIndustry(e.target.value)}>
@@ -107,7 +107,7 @@ export default function StartPage() {
       <div style={field}>
         <label style={label}>Mobile</label>
         <div style={readOnly}>{phone ?? "Verified"}</div>
-        <div style={{ fontSize: 12, color: "#64748b", marginTop: 6 }}>Already confirmed by the code you entered.</div>
+        <div style={{ fontSize: 12, color: "#8593aa", marginTop: 6 }}>Already confirmed by the code you entered.</div>
       </div>
       {error && <div style={{ color: "#b91c1c", fontSize: 14, marginBottom: 12 }}>{error}</div>}
       <div style={bar}>

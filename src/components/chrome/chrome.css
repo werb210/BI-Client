@@ -1,3 +1,37 @@
+/* BI_CLIENT_DESIGN_v15 - design system for the whole app. The pages are
+   inline-styled with no Tailwind, so the root rules below are what gives them
+   the marketing site's type. The variables are here for anything added later
+   that should not hardcode a hex. */
+:root {
+  --boreal-ink: #0B1F3A;
+  --boreal-ink-deep: #081729;
+  --boreal-gold: #BF9B49;
+  --boreal-gold-hover: #cfa953;
+  --boreal-mist: #F5F8FC;
+  --boreal-line: #E4EAF2;
+  --boreal-body: #51617D;
+  --boreal-muted: #8593aa;
+}
+
+html,
+body {
+  font-family: "Public Sans", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--boreal-ink);
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+}
+
+/* The application flow is a sequence of forms. Anything focusable gets the
+   same gold ring the marketing site uses, so tabbing through is visible. */
+:where(input, select, textarea, button, a):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(191, 155, 73, 0.45);
+}
+
 /* BI_CLIENT_CHROME_v14
    Mirrors BF-Website's Header.tsx and footer.tsx. */
 .bi-chrome-header {

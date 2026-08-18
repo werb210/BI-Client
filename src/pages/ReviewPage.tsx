@@ -9,21 +9,21 @@ import { getSummary, submitApplication, type Summary } from "@/api/summary";
 
 const wrap: React.CSSProperties = { maxWidth: 680, margin: "0 auto", padding: 24, paddingBottom: 120 };
 const card: React.CSSProperties = {
-  border: "1px solid #e2e8f0", borderRadius: 12, padding: 18, marginBottom: 16, background: "#fff",
+  border: "1px solid #E4EAF2", borderRadius: 12, padding: 18, marginBottom: 16, background: "#fff",
 };
-const h2: React.CSSProperties = { fontSize: 15, fontWeight: 600, margin: "0 0 12px", color: "#0f172a" };
-const line: React.CSSProperties = { fontSize: 14, color: "#334155", padding: "6px 0" };
+const h2: React.CSSProperties = { fontSize: 15, fontWeight: 600, margin: "0 0 12px", color: "#0B1F3A" };
+const line: React.CSSProperties = { fontSize: 14, color: "#0B1F3A", padding: "6px 0" };
 const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
-  background: "#fff", borderTop: "1px solid #e2e8f0", display: "flex", gap: 12,
+  background: "#fff", borderTop: "1px solid #E4EAF2", display: "flex", gap: 12,
 };
 const cta: React.CSSProperties = {
   flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
-  border: "none", background: "#1E3A8A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
 };
 const ghost: React.CSSProperties = {
   minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 10,
-  border: "1px solid #cbd5e1", background: "#fff", color: "#334155", cursor: "pointer",
+  border: "1px solid #E4EAF2", background: "#fff", color: "#0B1F3A", cursor: "pointer",
 };
 
 export default function ReviewPage() {
@@ -74,7 +74,7 @@ export default function ReviewPage() {
     return (
       <div style={wrap}>
         <h1 style={{ fontSize: 24, marginBottom: 8 }}>That's everything we need</h1>
-        <p style={{ color: "#475569", fontSize: 15, marginTop: 0 }}>
+        <p style={{ color: "#51617D", fontSize: 15, marginTop: 0 }}>
           Your application is with our team. We will text you at the number you verified
           as soon as there is news, usually within one business day.
         </p>
@@ -100,7 +100,7 @@ export default function ReviewPage() {
     <div style={wrap}>
       <BackBar />
       <h1 style={{ fontSize: 24, marginBottom: 4 }}>Check this over</h1>
-      <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
+      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0, marginBottom: 20 }}>
         Nothing is sent until you press submit.
       </p>
 
@@ -135,7 +135,7 @@ export default function ReviewPage() {
           <div key={c.code} style={line}>
             {c.display_name}
             {c.source === "contract" && (
-              <span style={{ color: "#64748b", fontSize: 12 }}> — required by your contract</span>
+              <span style={{ color: "#8593aa", fontSize: 12 }}> — required by your contract</span>
             )}
           </div>
         ))}

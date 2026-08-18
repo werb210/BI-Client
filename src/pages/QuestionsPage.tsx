@@ -11,36 +11,36 @@ import { getQuestions, saveAnswers, type AnswerInput, type Question } from "@/ap
 const wrap: React.CSSProperties = { maxWidth: 680, margin: "0 auto", padding: 24, paddingBottom: 120 };
 const bar: React.CSSProperties = {
   position: "fixed", left: 0, right: 0, bottom: 0, padding: 16,
-  background: "#fff", borderTop: "1px solid #e2e8f0", display: "flex", gap: 12,
+  background: "#fff", borderTop: "1px solid #E4EAF2", display: "flex", gap: 12,
 };
 const cta: React.CSSProperties = {
   flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10,
-  border: "none", background: "#1E3A8A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
 };
 const back: React.CSSProperties = {
   minHeight: 56, padding: "0 20px", fontSize: 16, borderRadius: 10,
-  border: "1px solid #cbd5e1", background: "#fff", color: "#334155", cursor: "pointer",
+  border: "1px solid #E4EAF2", background: "#fff", color: "#0B1F3A", cursor: "pointer",
 };
 const block: React.CSSProperties = {
-  padding: "18px 0", borderBottom: "1px solid #e2e8f0",
+  padding: "18px 0", borderBottom: "1px solid #E4EAF2",
 };
 const row: React.CSSProperties = { display: "flex", gap: 10, marginTop: 12 };
 // Side-by-side keeps a long list scannable; still 56px tall for thumbs.
 const pill = (on: boolean): React.CSSProperties => ({
   flex: 1, minHeight: 56, fontSize: 16, fontWeight: 600, borderRadius: 10, cursor: "pointer",
-  border: on ? "2px solid #1E3A8A" : "1px solid #cbd5e1",
-  background: on ? "#eef2ff" : "#fff", color: "#0f172a",
+  border: on ? "2px solid #0B1F3A" : "1px solid #E4EAF2",
+  background: on ? "#eef2ff" : "#fff", color: "#0B1F3A",
 });
 // BI_CLIENT_FIELD_INPUTS_v9 - text, date, number and select. Everything is
 // 56px tall and 16px type, because iOS zooms the page on any input under 16px.
 const field: React.CSSProperties = {
   width: "100%", minHeight: 56, fontSize: 16, padding: "0 14px", marginTop: 12,
-  border: "1px solid #cbd5e1", borderRadius: 10, background: "#fff",
-  color: "#0f172a", boxSizing: "border-box",
+  border: "1px solid #E4EAF2", borderRadius: 10, background: "#fff",
+  color: "#0B1F3A", boxSizing: "border-box",
 };
 const area: React.CSSProperties = {
   width: "100%", minHeight: 92, fontSize: 16, padding: 12, borderRadius: 10,
-  border: "1px solid #cbd5e1", boxSizing: "border-box", marginTop: 12,
+  border: "1px solid #E4EAF2", boxSizing: "border-box", marginTop: 12,
 };
 
 const GROUP_TITLES: Record<string, string> = {
@@ -188,7 +188,7 @@ export default function QuestionsPage() {
     return (
       <div style={wrap}>
         <h1 style={{ fontSize: 22 }}>Nothing to answer yet</h1>
-        <p style={{ color: "#475569", fontSize: 14 }}>
+        <p style={{ color: "#51617D", fontSize: 14 }}>
           Choose your coverage first and we will ask only what those policies require.
         </p>
       </div>
@@ -198,18 +198,18 @@ export default function QuestionsPage() {
   return (
     <div style={wrap}>
       <BackBar />
-      <div style={{ fontSize: 12, color: "#64748b", marginBottom: 8 }}>
+      <div style={{ fontSize: 12, color: "#8593aa", marginBottom: 8 }}>
         Step {step + 1} of {groups.length}
       </div>
-      <div style={{ height: 4, background: "#e2e8f0", borderRadius: 999, marginBottom: 20 }}>
-        <div style={{ height: 4, borderRadius: 999, background: "#1E3A8A",
+      <div style={{ height: 4, background: "#E4EAF2", borderRadius: 999, marginBottom: 20 }}>
+        <div style={{ height: 4, borderRadius: 999, background: "#0B1F3A",
           width: `${Math.round(((step + 1) / groups.length) * 100)}%` }} />
       </div>
 
       <h1 style={{ fontSize: 22, marginTop: 0, marginBottom: 4 }}>
         {GROUP_TITLES[group.key] ?? "A few more questions"}
       </h1>
-      <p style={{ color: "#475569", fontSize: 14, marginTop: 0, marginBottom: 8 }}>
+      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0, marginBottom: 8 }}>
         {GROUP_BLURBS[group.key] ?? ""}
       </p>
 
@@ -221,7 +221,7 @@ export default function QuestionsPage() {
           <div key={q.questionKey} style={block}>
             <div style={{ fontSize: 15, lineHeight: 1.45, fontWeight: 500 }}>{q.prompt}</div>
             {q.helpText && (
-              <div style={{ color: "#475569", fontSize: 13, marginTop: 4 }}>{q.helpText}</div>
+              <div style={{ color: "#51617D", fontSize: 13, marginTop: 4 }}>{q.helpText}</div>
             )}
             {CHOICE_TYPES.has(q.inputType) ? (
               <div style={row}>

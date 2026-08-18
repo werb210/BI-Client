@@ -12,7 +12,7 @@ import { getSelection } from "@/api/products";
 
 const wrap: React.CSSProperties = { maxWidth: 620, margin: "0 auto", padding: 24 };
 const card: React.CSSProperties = {
-  border: "1px solid #cbd5e1", borderRadius: 12, padding: 16,
+  border: "1px solid #E4EAF2", borderRadius: 12, padding: 16,
   marginBottom: 12, background: "#fff",
 };
 // BI_CLIENT_REFERRAL_v8
@@ -21,16 +21,16 @@ const notice: React.CSSProperties = {
   padding: "10px 12px", margin: "10px 0", fontSize: 13, color: "#78350f",
 };
 const quote: React.CSSProperties = {
-  borderLeft: "3px solid #cbd5e1", paddingLeft: 12, margin: "10px 0",
-  color: "#475569", fontSize: 13, fontStyle: "italic",
+  borderLeft: "3px solid #E4EAF2", paddingLeft: 12, margin: "10px 0",
+  color: "#51617D", fontSize: 13, fontStyle: "italic",
 };
 const yes: React.CSSProperties = {
   padding: "8px 16px", borderRadius: 8, border: "none",
-  background: "#1E3A8A", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600,
+  background: "#0B1F3A", color: "#fff", cursor: "pointer", fontSize: 14, fontWeight: 600,
 };
 const no: React.CSSProperties = {
-  padding: "8px 16px", borderRadius: 8, border: "1px solid #cbd5e1",
-  background: "#fff", color: "#334155", cursor: "pointer", fontSize: 14,
+  padding: "8px 16px", borderRadius: 8, border: "1px solid #E4EAF2",
+  background: "#fff", color: "#0B1F3A", cursor: "pointer", fontSize: 14,
 };
 
 export default function RequirementsPage() {
@@ -86,7 +86,7 @@ export default function RequirementsPage() {
     <div style={wrap}>
       <BackBar to="/upload" />
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>What your contract asks for</h1>
-      <p style={{ color: "#475569", fontSize: 14, marginTop: 0 }}>
+      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0 }}>
         This is what we read in your subcontract. Please check each one against your
         own copy and tell us whether we read it correctly. We have quoted the exact
         wording so you can compare.
@@ -95,7 +95,7 @@ export default function RequirementsPage() {
       {items.length === 0 ? (
         <div style={card}>
           <div style={{ fontWeight: 600, marginBottom: 6 }}>We did not find any insurance clauses</div>
-          <div style={{ fontSize: 14, color: "#475569" }}>
+          <div style={{ fontSize: 14, color: "#51617D" }}>
             Choose your coverage below and we will go through the contract with you.
           </div>
         </div>
@@ -104,7 +104,7 @@ export default function RequirementsPage() {
           <div key={req.id} style={card} data-testid={`requirement-${req.coverageCode}`}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
               <strong style={{ fontSize: 16 }}>{req.displayName}</strong>
-              <span style={{ fontSize: 14, color: "#1E3A8A", fontWeight: 600 }}>
+              <span style={{ fontSize: 14, color: "#0B1F3A", fontWeight: 600 }}>
                 {formatLimit(req.extractedLimit)}
                 {req.limitBasis ? ` ${req.limitBasis}` : ""}
               </span>
@@ -151,7 +151,7 @@ export default function RequirementsPage() {
         ))
       )}
       {items.length > 0 && (
-        <div style={{ fontSize: 13, color: "#64748b", marginTop: 16 }}>
+        <div style={{ fontSize: 13, color: "#8593aa", marginTop: 16 }}>
           {outstanding > 0
             ? `${outstanding} still to check.`
             : "All checked. We will show you what is available next."}

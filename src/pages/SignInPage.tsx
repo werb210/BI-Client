@@ -14,8 +14,8 @@ function message(err: unknown): string {
 }
 
 const wrap: React.CSSProperties = { maxWidth: 420, margin: "0 auto", padding: 24 };
-const input: React.CSSProperties = { width: "100%", padding: "12px 14px", fontSize: 16, borderRadius: 8, border: "1px solid #cbd5e1", boxSizing: "border-box", marginTop: 6 };
-const button: React.CSSProperties = { width: "100%", marginTop: 14, padding: "12px 16px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#1E3A8A", color: "#fff", cursor: "pointer" };
+const input: React.CSSProperties = { width: "100%", padding: "12px 14px", fontSize: 16, borderRadius: 8, border: "1px solid #E4EAF2", boxSizing: "border-box", marginTop: 6 };
+const button: React.CSSProperties = { width: "100%", marginTop: 14, padding: "12px 16px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer" };
 
 export default function SignInPage() {
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ export default function SignInPage() {
   return (
     <div style={wrap}>
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>Boreal Risk Management</h1>
-      <p style={{ color: "#475569", fontSize: 14, marginTop: 0 }}>
+      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0 }}>
         Sign in with your mobile number. We will text you a code.
       </p>
 
@@ -104,7 +104,7 @@ export default function SignInPage() {
             {busy ? "Checking\u2026" : "Sign in"}
           </button>
           <button type="button" onClick={() => { setPhase("phone"); setCode(""); setError(null); sentFor.current = ""; checkedFor.current = ""; }}
-            style={{ marginTop: 12, background: "none", border: "none", color: "#1E3A8A", cursor: "pointer", padding: 0, fontSize: 14 }}>
+            style={{ marginTop: 12, background: "none", border: "none", color: "#0B1F3A", cursor: "pointer", padding: 0, fontSize: 14 }}>
             Use a different number
           </button>
         </>

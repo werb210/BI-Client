@@ -8,19 +8,19 @@ export default function HomePage() {
   return (
     <div style={{ maxWidth: 560, margin: "0 auto", padding: 24 }}>
       <h1 style={{ fontSize: 22 }}>You are signed in</h1>
-      <p style={{ color: "#475569", fontSize: 14 }}>
+      <p style={{ color: "#51617D", fontSize: 14 }}>
         Upload your subcontract and we will tell you which coverages it requires.
       </p>
       <button
         type="button"
         onClick={() => navigate("/upload")}
-        style={{ padding: "12px 20px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#1E3A8A", color: "#fff", cursor: "pointer", marginBottom: 16 }}
+        style={{ padding: "12px 20px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer", marginBottom: 16 }}
       >
         Upload my subcontract
       </button>
       <div />
       <button type="button" onClick={() => { clearToken(); navigate("/"); }}
-        style={{ background: "none", border: "none", color: "#1E3A8A", cursor: "pointer", padding: 0, fontSize: 14 }}>
+        style={{ background: "none", border: "none", color: "#0B1F3A", cursor: "pointer", padding: 0, fontSize: 14 }}>
         Sign out
       </button>
     </div>

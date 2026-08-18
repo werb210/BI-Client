@@ -21,12 +21,12 @@ function message(err: unknown): string {
 
 const wrap: React.CSSProperties = { maxWidth: 560, margin: "0 auto", padding: 24 };
 const drop: React.CSSProperties = {
-  border: "2px dashed #cbd5e1", borderRadius: 12, padding: 32,
-  textAlign: "center", cursor: "pointer", background: "#f8fafc", marginTop: 16,
+  border: "2px dashed #E4EAF2", borderRadius: 12, padding: 32,
+  textAlign: "center", cursor: "pointer", background: "#F5F8FC", marginTop: 16,
 };
 const button: React.CSSProperties = {
   padding: "12px 20px", fontSize: 16, fontWeight: 600, borderRadius: 8,
-  border: "none", background: "#1E3A8A", color: "#fff", cursor: "pointer",
+  border: "none", background: "#0B1F3A", color: "#fff", cursor: "pointer",
 };
 
 export default function UploadContractPage() {
@@ -57,7 +57,7 @@ export default function UploadContractPage() {
     <div style={wrap}>
       <BackBar to="/start" />
       <h1 style={{ fontSize: 22, marginBottom: 4 }}>Upload your subcontract</h1>
-      <p style={{ color: "#475569", fontSize: 14, marginTop: 0 }}>
+      <p style={{ color: "#51617D", fontSize: 14, marginTop: 0 }}>
         We will read the insurance and bonding clauses and show you what the contract
         asks for. You will get a chance to check each one before anything happens.
       </p>
@@ -74,7 +74,7 @@ export default function UploadContractPage() {
         <div style={{ fontWeight: 600, marginBottom: 6 }}>
           {busy ? "Reading your contract…" : "Choose a file or drop it here"}
         </div>
-        <div style={{ fontSize: 13, color: "#64748b" }}>PDF, Word or a photo. Up to 25 MB.</div>
+        <div style={{ fontSize: 13, color: "#8593aa" }}>PDF, Word or a photo. Up to 25 MB.</div>
         <input
           ref={inputRef}
           type="file"
@@ -99,7 +99,7 @@ export default function UploadContractPage() {
           they hold a signed contract. Without this the flow dead-ends for them. */}
       <div style={{ marginTop: 20 }}>
         <button type="button" disabled={busy} onClick={() => navigate("/coverage/me")}
-          style={{ background: "none", border: "none", color: "#1E3A8A", cursor: "pointer",
+          style={{ background: "none", border: "none", color: "#0B1F3A", cursor: "pointer",
                    padding: 0, fontSize: 14, textDecoration: "underline", minHeight: 44 }}>
           I do not have a subcontract yet
         </button>
