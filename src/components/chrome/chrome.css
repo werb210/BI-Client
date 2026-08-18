@@ -57,48 +57,51 @@ button:disabled {
   box-shadow: 0 0 0 3px rgba(191, 155, 73, 0.45);
 }
 
-/* BI_CLIENT_SHELL_v19 - a consistent canvas and card for the application
-   flow. Page variants preserve the widths chosen for each step while the
-   outer padding keeps cards clear of the viewport edge on small screens. */
+/* BI_CLIENT_SHELL_v18 - the page shell. Content sits in a bordered card on a
+   mist ground, matching bf-client and the marketing site. Widths are set here
+   rather than per page, which is how they drifted to four different values. */
 .bi-page {
-  min-height: 100%;
-  padding: 48px 24px;
   background: var(--boreal-mist);
-  box-sizing: border-box;
+  min-height: 100%;
+  padding: 32px 16px 48px;
 }
 
 .bi-page__inner {
-  width: 100%;
+  max-width: 620px;
   margin: 0 auto;
 }
 
-.bi-page__inner--signin { max-width: 420px; }
-.bi-page__inner--narrow { max-width: 560px; }
-.bi-page__inner--medium { max-width: 620px; }
-.bi-page__inner--wide { max-width: 680px; }
+.bi-page__inner--narrow { max-width: 460px; }
+.bi-page__inner--wide { max-width: 720px; }
 
 .bi-card {
-  padding: 32px;
+  background: #ffffff;
   border: 1px solid var(--boreal-line);
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 12px 32px rgba(11, 31, 58, 0.08);
-  box-sizing: border-box;
+  border-radius: 12px;
+  padding: 28px 24px;
+  box-shadow: 0 10px 30px rgba(11, 31, 58, 0.06);
 }
 
-.bi-card h1 {
-  margin-top: 0;
-  font-size: 22px;
+.bi-card + .bi-card { margin-top: 16px; }
+
+.bi-page h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--boreal-ink);
 }
 
 .bi-page__lede {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.6;
   color: var(--boreal-body);
-  font-size: 14px;
 }
 
-@media (max-width: 639px) {
-  .bi-page { padding: 24px 16px; }
-  .bi-card { padding: 24px; }
+@media (max-width: 640px) {
+  .bi-page { padding: 20px 12px 40px; }
+  .bi-card { padding: 20px 16px; }
+  .bi-page h1 { font-size: 24px; }
 }
 
 /* BI_CLIENT_CHROME_v14
