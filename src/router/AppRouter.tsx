@@ -13,10 +13,10 @@ import ReviewPage from "@/pages/ReviewPage";
 // BI_CLIENT_CONTRACT_UPLOAD_v1
 import UploadContractPage from "@/pages/UploadContractPage";
 import RequirementsPage from "@/pages/RequirementsPage";
-import { getToken } from "@/auth/token";
+import { getCachedToken } from "@/auth/token";
 
 function RequireApplicant({ children }: { children: React.ReactNode }) {
-  return getToken() ? <>{children}</> : <Navigate to="/" replace />;
+  return getCachedToken() ? <>{children}</> : <Navigate to="/" replace />;
 }
 
 export default function AppRouter() {

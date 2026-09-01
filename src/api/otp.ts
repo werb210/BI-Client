@@ -24,8 +24,8 @@ export async function verifyOtp(phone: string, code: string): Promise<VerifyResu
     code: code.trim(),
   });
   if (!r?.token) throw new Error("verify_failed");
-  setToken(r.token);
+  await setToken(r.token);
   // BI_CLIENT_STEP1_PROFILE_v3
-  setPhone(r.phone || toE164(phone));
+  await setPhone(r.phone || toE164(phone));
   return r;
 }

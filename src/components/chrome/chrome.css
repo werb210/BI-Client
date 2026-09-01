@@ -19,6 +19,12 @@ body {
   color: var(--boreal-ink);
 }
 
+html, body, #root { min-height: 100%; }
+body { margin: 0; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+.bi-auth-loading { min-height: 100vh; display: grid; place-items: center; background: var(--boreal-mist); }
+.bi-page { scroll-padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+@supports (-webkit-touch-callout: none) { input, select, textarea { font-size: 16px; } }
+
 h1,
 h2,
 h3 {

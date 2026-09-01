@@ -38,3 +38,13 @@ caused a block to apply twice.
 - Product catalogue and requirement matching
 - Dynamic carrier application form
 - Signature
+
+## Mobile applications
+
+BI-Client supports its existing browser/PWA deployment plus Capacitor 8 native shells for iOS/iPadOS and Android. These projects are foundations for native builds and have **not** been published to the App Store or Play Store. They reuse the same React Router applicant routes and BI-Server API contract; no separate native business flow exists.
+
+- iOS bundle ID: `com.boreal.risk.client`
+- Android application ID: `com.boreal.risk.client` (target API 36)
+- Native fallback links: `borealrisk://`
+
+See [NATIVE_BUILD.md](NATIVE_BUILD.md) for build/configuration commands and [MOBILE_RELEASE_READINESS.md](MOBILE_RELEASE_READINESS.md) for credential and store work that remains. BI-Client remains strictly isolated from BF authentication, storage, data, and server configuration.

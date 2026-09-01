@@ -36,7 +36,7 @@ const looksLikeEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()
 
 export default function StartPage() {
   const navigate = useNavigate();
-  const phone = getPhone();
+  const [phone, setPhoneValue] = useState<string | null>(null);
   const initial = loadDraft(DRAFT);
   const [businessName, setBusinessName] = useState(initial.businessName);
   const [applicantName, setApplicantName] = useState(initial.applicantName);
@@ -48,6 +48,7 @@ export default function StartPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    void getPhone().then(setPhoneValue);
     let alive = true;
     void listIndustries().then((r) => { if (alive) setIndustries(r.industries ?? []); }).catch(() => undefined);
     return () => { alive = false; };
