@@ -1,54 +1,69 @@
-// BI_CLIENT_SCAFFOLD_v1 - the applicant token from bi-server. Its own storage
-// key: a subcontractor and a Boreal staff member may share a browser, and the
-// BF client token must never be read or overwritten from here.
-const KEY = "boreal_bi_applicant_token";
+import { Capacitor } from "@capacitor/core";
+import { Preferences } from "@capacitor/preferences";
+import { SecurePreferences } from "@capawesome-team/capacitor-secure-preferences";
 
-export function getToken(): string | null {
+// These names are intentionally BI-applicant-specific. Never share auth keys
+// with a Boreal staff or BF application.
+export const APPLICANT_TOKEN_KEY = "boreal_bi_applicant_token";
+export const APPLICANT_PHONE_KEY = "boreal_bi_applicant_phone";
+const PHONE_KEY = APPLICANT_PHONE_KEY;
+
+const native = () => Capacitor.isNativePlatform();
+let cachedToken: string | null = null;
+let restored = false;
+
+export function getCachedToken(): string | null { return cachedToken; }
+export function isTokenRestored(): boolean { return restored; }
+
+export async function restoreToken(): Promise<string | null> {
   try {
-    return localStorage.getItem(KEY);
+    cachedToken = native()
+      ? (await SecurePreferences.get({ key: APPLICANT_TOKEN_KEY })).value
+      : localStorage.getItem(APPLICANT_TOKEN_KEY);
   } catch {
-    return null;
+    // Secure storage failure is fail-closed: never fall back to plaintext on native.
+    cachedToken = null;
+  } finally {
+    restored = true;
   }
+  return cachedToken;
 }
 
-export function setToken(token: string): void {
-  try {
-    localStorage.setItem(KEY, token);
-  } catch {
-    // private browsing - the session will not survive a reload, which is
-    // recoverable: the applicant can request another code.
-  }
+export async function setToken(token: string): Promise<void> {
+  if (native()) await SecurePreferences.set({ key: APPLICANT_TOKEN_KEY, value: token });
+  else localStorage.setItem(APPLICANT_TOKEN_KEY, token);
+  cachedToken = token;
+  restored = true;
 }
 
-// BI_CLIENT_STEP1_PROFILE_v3 - the OTP-verified phone is the one field we never
-// ask for again. Kept beside the token and cleared with it.
-const PHONE_KEY = "boreal_bi_applicant_phone";
-
-export function getPhone(): string | null {
+export async function getPhone(): Promise<string | null> {
   try {
-    return localStorage.getItem(PHONE_KEY);
-  } catch {
-    return null;
-  }
+    return native()
+      ? (await Preferences.get({ key: PHONE_KEY })).value
+      : localStorage.getItem(PHONE_KEY);
+  } catch { return null; }
 }
 
-export function setPhone(phone: string): void {
-  try {
-    localStorage.setItem(PHONE_KEY, phone);
-  } catch {
-    // private browsing
-  }
+export async function setPhone(phone: string): Promise<void> {
+  if (native()) await Preferences.set({ key: PHONE_KEY, value: phone });
+  else localStorage.setItem(PHONE_KEY, phone);
 }
 
-export function clearToken(): void {
-  try {
+export function clearToken(): Promise<void> {
+  return clearApplicantSession();
+}
+
+async function clearApplicantSession(): Promise<void> {
+  cachedToken = null;
+  if (native()) {
+    // Do not erase the entire Keychain/Preferences domains: they may later hold
+    // other BI-only state. Remove only this applicant session.
+    await Promise.allSettled([
+      SecurePreferences.remove({ key: APPLICANT_TOKEN_KEY }),
+      Preferences.remove({ key: PHONE_KEY }),
+    ]);
+  } else {
+    localStorage.removeItem(APPLICANT_TOKEN_KEY);
     localStorage.removeItem(PHONE_KEY);
-  } catch {
-    // nothing to do
-  }
-  try {
-    localStorage.removeItem(KEY);
-  } catch {
-    // nothing to do
   }
 }

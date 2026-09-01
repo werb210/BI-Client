@@ -4,9 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { uploadContract } from "@/api/contract";
 import { ApiError } from "@/api/client";
 import BackBar from "@/components/BackBar";
+import { Capacitor } from "@capacitor/core";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import { FilePicker } from "@capawesome/capacitor-file-picker";
+import { Network } from "@capacitor/network";
+import { normalizeBrowserFile, normalizeNativeSource } from "@/upload/normalize";
 
 const ACCEPT = ".pdf,.doc,.docx,.png,.jpg,.jpeg";
-const MAX_BYTES = 25 * 1024 * 1024;
 
 function message(err: unknown): string {
   const code = err instanceof ApiError ? err.code : "";
@@ -36,23 +40,40 @@ export default function UploadContractPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const native = Capacitor.isNativePlatform();
 
   async function send(file: File) {
-    if (file.size > MAX_BYTES) {
-      setError("That file is over 25 MB. Please upload a smaller copy.");
-      return;
-    }
     setBusy(true);
     setError(null);
     try {
+      normalizeBrowserFile(file);
+      if (native && !(await Network.getStatus()).connected) throw new Error("offline");
       const result = await uploadContract(file);
       // BI_CLIENT_FLOW_v12 - the subcontract is the only document we ask for.
       navigate(`/requirements/${result.applicationId}`);
     } catch (err) {
-      setError(message(err));
+      setError(err instanceof Error && err.message === "offline"
+        ? "Your connection was lost. Check it and try this file again."
+        : message(err));
     } finally {
       setBusy(false);
     }
+  }
+
+  async function chooseNativeFile() {
+    try {
+      const result = await FilePicker.pickFiles({ types: ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/png", "image/jpeg"], limit: 1, readData: false });
+      const picked = result.files[0];
+      if (picked?.path) await send(await normalizeNativeSource({ name: picked.name, mimeType: picked.mimeType, size: picked.size, path: picked.path }));
+    } catch (err) { if (!(err instanceof Error && /cancel/i.test(err.message))) setError(message(err)); }
+  }
+
+  async function chooseImage(source: CameraSource) {
+    try {
+      const photo = await Camera.getPhoto({ source, resultType: CameraResultType.Uri, quality: 90, correctOrientation: true });
+      if (!photo.webPath) return;
+      await send(await normalizeNativeSource({ name: `contract.${photo.format === "jpeg" ? "jpg" : photo.format}`, mimeType: `image/${photo.format}`, path: photo.webPath }));
+    } catch (err) { if (!(err instanceof Error && /cancel/i.test(err.message))) setError(message(err)); }
   }
 
   return (
@@ -66,7 +87,7 @@ export default function UploadContractPage() {
       </p>
       <div
         style={drop}
-        onClick={() => inputRef.current?.click()}
+        onClick={() => native ? void chooseNativeFile() : inputRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -75,7 +96,7 @@ export default function UploadContractPage() {
         }}
       >
         <div style={{ fontWeight: 600, marginBottom: 6 }}>
-          {busy ? "Reading your contract…" : "Choose a file or drop it here"}
+          {busy ? "Reading your contract…" : native ? "Choose a contract document" : "Choose a file or drop it here"}
         </div>
         <div style={{ fontSize: 13, color: "#8593aa" }}>PDF, Word or a photo. Up to 25 MB.</div>
         <input
@@ -94,10 +115,14 @@ export default function UploadContractPage() {
       </div>
       {error && <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 12 }}>{error}</div>}
       <div style={{ marginTop: 20 }}>
-        <button type="button" style={button} disabled={busy} onClick={() => inputRef.current?.click()}>
+        <button type="button" style={button} disabled={busy} onClick={() => native ? void chooseNativeFile() : inputRef.current?.click()}>
           {busy ? "Reading…" : "Choose file"}
         </button>
       </div>
+      {native && <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
+        <button type="button" disabled={busy} onClick={() => void chooseImage(CameraSource.Photos)}>Choose Photo</button>
+        <button type="button" disabled={busy} onClick={() => void chooseImage(CameraSource.Camera)}>Take Photo</button>
+      </div>}
       {/* BI_CLIENT_COVERAGE_v4 - plenty of subcontractors are quoting before
           they hold a signed contract. Without this the flow dead-ends for them. */}
       <div style={{ marginTop: 20 }}>
