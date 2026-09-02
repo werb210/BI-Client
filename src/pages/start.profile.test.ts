@@ -34,8 +34,13 @@ describe("the phone survives the sign-in", () => {
 });
 
 describe("sign-in leads into step 1", () => {
-  it("routes to /start, not the stub home", () => {
-    expect(signIn).toContain('navigate("/start")');
+  it("uses /start as the normal post-OTP fallback", () => {
+    expect(signIn).toContain(
+      'navigate(consumeNativeDestination() ?? "/start")'
+    );
+    expect(signIn).toContain(
+      'import { consumeNativeDestination } from "@/native/deepLinks"'
+    );
     expect(router).toContain('path="/start"');
     expect(router).toContain("<StartPage />");
   });
