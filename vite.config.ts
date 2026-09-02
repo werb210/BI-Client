@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       ...(mode === "test" ? Object.fromEntries([
-        "@capacitor/core", "@capacitor/preferences", "@capawesome-team/capacitor-secure-preferences",
+        "@capacitor/core", "@capacitor/preferences", "@aparajita/capacitor-secure-storage",
         "@capacitor/app", "@capacitor/keyboard", "@capacitor/splash-screen", "@capacitor/status-bar",
         "@capacitor/network", "@capacitor/camera", "@capawesome/capacitor-file-picker",
         "@capacitor/push-notifications",

@@ -1,6 +1,6 @@
 import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
-import { SecurePreferences } from "@capawesome-team/capacitor-secure-preferences";
+import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 
 // These names are intentionally BI-applicant-specific. Never share auth keys
 // with a Boreal staff or BF application.
@@ -17,9 +17,12 @@ export function isTokenRestored(): boolean { return restored; }
 
 export async function restoreToken(): Promise<string | null> {
   try {
-    cachedToken = native()
-      ? (await SecurePreferences.get({ key: APPLICANT_TOKEN_KEY })).value
-      : localStorage.getItem(APPLICANT_TOKEN_KEY);
+    if (native()) {
+      const value = await SecureStorage.get(APPLICANT_TOKEN_KEY);
+      cachedToken = typeof value === "string" ? value : null;
+    } else {
+      cachedToken = localStorage.getItem(APPLICANT_TOKEN_KEY);
+    }
   } catch {
     // Secure storage failure is fail-closed: never fall back to plaintext on native.
     cachedToken = null;
@@ -30,7 +33,7 @@ export async function restoreToken(): Promise<string | null> {
 }
 
 export async function setToken(token: string): Promise<void> {
-  if (native()) await SecurePreferences.set({ key: APPLICANT_TOKEN_KEY, value: token });
+  if (native()) await SecureStorage.set(APPLICANT_TOKEN_KEY, token);
   else localStorage.setItem(APPLICANT_TOKEN_KEY, token);
   cachedToken = token;
   restored = true;
@@ -59,7 +62,7 @@ async function clearApplicantSession(): Promise<void> {
     // Do not erase the entire Keychain/Preferences domains: they may later hold
     // other BI-only state. Remove only this applicant session.
     await Promise.allSettled([
-      SecurePreferences.remove({ key: APPLICANT_TOKEN_KEY }),
+      SecureStorage.remove(APPLICANT_TOKEN_KEY),
       Preferences.remove({ key: PHONE_KEY }),
     ]);
   } else {
