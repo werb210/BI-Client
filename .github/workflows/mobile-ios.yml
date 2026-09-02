@@ -11,7 +11,29 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci --include=optional
+      - run: npm ci
+      - name: Install macOS native build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ARCH="$(node -p 'process.arch')"
+
+          case "$ARCH" in
+            arm64|x64)
+              ;;
+            *)
+              echo "::error::Unsupported macOS runner architecture: $ARCH"
+              exit 1
+              ;;
+          esac
+
+          npm install \
+            --no-save \
+            --package-lock=false \
+            --ignore-scripts \
+            "@rollup/rollup-darwin-${ARCH}@4.62.4" \
+            "@esbuild/darwin-${ARCH}@0.21.5"
       - name: Verify macOS native build dependencies
         run: |
           node <<'NODE'
@@ -25,12 +47,12 @@ jobs:
           const esbuild = `@esbuild/darwin-${arch}`;
 
           console.log(`Runner architecture: ${arch}`);
-          console.log(`Checking ${rollup}`);
           console.log(require.resolve(rollup));
-
-          console.log(`Checking ${esbuild}`);
           console.log(require.resolve(esbuild));
           NODE
+      - name: Verify native install did not alter manifests
+        run: |
+          git diff --exit-code -- package.json package-lock.json
       - run: npm run typecheck
       - run: npm run test:ci
       - run: npm run build
