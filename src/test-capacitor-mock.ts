@@ -1,6 +1,6 @@
 export const Capacitor = { isNativePlatform: () => false, convertFileSrc: (path: string) => path, getPlatform: () => "web" };
 export const Preferences = { get: async () => ({ value: null }), set: async () => undefined, remove: async () => undefined };
-export const SecurePreferences = Preferences;
+export const SecureStorage = { get: async (_key: string): Promise<string | null> => null, set: async (_key: string, _value: string) => undefined, remove: async (_key: string) => undefined };
 export const App = { addListener: async () => ({ remove: async () => undefined }), exitApp: async () => undefined };
 export const Keyboard = { setAccessoryBarVisible: async () => undefined };
 export const SplashScreen = { hide: async () => undefined };

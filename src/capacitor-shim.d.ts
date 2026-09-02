@@ -1,6 +1,6 @@
 declare module "@capacitor/core" { export const Capacitor: { isNativePlatform(): boolean; convertFileSrc(path: string): string; getPlatform(): string }; }
 declare module "@capacitor/preferences" { export const Preferences: { get(o:{key:string}):Promise<{value:string|null}>; set(o:{key:string,value:string}):Promise<void>; remove(o:{key:string}):Promise<void> }; }
-declare module "@capawesome-team/capacitor-secure-preferences" { export const SecurePreferences: { get(o:{key:string}):Promise<{value:string|null}>; set(o:{key:string,value:string}):Promise<void>; remove(o:{key:string}):Promise<void> }; }
+declare module "@aparajita/capacitor-secure-storage" { export const SecureStorage: { get(key:string):Promise<unknown>; set(key:string,value:string):Promise<void>; remove(key:string):Promise<void> }; }
 type CapHandle = { remove(): Promise<void> };
 declare module "@capacitor/app" { export const App: { addListener(name:string, cb:(event:any)=>void):Promise<CapHandle>; exitApp():Promise<void> }; }
 declare module "@capacitor/keyboard" { export const Keyboard: { setAccessoryBarVisible(o:{isVisible:boolean}):Promise<void> }; }
