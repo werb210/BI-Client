@@ -86,4 +86,53 @@ assert(lockfile.includes('node_modules/@aparajita/capacitor-secure-storage'), "S
 const privateSecurePreferences = ["@capawesome-team", "capacitor-secure-preferences"].join("/");
 assert(!lockfile.includes(privateSecurePreferences), "Private secure-preferences package is forbidden");
 
+const swiftPackage = read("ios/App/CapApp-SPM/Package.swift");
+const nativePlugins = [
+  { dependency: "@capacitor/app", path: "@capacitor/app", product: "CapacitorApp", package: "app" },
+  { dependency: "@capacitor/app-launcher", path: "@capacitor/app-launcher", product: "CapacitorAppLauncher", package: "app-launcher" },
+  { dependency: "@capacitor/camera", path: "@capacitor/camera", product: "CapacitorCamera", package: "camera" },
+  { dependency: "@capacitor/device", path: "@capacitor/device", product: "CapacitorDevice", package: "device" },
+  { dependency: "@capacitor/filesystem", path: "@capacitor/filesystem", product: "CapacitorFilesystem", package: "filesystem" },
+  { dependency: "@capacitor/keyboard", path: "@capacitor/keyboard", product: "CapacitorKeyboard", package: "keyboard" },
+  { dependency: "@capacitor/network", path: "@capacitor/network", product: "CapacitorNetwork", package: "network" },
+  { dependency: "@capacitor/preferences", path: "@capacitor/preferences", product: "CapacitorPreferences", package: "preferences" },
+  { dependency: "@capacitor/push-notifications", path: "@capacitor/push-notifications", product: "CapacitorPushNotifications", package: "push-notifications" },
+  { dependency: "@capacitor/splash-screen", path: "@capacitor/splash-screen", product: "CapacitorSplashScreen", package: "splash-screen" },
+  { dependency: "@capacitor/status-bar", path: "@capacitor/status-bar", product: "CapacitorStatusBar", package: "status-bar" },
+  { dependency: "@capawesome/capacitor-file-picker", path: "@capawesome/capacitor-file-picker", product: "FilePicker", package: "capacitor-file-picker" },
+  { dependency: "@aparajita/capacitor-secure-storage", path: "@aparajita/capacitor-secure-storage", product: "SecureStoragePlugin", package: "capacitor-secure-storage" },
+];
+
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const linkage = nativePlugins.map((plugin) => {
+  const declared = Boolean(packageJson.dependencies?.[plugin.dependency]);
+  const packageLinked = new RegExp(`\\.package\\(path:\\s*"[^"]*node_modules/${escapeRegExp(plugin.path)}"\\)`).test(swiftPackage);
+  const productLinked = new RegExp(
+    `\\.product\\(name:\\s*"${escapeRegExp(plugin.product)}",\\s*package:\\s*"${escapeRegExp(plugin.package)}"\\)`,
+  ).test(swiftPackage);
+  return { ...plugin, declared, packageLinked, productLinked };
+});
+
+console.log("\nPLUGIN                         PACKAGE  PRODUCT  STATUS");
+for (const plugin of linkage) {
+  const ok = plugin.declared && plugin.packageLinked && plugin.productLinked;
+  console.log(
+    `${plugin.product.padEnd(30)} ${(plugin.packageLinked ? "yes" : "no").padEnd(7)}  ${(plugin.productLinked ? "yes" : "no").padEnd(7)}  ${ok ? "OK" : "MISSING"}`,
+  );
+}
+
+const capacitorVersion = JSON.parse(lockfile).packages?.["node_modules/@capacitor/core"]?.version;
+assert(capacitorVersion, "Installed Capacitor version is missing from package-lock.json");
+assert(
+  swiftPackage.includes(`.package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "${capacitorVersion}")`),
+  `Capacitor SwiftPM must be pinned to the lockfile version (${capacitorVersion})`,
+);
+assert(swiftPackage.includes('.product(name: "Capacitor", package: "capacitor-swift-pm")'), "Base Capacitor product is not linked");
+assert(swiftPackage.includes('.product(name: "Cordova", package: "capacitor-swift-pm")'), "Base Cordova product is not linked");
+for (const plugin of linkage) {
+  assert(plugin.declared, `${plugin.dependency} is missing from package.json`);
+  assert(plugin.packageLinked, `${plugin.dependency} Swift package dependency is missing`);
+  assert(plugin.productLinked, `${plugin.product} target product dependency is missing`);
+}
+
 console.log("iOS platform, package, resources, identity, transport, and secure-storage guardrails passed.");
