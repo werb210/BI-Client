@@ -1,5 +1,6 @@
-plugins { id 'com.android.application' }
-apply from: '../variables.gradle'
+plugins {
+    id 'com.android.application'
+}
 
 android {
     namespace 'com.boreal.risk.client'
@@ -20,9 +21,9 @@ repositories { flatDir { dirs '../capacitor-cordova-android-plugins/src/main/lib
 dependencies {
     implementation project(':capacitor-android')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
-    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
-    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
-    testImplementation "junit:junit:$junitVersion"
+    implementation "androidx.appcompat:appcompat:${rootProject.ext.androidxAppCompatVersion}"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:${rootProject.ext.androidxCoordinatorLayoutVersion}"
+    implementation "androidx.core:core-splashscreen:${rootProject.ext.coreSplashScreenVersion}"
+    testImplementation "junit:junit:${rootProject.ext.junitVersion}"
 }
 apply from: 'capacitor.build.gradle'
