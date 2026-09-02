@@ -35,21 +35,66 @@ jobs:
             "@rollup/rollup-darwin-${ARCH}@4.62.4" \
             "@esbuild/darwin-${ARCH}@0.21.5"
       - name: Verify macOS native build dependencies
+        shell: bash
         run: |
+          set -euo pipefail
+
           node <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+
           const arch = process.arch;
 
           if (!["arm64", "x64"].includes(arch)) {
             throw new Error(`Unsupported macOS CI architecture: ${arch}`);
           }
 
-          const rollup = `@rollup/rollup-darwin-${arch}`;
-          const esbuild = `@esbuild/darwin-${arch}`;
+          const rollupPackage = `@rollup/rollup-darwin-${arch}`;
 
           console.log(`Runner architecture: ${arch}`);
-          console.log(require.resolve(rollup));
-          console.log(require.resolve(esbuild));
+
+          const rollupPath = require.resolve(rollupPackage);
+          console.log(`Rollup native module: ${rollupPath}`);
+
+          const esbuildBinary = path.join(
+            process.cwd(),
+            "node_modules",
+            "@esbuild",
+            `darwin-${arch}`,
+            "bin",
+            "esbuild"
+          );
+
+          if (!fs.existsSync(esbuildBinary)) {
+            throw new Error(
+              `Esbuild native binary missing: ${esbuildBinary}`
+            );
+          }
+
+          const stat = fs.statSync(esbuildBinary);
+
+          if (!stat.isFile()) {
+            throw new Error(
+              `Esbuild native binary is not a file: ${esbuildBinary}`
+            );
+          }
+
+          console.log(`Esbuild native binary: ${esbuildBinary}`);
           NODE
+      - name: Verify Esbuild native binary executes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ARCH="$(node -p 'process.arch')"
+
+          ESBUILD_BINARY="node_modules/@esbuild/darwin-${ARCH}/bin/esbuild"
+
+          test -f "$ESBUILD_BINARY"
+
+          chmod +x "$ESBUILD_BINARY"
+
+          "$ESBUILD_BINARY" --version
       - name: Verify native install did not alter manifests
         run: |
           git diff --exit-code -- package.json package-lock.json
