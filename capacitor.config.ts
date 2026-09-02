@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.boreal.risk.client',
-  appName: 'Boreal Risk Management',
+  appName: 'Boreal Risk',
   webDir: 'dist',
   android: { scheme: 'https' },
   plugins: {

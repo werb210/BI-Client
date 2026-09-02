@@ -1,6 +1,17 @@
 const STATIC_ROUTES = new Set(["home", "start", "upload"]);
 const ID_ROUTES = new Set(["coverage", "questions", "review", "requirements"]);
 const SAFE_ID = /^[A-Za-z0-9_-]{1,128}$/;
+let pendingDestination: string | null = null;
+
+export function retainNativeDestination(path: string): void {
+  pendingDestination = path === "/" ? null : path;
+}
+
+export function consumeNativeDestination(): string | null {
+  const destination = pendingDestination;
+  pendingDestination = null;
+  return destination;
+}
 
 /** Parse only BI's registered custom scheme. Route guards still enforce auth. */
 export function parseNativeUrl(raw: string, authenticated: boolean): string {
