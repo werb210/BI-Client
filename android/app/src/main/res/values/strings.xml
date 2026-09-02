@@ -1,1 +1,1 @@
-<resources><string name="app_name">Boreal Risk Management</string><string name="title_activity_main">Boreal Risk Management</string><string name="package_name">com.boreal.risk.client</string><string name="custom_url_scheme">com.boreal.risk.client</string></resources>
+<resources><string name="app_name">Boreal Risk</string><string name="title_activity_main">Boreal Risk</string><string name="package_name">com.boreal.risk.client</string><string name="custom_url_scheme">borealrisk</string></resources>

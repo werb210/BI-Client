@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { startOtp, verifyOtp } from "@/api/otp";
 import { ApiError } from "@/api/client";
+import { consumeNativeDestination } from "@/native/deepLinks";
 
 function message(err: unknown): string {
   const code = err instanceof ApiError ? err.code : "";
@@ -70,7 +71,7 @@ export default function SignInPage() {
     try {
       await verifyOtp(phone, code);
       // BI_CLIENT_STEP1_PROFILE_v3 - sign-in lands on step 1, not the stub home.
-      navigate("/start");
+      navigate(consumeNativeDestination() ?? "/start");
     } catch (err) {
       checkedFor.current = ""; // a mistyped code must be retryable
       setError(message(err));

@@ -15,7 +15,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = 'Boreal Risk Management'
+rootProject.name = 'Boreal Risk'
 
 include ':app'
 

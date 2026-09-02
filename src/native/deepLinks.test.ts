@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseNativeUrl } from "./deepLinks";
+import { consumeNativeDestination, parseNativeUrl, retainNativeDestination } from "./deepLinks";
 
 describe("BI native URLs", () => {
   it.each([
@@ -13,5 +13,10 @@ describe("BI native URLs", () => {
     expect(parseNativeUrl("borealrisk://coverage/a%2Fb", false)).toBe("/");
     expect(parseNativeUrl("borealrisk://unknown", true)).toBe("/home");
     expect(parseNativeUrl("https://example.com/home", false)).toBe("/");
+  });
+  it("retains a protected destination for exactly one post-login navigation", () => {
+    retainNativeDestination("/requirements/abc123");
+    expect(consumeNativeDestination()).toBe("/requirements/abc123");
+    expect(consumeNativeDestination()).toBeNull();
   });
 });

@@ -6,7 +6,7 @@ import { Keyboard } from "@capacitor/keyboard";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { getCachedToken } from "@/auth/token";
-import { parseNativeUrl } from "@/native/deepLinks";
+import { parseNativeUrl, retainNativeDestination } from "@/native/deepLinks";
 import { initializePushNotifications } from "@/native/pushNotifications";
 
 export default function NativeBridge() {
@@ -18,8 +18,13 @@ export default function NativeBridge() {
     if (!Capacitor.isNativePlatform()) return;
     const handles: Array<{ remove: () => Promise<void> }> = [];
     const add = async () => {
-      handles.push(await NativeApp.addListener("appUrlOpen", ({ url }) =>
-        navigate(parseNativeUrl(url, Boolean(getCachedToken())))));
+      const openUrl = (url: string) => {
+        const authenticated = Boolean(getCachedToken());
+        const destination = parseNativeUrl(url, authenticated);
+        if (!authenticated && destination !== "/") retainNativeDestination(destination);
+        navigate(authenticated ? destination : "/");
+      };
+      handles.push(await NativeApp.addListener("appUrlOpen", ({ url }) => openUrl(url)));
       handles.push(await NativeApp.addListener("backButton", ({ canGoBack }) => {
         const openDialog = document.querySelector<HTMLDialogElement>("dialog[open]");
         if (openDialog) return openDialog.close();
@@ -32,8 +37,7 @@ export default function NativeBridge() {
       handles.push(await NativeApp.addListener("resume", () => undefined));
       await Keyboard.setAccessoryBarVisible({ isVisible: true }).catch(() => undefined);
       await StatusBar.setStyle({ style: Style.Light }).catch(() => undefined);
-      handles.push(...await initializePushNotifications((url) =>
-        navigate(parseNativeUrl(url, Boolean(getCachedToken())))));
+      handles.push(...await initializePushNotifications(openUrl));
       await SplashScreen.hide().catch(() => undefined);
     };
     void add();
