@@ -1,6 +1,9 @@
 name: Mobile iOS verification
 on:
+  push:
+    branches: [main]
   pull_request:
+    branches: [main]
   workflow_dispatch:
 jobs:
   ios:
@@ -101,13 +104,18 @@ jobs:
       - run: npm run typecheck
       - run: npm run test:ci
       - run: npm run build
-      - name: Verify web output and iOS release guardrails
+      - name: Verify web output
         run: |
           test -f dist/index.html
-          node scripts/verify-ios-config.mjs
       - run: npx cap sync ios
+      - name: Inspect generated Capacitor Swift package
+        run: cat ios/App/CapApp-SPM/Package.swift
+      - name: Verify iOS release guardrails after Capacitor sync
+        run: node scripts/verify-ios-config.mjs
       - name: Resolve Swift Package Manager dependencies
         run: |
+          swift package resolve \
+            --package-path ios/App/CapApp-SPM
           xcodebuild \
             -resolvePackageDependencies \
             -project ios/App/App.xcodeproj \
