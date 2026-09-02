@@ -3,6 +3,23 @@
 This repository is the **BI applicant silo only**. Mobile code must use the existing
 BI applicant API contract; it must not access BF or SLF routes, credentials, or data.
 
+## Release status
+
+| Release fact | Current state |
+|---|---|
+| Product | **Boreal Risk** |
+| Bundle ID | `com.boreal.risk.client` |
+| Supported native platforms | **iPhone, iPad, Android** |
+| iOS code state | **Unsigned simulator build verified by CI** |
+| Android code state | **Debug APK build verified by CI** |
+
+Production distribution credentials are not committed or assumed to exist. An Apple
+Developer account is still required for production signing, App ID/capabilities,
+APNs production configuration, provisioning profiles, App Store Connect, TestFlight,
+and physical-device installation. Android release still requires release signing,
+Play Console configuration, and production app/store artwork where applicable.
+Missing store artwork is a **NEEDS MANUAL ASSET** item.
+
 ## Application identity and supported links
 
 | Setting | Value / status |
