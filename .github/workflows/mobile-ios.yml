@@ -11,7 +11,26 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - run: npm ci --include=optional
+      - name: Verify macOS native build dependencies
+        run: |
+          node <<'NODE'
+          const arch = process.arch;
+
+          if (!["arm64", "x64"].includes(arch)) {
+            throw new Error(`Unsupported macOS CI architecture: ${arch}`);
+          }
+
+          const rollup = `@rollup/rollup-darwin-${arch}`;
+          const esbuild = `@esbuild/darwin-${arch}`;
+
+          console.log(`Runner architecture: ${arch}`);
+          console.log(`Checking ${rollup}`);
+          console.log(require.resolve(rollup));
+
+          console.log(`Checking ${esbuild}`);
+          console.log(require.resolve(esbuild));
+          NODE
       - run: npm run typecheck
       - run: npm run test:ci
       - run: npm run build
