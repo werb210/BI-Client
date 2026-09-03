@@ -88,27 +88,114 @@ assert(!lockfile.includes(privateSecurePreferences), "Private secure-preferences
 
 const swiftPackage = read("ios/App/CapApp-SPM/Package.swift");
 const nativePlugins = [
-  { dependency: "@capacitor/app", path: "@capacitor/app", product: "CapacitorApp", package: "app" },
-  { dependency: "@capacitor/app-launcher", path: "@capacitor/app-launcher", product: "CapacitorAppLauncher", package: "app-launcher" },
-  { dependency: "@capacitor/camera", path: "@capacitor/camera", product: "CapacitorCamera", package: "camera" },
-  { dependency: "@capacitor/device", path: "@capacitor/device", product: "CapacitorDevice", package: "device" },
-  { dependency: "@capacitor/filesystem", path: "@capacitor/filesystem", product: "CapacitorFilesystem", package: "filesystem" },
-  { dependency: "@capacitor/keyboard", path: "@capacitor/keyboard", product: "CapacitorKeyboard", package: "keyboard" },
-  { dependency: "@capacitor/network", path: "@capacitor/network", product: "CapacitorNetwork", package: "network" },
-  { dependency: "@capacitor/preferences", path: "@capacitor/preferences", product: "CapacitorPreferences", package: "preferences" },
-  { dependency: "@capacitor/push-notifications", path: "@capacitor/push-notifications", product: "CapacitorPushNotifications", package: "push-notifications" },
-  { dependency: "@capacitor/splash-screen", path: "@capacitor/splash-screen", product: "CapacitorSplashScreen", package: "splash-screen" },
-  { dependency: "@capacitor/status-bar", path: "@capacitor/status-bar", product: "CapacitorStatusBar", package: "status-bar" },
-  { dependency: "@capawesome/capacitor-file-picker", path: "@capawesome/capacitor-file-picker", product: "FilePicker", package: "capacitor-file-picker" },
-  { dependency: "@aparajita/capacitor-secure-storage", path: "@aparajita/capacitor-secure-storage", product: "SecureStoragePlugin", package: "capacitor-secure-storage" },
+  {
+    dependency: "@capacitor/app",
+    path: "@capacitor/app",
+    packageName: "CapacitorApp",
+    product: "CapacitorApp",
+  },
+  {
+    dependency: "@capacitor/app-launcher",
+    path: "@capacitor/app-launcher",
+    packageName: "CapacitorAppLauncher",
+    product: "CapacitorAppLauncher",
+  },
+  {
+    dependency: "@capacitor/camera",
+    path: "@capacitor/camera",
+    packageName: "CapacitorCamera",
+    product: "CapacitorCamera",
+  },
+  {
+    dependency: "@capacitor/device",
+    path: "@capacitor/device",
+    packageName: "CapacitorDevice",
+    product: "CapacitorDevice",
+  },
+  {
+    dependency: "@capacitor/filesystem",
+    path: "@capacitor/filesystem",
+    packageName: "CapacitorFilesystem",
+    product: "CapacitorFilesystem",
+  },
+  {
+    dependency: "@capacitor/keyboard",
+    path: "@capacitor/keyboard",
+    packageName: "CapacitorKeyboard",
+    product: "CapacitorKeyboard",
+  },
+  {
+    dependency: "@capacitor/network",
+    path: "@capacitor/network",
+    packageName: "CapacitorNetwork",
+    product: "CapacitorNetwork",
+  },
+  {
+    dependency: "@capacitor/preferences",
+    path: "@capacitor/preferences",
+    packageName: "CapacitorPreferences",
+    product: "CapacitorPreferences",
+  },
+  {
+    dependency: "@capacitor/push-notifications",
+    path: "@capacitor/push-notifications",
+    packageName: "CapacitorPushNotifications",
+    product: "CapacitorPushNotifications",
+  },
+  {
+    dependency: "@capacitor/splash-screen",
+    path: "@capacitor/splash-screen",
+    packageName: "CapacitorSplashScreen",
+    product: "CapacitorSplashScreen",
+  },
+  {
+    dependency: "@capacitor/status-bar",
+    path: "@capacitor/status-bar",
+    packageName: "CapacitorStatusBar",
+    product: "CapacitorStatusBar",
+  },
+  {
+    dependency: "@capawesome/capacitor-file-picker",
+    path: "@capawesome/capacitor-file-picker",
+    packageName: "CapawesomeCapacitorFilePicker",
+    product: "CapawesomeCapacitorFilePicker",
+  },
+  {
+    dependency: "@aparajita/capacitor-secure-storage",
+    path: "@aparajita/capacitor-secure-storage",
+    packageName: "AparajitaCapacitorSecureStorage",
+    product: "AparajitaCapacitorSecureStorage",
+  },
 ];
 
 const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const linkage = nativePlugins.map((plugin) => {
   const declared = Boolean(packageJson.dependencies?.[plugin.dependency]);
-  const packageLinked = new RegExp(`\\.package\\(path:\\s*"[^"]*node_modules/${escapeRegExp(plugin.path)}"\\)`).test(swiftPackage);
+  const packageLinked = new RegExp(
+    [
+      "\\.package\\(",
+      "\\s*name:\\s*\"",
+      escapeRegExp(plugin.packageName),
+      "\"",
+      "\\s*,\\s*",
+      "path:\\s*\"[^\"]*node_modules/",
+      escapeRegExp(plugin.path),
+      "\"",
+      "\\s*\\)",
+    ].join(""),
+  ).test(swiftPackage);
   const productLinked = new RegExp(
-    `\\.product\\(name:\\s*"${escapeRegExp(plugin.product)}",\\s*package:\\s*"${escapeRegExp(plugin.package)}"\\)`,
+    [
+      "\\.product\\(",
+      "\\s*name:\\s*\"",
+      escapeRegExp(plugin.product),
+      "\"",
+      "\\s*,\\s*",
+      "package:\\s*\"",
+      escapeRegExp(plugin.packageName),
+      "\"",
+      "\\s*\\)",
+    ].join(""),
   ).test(swiftPackage);
   return { ...plugin, declared, packageLinked, productLinked };
 });

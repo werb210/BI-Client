@@ -108,6 +108,9 @@ jobs:
         run: |
           test -f dist/index.html
       - run: npx cap sync ios
+      - name: Verify generated Swift package is committed
+        run: |
+          git diff --exit-code -- ios/App/CapApp-SPM/Package.swift
       - name: Inspect generated Capacitor Swift package
         run: cat ios/App/CapApp-SPM/Package.swift
       - name: Verify iOS release guardrails after Capacitor sync
