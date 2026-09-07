@@ -1,9 +1,28 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
 import { fileURLToPath, URL } from "node:url";
 
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
+  plugins: [react(), VitePWA({
+      registerType: "autoUpdate",
+      includeAssets: ["favicon-32x32.png"],
+      manifest: {
+        name: "Boreal Risk Management",
+        short_name: "Boreal Risk",
+        description: "Personal Guarantee Insurance applications and status.",
+        theme_color: "#0b1f3a",
+        background_color: "#0b1f3a",
+        display: "standalone",
+        start_url: "/",
+        scope: "/",
+        icons: [
+          { src: "/pwa-192x192.png", sizes: "192x192", type: "image/png" },
+          { src: "/pwa-512x512.png", sizes: "512x512", type: "image/png" },
+          { src: "/pwa-maskable-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+        ],
+      },
+    })],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
