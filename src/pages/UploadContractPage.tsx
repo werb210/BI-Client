@@ -9,7 +9,7 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
 import { Network } from "@capacitor/network";
 import { normalizeBrowserFile, normalizeNativeSource } from "@/upload/normalize";
-import { scanContractAsPdf } from "@/native/documentScanner";
+import { scanContractAsPdf } from "@/native/documentScanner"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
 
 const ACCEPT = ".pdf,.doc,.docx,.png,.jpg,.jpeg";
 
