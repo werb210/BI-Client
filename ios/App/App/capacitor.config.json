@@ -1,0 +1,33 @@
+{
+	"appId": "com.boreal.risk.client",
+	"appName": "Boreal Risk",
+	"webDir": "dist",
+	"android": {
+		"scheme": "https"
+	},
+	"plugins": {
+		"SplashScreen": {
+			"launchAutoHide": false,
+			"launchShowDuration": 3000
+		},
+		"Keyboard": {
+			"resize": "native",
+			"resizeOnFullScreen": true
+		}
+	},
+	"packageClassList": [
+		"AppPlugin",
+		"AppLauncherPlugin",
+		"CAPCameraPlugin",
+		"DevicePlugin",
+		"FilesystemPlugin",
+		"KeyboardPlugin",
+		"CAPNetworkPlugin",
+		"PreferencesPlugin",
+		"PushNotificationsPlugin",
+		"SplashScreenPlugin",
+		"StatusBarPlugin",
+		"FilePickerPlugin",
+		"SecureStorage"
+	]
+}
