@@ -1,10 +1,16 @@
 import type { CapacitorConfig } from '@capacitor/cli';
+// BI_CLIENT_CONFIG_TYPES_v1 - resize takes the enum, not a string literal.
+import { KeyboardResize } from '@capacitor/keyboard';
 
 const config: CapacitorConfig = {
   appId: 'com.boreal.risk.client',
   appName: 'Boreal Risk',
   webDir: 'dist',
-  android: { scheme: 'https' },
+  // BI_CLIENT_CONFIG_TYPES_v1 - was `android: { scheme: 'https' }`, which is
+  // not a valid key: androidScheme lives under `server`. The setting had never
+  // taken effect. https is the default, so behaviour is unchanged -- it is now
+  // simply declared where Capacitor reads it.
+  server: { androidScheme: 'https' },
   plugins: {
     // BI_CLIENT_SPLASH_RECURSION_v1
     // @capacitor/splash-screen 8.0.2 observes the parent view's frame/bounds
@@ -17,7 +23,7 @@ const config: CapacitorConfig = {
     // never depends on NativeBridge mounting -- it cannot mount if the plugin
     // has already blown the stack.
     SplashScreen: { launchAutoHide: true, launchShowDuration: 0 },
-    Keyboard: { resize: 'native', resizeOnFullScreen: true },
+    Keyboard: { resize: KeyboardResize.Native, resizeOnFullScreen: true },
   },
 };
 export default config;

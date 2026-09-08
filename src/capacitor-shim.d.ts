@@ -3,7 +3,10 @@ declare module "@capacitor/preferences" { export const Preferences: { get(o:{key
 declare module "@aparajita/capacitor-secure-storage" { export const SecureStorage: { get(key:string):Promise<unknown>; set(key:string,value:string):Promise<void>; remove(key:string):Promise<void> }; }
 type CapHandle = { remove(): Promise<void> };
 declare module "@capacitor/app" { export const App: { addListener(name:string, cb:(event:any)=>void):Promise<CapHandle>; exitApp():Promise<void> }; }
-declare module "@capacitor/keyboard" { export const Keyboard: { setAccessoryBarVisible(o:{isVisible:boolean}):Promise<void> }; }
+declare module "@capacitor/keyboard" {
+  export enum KeyboardResize { Body="body", Ionic="ionic", Native="native", None="none" }
+  export const Keyboard: { setAccessoryBarVisible(o:{isVisible:boolean}):Promise<void> };
+}
 declare module "@capacitor/splash-screen" { export const SplashScreen: { hide():Promise<void> }; }
 declare module "@capacitor/status-bar" { export enum Style { Light="LIGHT", Dark="DARK", Default="DEFAULT" } export const StatusBar:{setStyle(o:{style:Style}):Promise<void>}; }
 declare module "@capacitor/network" {

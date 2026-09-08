@@ -15,6 +15,15 @@ describe("splash screen cannot hang the app", () => {
   });
 
   it("leaves the rest of the plugin config untouched", () => {
+    // KeyboardResize.Native === "native", so this assertion is unchanged by
+    // the enum fix -- the runtime value was always right, only the type was
+    // unchecked because nothing imported this file into the tsc program.
     expect(config.plugins?.Keyboard?.resize).toBe("native");
+  });
+
+  it("declares the android scheme where Capacitor actually reads it", () => {
+    // Previously `android: { scheme }`, which is not a valid key and was
+    // silently discarded.
+    expect(config.server?.androidScheme).toBe("https");
   });
 });
