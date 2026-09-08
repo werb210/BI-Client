@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		AA000040 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000030 /* AppDelegate.swift */; };
+		AA000048 /* DocumentScannerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000038 /* DocumentScannerPlugin.swift */; };
 		AA000041 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA000032 /* Main.storyboard */; };
 		AA000042 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA000033 /* LaunchScreen.storyboard */; };
 		AA000043 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA000034 /* PrivacyInfo.xcprivacy */; };
@@ -20,6 +21,7 @@
 /* Begin PBXFileReference section */
 		AA000006 /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA000030 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		AA000038 /* DocumentScannerPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerPlugin.swift; sourceTree = "<group>"; };
 		AA000031 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA000032 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AA000033 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -61,6 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000030 /* AppDelegate.swift */,
+				AA000038 /* DocumentScannerPlugin.swift */,
 				AA000031 /* Info.plist */,
 				AA000032 /* Main.storyboard */,
 				AA000033 /* LaunchScreen.storyboard */,
@@ -147,6 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA000040 /* AppDelegate.swift in Sources */,
+				AA000048 /* DocumentScannerPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
