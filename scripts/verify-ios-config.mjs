@@ -1,3 +1,10 @@
+// BI_CLIENT_BLOCK_v093_VERIFIER_WHITESPACE_TOLERANT_v1
+// Xcode writes pbxproj objects in two equally valid layouts: compact
+// (everything on one line) and expanded (one key per line). Commit 501b6bd
+// switched this project to expanded and every matcher below, which assumed
+// compact, stopped matching -- so the guardrails failed open on the App target
+// configuration list. Whitespace between tokens is now `\s*`, so the assertions
+// hold under either layout instead of tracking whichever one Xcode last wrote.
 import { readFileSync, statSync } from "node:fs";
 
 const root = new URL("../", import.meta.url);
@@ -14,19 +21,21 @@ const appTarget = project.match(/PBXNativeTarget;[\s\S]*?buildConfigurationList 
 assert(appTarget, "The App native target is missing");
 
 const configurationList = project.match(
-  new RegExp(`${appTarget[1]}(?: \\/\\*[^*]*\\*\\/)? = \\{isa = XCConfigurationList; buildConfigurations = \\(([^)]*)\\)`),
+  new RegExp(`${appTarget[1]}(?:\\s*\\/\\*[^*]*\\*\\/)?\\s*=\\s*\\{\\s*isa\\s*=\\s*XCConfigurationList;\\s*buildConfigurations\\s*=\\s*\\(([^)]*)\\)`),
 );
 assert(configurationList, "The App target configuration list is missing");
 const configurationIds = configurationList[1].match(/\b[A-F0-9]{8,}\b/g) ?? [];
 const configurations = configurationIds.map((id) => {
-  const match = project.match(new RegExp(`${id}(?: \\/\\*[^*]*\\*\\/)? = \\{isa = XCBuildConfiguration; buildSettings = \\{([^}]*)\\}; name = (Debug|Release);`));
+  const match = project.match(new RegExp(`${id}(?:\\s*\\/\\*[^*]*\\*\\/)?\\s*=\\s*\\{\\s*isa\\s*=\\s*XCBuildConfiguration;\\s*buildSettings\\s*=\\s*\\{([^}]*)\\};\\s*name\\s*=\\s*(Debug|Release);`));
   assert(match, `Cannot read App build configuration ${id}`);
   return { settings: match[1], name: match[2] };
 });
 
 assert(configurations.length === 2, "The App target must have Debug and Release configurations");
 assert(new Set(configurations.map(({ name }) => name)).size === 2, "The App target must have distinct Debug and Release configurations");
-for (const { name, settings } of configurations) {
+const normalise = (settings) => settings.replace(/\s+/g, " ");
+for (const { name, settings: rawSettings } of configurations) {
+  const settings = normalise(rawSettings);
   assert(settings.includes("PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client;"), `${name} App bundle ID changed`);
   assert(settings.includes('TARGETED_DEVICE_FAMILY = "1,2";'), `${name} App must support iPhone and iPad`);
   assert(settings.includes("SDKROOT = iphoneos;"), `${name} App SDK must be iOS`);
@@ -37,38 +46,38 @@ for (const { name, settings } of configurations) {
 const projectObject = project.match(/PBXProject;[\s\S]*?buildConfigurationList = ([A-F0-9]+)(?: \/\*[^*]*\*\/)?;/);
 assert(projectObject, "The Xcode project configuration list is missing");
 const projectConfigurationList = project.match(
-  new RegExp(`${projectObject[1]}(?: \\/\\*[^*]*\\*\\/)? = \\{isa = XCConfigurationList; buildConfigurations = \\(([^)]*)\\)`),
+  new RegExp(`${projectObject[1]}(?:\\s*\\/\\*[^*]*\\*\\/)?\\s*=\\s*\\{\\s*isa\\s*=\\s*XCConfigurationList;\\s*buildConfigurations\\s*=\\s*\\(([^)]*)\\)`),
 );
 assert(projectConfigurationList, "Cannot read the Xcode project configurations");
 const projectConfigurationIds = projectConfigurationList[1].match(/\b[A-F0-9]{8,}\b/g) ?? [];
 assert(projectConfigurationIds.length === 2, "The Xcode project must have Debug and Release configurations");
 for (const id of projectConfigurationIds) {
-  const match = project.match(new RegExp(`${id}(?: \\/\\*[^*]*\\*\\/)? = \\{isa = XCBuildConfiguration; buildSettings = \\{([^}]*)\\}; name = (Debug|Release);`));
+  const match = project.match(new RegExp(`${id}(?:\\s*\\/\\*[^*]*\\*\\/)?\\s*=\\s*\\{\\s*isa\\s*=\\s*XCBuildConfiguration;\\s*buildSettings\\s*=\\s*\\{([^}]*)\\};\\s*name\\s*=\\s*(Debug|Release);`));
   assert(match, `Cannot read Xcode project configuration ${id}`);
-  assert(match[1].includes("SDKROOT = iphoneos;"), `${match[2]} project SDK must be iOS`);
-  assert(match[1].includes('SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";'), `${match[2]} project must support iOS devices and simulators`);
+  assert(normalise(match[1]).includes("SDKROOT = iphoneos;"), `${match[2]} project SDK must be iOS`);
+  assert(normalise(match[1]).includes('SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";'), `${match[2]} project must support iOS devices and simulators`);
 }
 
 const assertAppResource = (path) => {
   const escapedPath = path.replaceAll(".", "\\.");
-  const reference = project.match(new RegExp(`([A-F0-9]+)(?: \\/\\*[^*]*\\*\\/)? = \\{isa = PBXFileReference;[^}]*path = ${escapedPath};`));
+  const reference = project.match(new RegExp(`([A-F0-9]+)(?:\\s*\\/\\*[^*]*\\*\\/)?\\s*=\\s*\\{\\s*isa\\s*=\\s*PBXFileReference;[^}]*path\\s*=\\s*${escapedPath};`));
   assert(reference, `${path} file reference is missing`);
-  const buildFile = project.match(new RegExp(`([A-F0-9]+)(?: \\/\\*[^*]*\\*\\/)? = \\{isa = PBXBuildFile; fileRef = ${reference[1]}`));
+  const buildFile = project.match(new RegExp(`([A-F0-9]+)(?:\\s*\\/\\*[^*]*\\*\\/)?\\s*=\\s*\\{\\s*isa\\s*=\\s*PBXBuildFile;\\s*fileRef\\s*=\\s*${reference[1]}`));
   assert(buildFile, `${path} build-file reference is missing`);
-  assert(new RegExp(`PBXResourcesBuildPhase;[\\s\\S]*?files = \\([^)]*${buildFile[1]}`).test(project), `${path} is not included in App resources`);
+  assert(new RegExp(`PBXResourcesBuildPhase;[\\s\\S]*?files\\s*=\\s*\\([^)]*${buildFile[1]}`).test(project), `${path} is not included in App resources`);
 };
 
 assertAppResource("PrivacyInfo.xcprivacy");
 assertAppResource("Assets.xcassets");
 
-const localPackage = project.match(/([A-F0-9]+)(?: \/\*[^*]*\*\/)? = \{isa = XCLocalSwiftPackageReference; relativePath = "?CapApp-SPM"?; };/);
+const localPackage = project.match(/([A-F0-9]+)(?:\s*\/\*[^*]*\*\/)?\s*=\s*\{\s*isa\s*=\s*XCLocalSwiftPackageReference;\s*relativePath\s*=\s*"?CapApp-SPM"?;\s*\};/);
 assert(localPackage, "CapApp-SPM local package reference is missing");
-const packageProduct = project.match(new RegExp(`([A-F0-9]+)(?: \\/\\*[^*]*\\*\\/)? = \\{isa = XCSwiftPackageProductDependency; package = ${localPackage[1]}[^;]*; productName = "?CapApp-SPM"?; };`));
+const packageProduct = project.match(new RegExp(`([A-F0-9]+)(?:\\s*\\/\\*[^*]*\\*\\/)?\\s*=\\s*\\{\\s*isa\\s*=\\s*XCSwiftPackageProductDependency;\\s*package\\s*=\\s*${localPackage[1]}[^;]*;\\s*productName\\s*=\\s*"?CapApp-SPM"?;\\s*\\};`));
 assert(packageProduct, "CapApp-SPM package product dependency is missing");
-assert(new RegExp(`packageProductDependencies = \\([^)]*${packageProduct[1]}`).test(appTarget[0]), "CapApp-SPM is not an App target dependency");
-const packageBuildFile = project.match(new RegExp(`([A-F0-9]+)(?: \\/\\*[^*]*\\*\\/)? = \\{isa = PBXBuildFile; productRef = ${packageProduct[1]}`));
+assert(new RegExp(`packageProductDependencies\\s*=\\s*\\([^)]*${packageProduct[1]}`).test(appTarget[0]), "CapApp-SPM is not an App target dependency");
+const packageBuildFile = project.match(new RegExp(`([A-F0-9]+)(?:\\s*\\/\\*[^*]*\\*\\/)?\\s*=\\s*\\{\\s*isa\\s*=\\s*PBXBuildFile;\\s*productRef\\s*=\\s*${packageProduct[1]}`));
 assert(packageBuildFile, "CapApp-SPM framework build-file reference is missing");
-assert(new RegExp(`PBXFrameworksBuildPhase;[\\s\\S]*?files = \\([^)]*${packageBuildFile[1]}`).test(project), "CapApp-SPM is not linked in App frameworks");
+assert(new RegExp(`PBXFrameworksBuildPhase;[\\s\\S]*?files\\s*=\\s*\\([^)]*${packageBuildFile[1]}`).test(project), "CapApp-SPM is not linked in App frameworks");
 
 const capacitorConfig = read("capacitor.config.ts");
 assert(/appId:\s*["']com\.boreal\.risk\.client["']/.test(capacitorConfig), "Capacitor appId changed");
