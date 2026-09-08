@@ -6,7 +6,10 @@ export const Keyboard = { setAccessoryBarVisible: async () => undefined };
 export const SplashScreen = { hide: async () => undefined };
 export enum Style { Light = "LIGHT" }
 export const StatusBar = { setStyle: async () => undefined };
-export const Network = { getStatus: async () => ({ connected: true }) };
+export const Network = {
+  getStatus: async () => ({ connected: true }),
+  addListener: async () => ({ remove: async () => undefined }),
+};
 export enum CameraResultType { Uri = "uri" }
 export enum CameraSource { Photos = "PHOTOS", Camera = "CAMERA" }
 export const Camera = { getPhoto: async () => ({ format: "jpeg" }) };
