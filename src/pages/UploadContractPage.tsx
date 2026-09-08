@@ -10,6 +10,9 @@ import { FilePicker } from "@capawesome/capacitor-file-picker";
 import { Network } from "@capacitor/network";
 import { normalizeBrowserFile, normalizeNativeSource } from "@/upload/normalize";
 import { scanContractAsPdf } from "@/native/documentScanner"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
+// BI_CLIENT_BLOCK_v094_WIRE_UPLOAD_QUEUE_v1
+import { assessImage, ISSUE_MESSAGES } from "@/upload/quality";
+import { enqueue, drain } from "@/upload/queue";
 
 const ACCEPT = ".pdf,.doc,.docx,.png,.jpg,.jpeg";
 
@@ -41,21 +44,60 @@ export default function UploadContractPage() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const native = Capacitor.isNativePlatform();
 
   async function send(file: File) {
     setBusy(true);
     setError(null);
+    setWarning(null);
     try {
       normalizeBrowserFile(file);
-      if (native && !(await Network.getStatus()).connected) throw new Error("offline");
+
+      // BI_CLIENT_BLOCK_v094 - advisory only. A borderline photo that an
+      // underwriter can still read is better than a false positive that blocks
+      // a legitimate upload, so this warns and continues.
+      const quality = await assessImage(file);
+      if (quality && !quality.ok) {
+        setWarning(quality.issues.map((issue) => ISSUE_MESSAGES[issue]).join(" "));
+      }
+
+      if (native && !(await Network.getStatus()).connected) {
+        // BI_CLIENT_BLOCK_v094 - previously this discarded the file and asked
+        // the applicant to re-shoot a subcontract they had already captured.
+        // Persist it and drain on the next successful send instead.
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error("read_failed"));
+          reader.readAsDataURL(file);
+        });
+        await enqueue({
+          id: `${file.name}:${file.size}:${file.lastModified}`,
+          documentType: "subcontract",
+          filename: file.name,
+          mimeType: file.type,
+          dataUrl,
+        });
+        throw new Error("queued");
+      }
+
       const result = await uploadContract(file);
+      // Anything stranded by an earlier outage goes now that we know we're online.
+      void drain(async (item) => {
+        const blob = await (await fetch(item.dataUrl)).blob();
+        await uploadContract(new File([blob], item.filename, { type: item.mimeType }));
+      });
       // BI_CLIENT_FLOW_v12 - the subcontract is the only document we ask for.
       navigate(`/requirements/${result.applicationId}`);
     } catch (err) {
-      setError(err instanceof Error && err.message === "offline"
-        ? "Your connection was lost. Check it and try this file again."
-        : message(err));
+      if (err instanceof Error && err.message === "queued") {
+        setError("You're offline. We've saved this document and will send it automatically once you're back online.");
+      } else {
+        setError(err instanceof Error && err.message === "offline"
+          ? "Your connection was lost. Check it and try this file again."
+          : message(err));
+      }
     } finally {
       setBusy(false);
     }
@@ -124,6 +166,9 @@ export default function UploadContractPage() {
         />
       </div>
       {error && <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 12 }}>{error}</div>}
+      {warning && (
+        <p data-testid="upload-warning" style={{ color: "#8A6D1F", marginTop: 12 }}>{warning}</p>
+      )}
       <div style={{ marginTop: 20 }}>
         <button type="button" style={button} disabled={busy} onClick={() => native ? void chooseNativeFile() : inputRef.current?.click()}>
           {busy ? "Reading…" : "Choose file"}
