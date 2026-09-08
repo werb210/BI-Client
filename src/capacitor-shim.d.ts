@@ -6,7 +6,14 @@ declare module "@capacitor/app" { export const App: { addListener(name:string, c
 declare module "@capacitor/keyboard" { export const Keyboard: { setAccessoryBarVisible(o:{isVisible:boolean}):Promise<void> }; }
 declare module "@capacitor/splash-screen" { export const SplashScreen: { hide():Promise<void> }; }
 declare module "@capacitor/status-bar" { export enum Style { Light="LIGHT", Dark="DARK", Default="DEFAULT" } export const StatusBar:{setStyle(o:{style:Style}):Promise<void>}; }
-declare module "@capacitor/network" { export const Network:{getStatus():Promise<{connected:boolean}>}; }
+declare module "@capacitor/network" {
+  type NetworkStatus = { connected: boolean };
+  type ListenerHandle = { remove(): Promise<void> };
+  export const Network: {
+    getStatus(): Promise<NetworkStatus>;
+    addListener(event: "networkStatusChange", listener: (status: NetworkStatus) => void): Promise<ListenerHandle>;
+  };
+}
 declare module "@capacitor/camera" { export enum CameraResultType { Uri="uri" } export enum CameraSource { Photos="PHOTOS", Camera="CAMERA" } export const Camera:{getPhoto(o:any):Promise<{webPath?:string,format:string}>}; }
 declare module "@capawesome/capacitor-file-picker" { export const FilePicker:{pickFiles(o:any):Promise<{files:Array<{name:string,mimeType?:string,size?:number,path?:string}>}>}; }
 declare module "@capacitor/push-notifications" { export const PushNotifications:{addListener(name:string,cb:(event:any)=>void):Promise<CapHandle>;checkPermissions():Promise<{receive:string}>;register():Promise<void>}; }
