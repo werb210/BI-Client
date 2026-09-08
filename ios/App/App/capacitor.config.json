@@ -16,6 +16,9 @@
 		}
 	},
 	"packageClassList": [
+		"BiometricAuthNative",
+		"SecureStorage",
+		"DocumentScannerPlugin",
 		"AppPlugin",
 		"AppLauncherPlugin",
 		"CAPCameraPlugin",
@@ -27,7 +30,6 @@
 		"PushNotificationsPlugin",
 		"SplashScreenPlugin",
 		"StatusBarPlugin",
-		"FilePickerPlugin",
-		"SecureStorage"
+		"FilePickerPlugin"
 	]
 }
