@@ -28,7 +28,6 @@
 		"CAPNetworkPlugin",
 		"PreferencesPlugin",
 		"PushNotificationsPlugin",
-		"SplashScreenPlugin",
 		"StatusBarPlugin",
 		"FilePickerPlugin"
 	]
