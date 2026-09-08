@@ -31,10 +31,12 @@ export default function NativeBridge() {
         if (canGoBack && pathRef.current !== "/") navigate(-1);
         else if (pathRef.current === "/") void NativeApp.exitApp();
       }));
-      // appStateChange/resume listeners are deliberately side-effect free: they
-      // establish lifecycle boundaries without restarting completed requests.
+      // Keep lifecycle handling independent from completed requests. Resume only
+      // announces the boundary so security-sensitive UI can reevaluate its lock.
       handles.push(await NativeApp.addListener("appStateChange", () => undefined));
-      handles.push(await NativeApp.addListener("resume", () => undefined));
+      handles.push(await NativeApp.addListener("resume", () => {
+        window.dispatchEvent(new Event("boreal:native-resume"));
+      }));
       await Keyboard.setAccessoryBarVisible({ isVisible: true }).catch(() => undefined);
       await StatusBar.setStyle({ style: Style.Light }).catch(() => undefined);
       handles.push(...await initializePushNotifications(openUrl));

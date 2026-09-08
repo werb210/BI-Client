@@ -9,6 +9,7 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
 import { Network } from "@capacitor/network";
 import { normalizeBrowserFile, normalizeNativeSource } from "@/upload/normalize";
+import { scanContractAsPdf } from "@/native/documentScanner";
 
 const ACCEPT = ".pdf,.doc,.docx,.png,.jpg,.jpeg";
 
@@ -76,6 +77,15 @@ export default function UploadContractPage() {
     } catch (err) { if (!(err instanceof Error && /cancel/i.test(err.message))) setError(message(err)); }
   }
 
+  async function scanDocument() {
+    try {
+      const file = await scanContractAsPdf();
+      if (file) await send(file);
+    } catch (err) {
+      if (!(err instanceof Error && /cancel/i.test(err.message))) setError(message(err));
+    }
+  }
+
   return (
     <div className="bi-page" style={wrap}>
       <div className="bi-page__inner">
@@ -120,6 +130,7 @@ export default function UploadContractPage() {
         </button>
       </div>
       {native && <div style={{ display: "flex", gap: 12, marginTop: 12, flexWrap: "wrap" }}>
+        <button type="button" disabled={busy} onClick={() => void scanDocument()}>Scan Document</button>
         <button type="button" disabled={busy} onClick={() => void chooseImage(CameraSource.Photos)}>Choose Photo</button>
         <button type="button" disabled={busy} onClick={() => void chooseImage(CameraSource.Camera)}>Take Photo</button>
       </div>}

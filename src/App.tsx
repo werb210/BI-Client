@@ -7,6 +7,7 @@ import Footer from "@/components/chrome/Footer";
 import { captureEntryParams } from "@/entry/entryContext"; // BI_CLIENT_INDUSTRY_v11
 import { restoreToken } from "@/auth/token";
 import NativeBridge from "@/native/NativeBridge";
+import BiometricGate from "@/native/BiometricGate"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
 
 captureEntryParams(typeof window === "undefined" ? "" : window.location.search);
 
@@ -15,15 +16,17 @@ export default function App() {
   useEffect(() => { void restoreToken().finally(() => setReady(true)); }, []);
   if (!ready) return <div className="bi-auth-loading" role="status">Loading…</div>;
   return (
-    <BrowserRouter>
-      <NativeBridge />
-      <div style={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}>
-        <Header />
-        <main style={{ flex: 1 }}>
-          <AppRouter />
-        </main>
-        <Footer />
-      </div>
-    </BrowserRouter>
+    <BiometricGate>
+      <BrowserRouter>
+        <NativeBridge />
+        <div style={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}>
+          <Header />
+          <main style={{ flex: 1 }}>
+            <AppRouter />
+          </main>
+          <Footer />
+        </div>
+      </BrowserRouter>
+    </BiometricGate>
   );
 }
