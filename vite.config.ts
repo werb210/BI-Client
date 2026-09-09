@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => ({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       ...(mode === "test" ? Object.fromEntries([
         "@capacitor/core", "@capacitor/preferences", "@aparajita/capacitor-secure-storage",
-        "@capacitor/app", "@capacitor/keyboard", "@capacitor/splash-screen", "@capacitor/status-bar",
+        "@capacitor/app", "@capacitor/keyboard", "@capacitor/status-bar",
         "@capacitor/network", "@capacitor/camera", "@capawesome/capacitor-file-picker",
         "@capacitor/push-notifications",
       ].map((name) => [name, fileURLToPath(new URL("./src/test-capacitor-mock.ts", import.meta.url))])) : {}),

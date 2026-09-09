@@ -6,10 +6,6 @@
 		"androidScheme": "https"
 	},
 	"plugins": {
-		"SplashScreen": {
-			"launchAutoHide": true,
-			"launchShowDuration": 0
-		},
 		"Keyboard": {
 			"resize": "native",
 			"resizeOnFullScreen": true

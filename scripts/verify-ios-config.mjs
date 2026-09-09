@@ -152,12 +152,6 @@ const nativePlugins = [
     product: "CapacitorPushNotifications",
   },
   {
-    dependency: "@capacitor/splash-screen",
-    path: "@capacitor/splash-screen",
-    packageName: "CapacitorSplashScreen",
-    product: "CapacitorSplashScreen",
-  },
-  {
     dependency: "@capacitor/status-bar",
     path: "@capacitor/status-bar",
     packageName: "CapacitorStatusBar",

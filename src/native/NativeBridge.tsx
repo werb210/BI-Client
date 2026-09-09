@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { App as NativeApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
-import { SplashScreen } from "@capacitor/splash-screen";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { getCachedToken } from "@/auth/token";
 import { parseNativeUrl, retainNativeDestination } from "@/native/deepLinks";
@@ -40,7 +39,6 @@ export default function NativeBridge() {
       await Keyboard.setAccessoryBarVisible({ isVisible: true }).catch(() => undefined);
       await StatusBar.setStyle({ style: Style.Light }).catch(() => undefined);
       handles.push(...await initializePushNotifications(openUrl));
-      await SplashScreen.hide().catch(() => undefined);
     };
     void add();
     return () => { for (const handle of handles) void handle.remove(); };
