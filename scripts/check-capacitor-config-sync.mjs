@@ -8,6 +8,16 @@ import { execSync } from "node:child_process";
 
 const GENERATED = "ios/App/App/capacitor.config.json";
 
+// BI_CLIENT_CONFIG_DRIFT_GATE_v2
+// cap sync copies dist into the iOS bundle, so this check cannot run before the
+// build. Say that plainly instead of letting Capacitor's "web assets directory"
+// message masquerade as a config-drift failure.
+if (!existsSync("dist/index.html")) {
+  console.error("FAIL: dist/index.html is missing — run `npm run build` first.");
+  console.error("This check runs `cap sync`, which needs the built web assets.");
+  process.exit(1);
+}
+
 if (!existsSync(GENERATED)) {
 console.error(`FAIL: ${GENERATED} is missing. Run: npx cap sync ios`);
 process.exit(1);

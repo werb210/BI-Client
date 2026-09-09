@@ -16,12 +16,6 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      # BI_CLIENT_CONFIG_DRIFT_GATE_v1 - the committed native config is what
-      # the app reads at launch; a stale copy ships configuration that is not
-      # in source control.
-      - name: Capacitor config in sync
-        run: npm run check:config
-
       - name: Typecheck
         run: npm run typecheck
       # Gated before build, deliberately: bf-client accumulated 145 test files
@@ -30,6 +24,13 @@ jobs:
         run: npm run test:ci
       - name: Build
         run: npm run build
+
+      # BI_CLIENT_CONFIG_DRIFT_GATE_v2 - must run AFTER Build. The check
+      # invokes `cap sync`, which copies dist into the iOS bundle; v1 put it
+      # before Typecheck, so dist did not exist yet and every run failed with
+      # "Could not find the web assets directory".
+      - name: Capacitor config in sync
+        run: npm run check:config
       - name: Verify SWA config reached the artifact
         run: |
           if [ ! -f dist/staticwebapp.config.json ]; then
