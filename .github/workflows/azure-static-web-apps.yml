@@ -16,6 +16,12 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
+      # BI_CLIENT_CONFIG_DRIFT_GATE_v1 - the committed native config is what
+      # the app reads at launch; a stale copy ships configuration that is not
+      # in source control.
+      - name: Capacitor config in sync
+        run: npm run check:config
+
       - name: Typecheck
         run: npm run typecheck
       # Gated before build, deliberately: bf-client accumulated 145 test files
