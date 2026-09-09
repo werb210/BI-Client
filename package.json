@@ -14,7 +14,8 @@
     "cap:sync:ios": "npm run build && cap sync ios",
     "cap:sync:android": "npm run build && cap sync android",
     "cap:open:ios": "cap open ios",
-    "cap:open:android": "cap open android"
+    "cap:open:android": "cap open android",
+    "check:config": "node scripts/check-capacitor-config-sync.mjs"
   },
   "dependencies": {
     "@aparajita/capacitor-biometric-auth": "^10.0.0",
