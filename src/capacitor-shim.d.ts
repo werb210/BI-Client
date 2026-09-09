@@ -7,7 +7,6 @@ declare module "@capacitor/keyboard" {
   export enum KeyboardResize { Body="body", Ionic="ionic", Native="native", None="none" }
   export const Keyboard: { setAccessoryBarVisible(o:{isVisible:boolean}):Promise<void> };
 }
-declare module "@capacitor/splash-screen" { export const SplashScreen: { hide():Promise<void> }; }
 declare module "@capacitor/status-bar" { export enum Style { Light="LIGHT", Dark="DARK", Default="DEFAULT" } export const StatusBar:{setStyle(o:{style:Style}):Promise<void>}; }
 declare module "@capacitor/network" {
   type NetworkStatus = { connected: boolean };

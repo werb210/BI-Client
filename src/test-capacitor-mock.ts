@@ -4,7 +4,6 @@ export const SecureStorage = { get: async (_key: string): Promise<string | null>
 export const App = { addListener: async () => ({ remove: async () => undefined }), exitApp: async () => undefined };
 export enum KeyboardResize { Body = "body", Ionic = "ionic", Native = "native", None = "none" }
 export const Keyboard = { setAccessoryBarVisible: async () => undefined };
-export const SplashScreen = { hide: async () => undefined };
 export enum Style { Light = "LIGHT" }
 export const StatusBar = { setStyle: async () => undefined };
 export const Network = {
