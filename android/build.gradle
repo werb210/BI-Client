@@ -1,5 +1,7 @@
 plugins {
     id 'com.android.application' version '8.9.1' apply false
+    // BI_CLIENT_ANDROID_FCM_v1
+    id 'com.google.gms.google-services' version '4.4.2' apply false // com.google.gms:google-services
 }
 
 apply from: 'variables.gradle'
