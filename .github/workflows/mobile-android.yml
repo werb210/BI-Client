@@ -19,5 +19,9 @@ jobs:
       - run: npm run test:ci
       - run: npm run build
       - run: npx cap sync android
+      - name: Ensure google-services.json (v117-google-services)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON_BI }}
+        run: node scripts/ensure-google-services.mjs
       - run: ./gradlew assembleDebug
         working-directory: android
