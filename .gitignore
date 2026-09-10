@@ -16,6 +16,7 @@ ios/DerivedData/
 ios/**/DerivedData/
 ios/**/build/
 google-services.json
+!android/app/google-services.json
 GoogleService-Info.plist
 *.p8
 *.p12
