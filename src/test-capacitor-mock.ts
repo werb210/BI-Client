@@ -1,4 +1,6 @@
-export const Capacitor = { isNativePlatform: () => false, convertFileSrc: (path: string) => path, getPlatform: () => "web" };
+// BI_CLIENT_SCANNER_AVAILABILITY_v165 — the mock stands in for a web build,
+// where no native plugin is available.
+export const Capacitor = { isNativePlatform: () => false, convertFileSrc: (path: string) => path, getPlatform: () => "web", isPluginAvailable: (_name: string) => false };
 export const Preferences = { get: async () => ({ value: null }), set: async () => undefined, remove: async () => undefined };
 export const SecureStorage = { get: async (_key: string): Promise<string | null> => null, set: async (_key: string, _value: string) => undefined, remove: async (_key: string) => undefined };
 export const App = { addListener: async () => ({ remove: async () => undefined }), exitApp: async () => undefined };

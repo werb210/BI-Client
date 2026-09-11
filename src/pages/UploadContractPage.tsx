@@ -9,7 +9,7 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
 import { Network } from "@capacitor/network";
 import { normalizeBrowserFile, normalizeNativeSource } from "@/upload/normalize";
-import { scanContractAsPdf } from "@/native/documentScanner"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
+import { scanContractAsPdf, ScannerUnavailableError } from "@/native/documentScanner"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
 // BI_CLIENT_BLOCK_v094_WIRE_UPLOAD_QUEUE_v1
 import { assessImage, ISSUE_MESSAGES } from "@/upload/quality";
 import { enqueue, drain } from "@/upload/queue";
@@ -124,6 +124,13 @@ export default function UploadContractPage() {
       const file = await scanContractAsPdf();
       if (file) await send(file);
     } catch (err) {
+      // BI_CLIENT_SCANNER_AVAILABILITY_v165 — the scanner plugin is not linked
+      // under SPM. Say so plainly and point at the route that still works,
+      // rather than surfacing a raw plugin error.
+      if (err instanceof ScannerUnavailableError) {
+        setError("Scanning is not available in this build. Please take a photo or choose a file instead.");
+        return;
+      }
       if (!(err instanceof Error && /cancel/i.test(err.message))) setError(message(err));
     }
   }

@@ -88,8 +88,36 @@ async function imagesToPdf(images: string[]): Promise<Blob> {
   return new Blob(output as BlobPart[], { type: "application/pdf" });
 }
 
+// BI_CLIENT_SCANNER_AVAILABILITY_v165
+// @capacitor-mlkit/document-scanner ships no Package.swift, and this app builds
+// with SPM (ios/App/CapApp-SPM), so `cap sync` reports
+//   [warn] @capacitor-mlkit/document-scanner does not have a Package.swift
+//   [warn] Some installed Capacitor plugins are not compatible with SPM
+// and omits it from the generated package. Every other plugin links; this one
+// is simply not in the iOS binary. Calling it threw a raw plugin error that
+// reached the applicant as an unreadable message.
+//
+// isNativePlatform() is not a sufficient guard: it is true on iOS whether or
+// not the plugin was linked. Ask the registry instead.
+export function isScannerAvailable(): boolean {
+  try {
+    return Capacitor.isNativePlatform() && Capacitor.isPluginAvailable("DocumentScanner");
+  } catch {
+    return false;
+  }
+}
+
+/** Thrown so the caller can say something useful instead of leaking plugin noise. */
+export class ScannerUnavailableError extends Error {
+  constructor() {
+    super("scanner_unavailable");
+    this.name = "ScannerUnavailableError";
+  }
+}
+
 export async function scanContractAsPdf(): Promise<File | null> {
   if (!Capacitor.isNativePlatform()) return null;
+  if (!isScannerAvailable()) throw new ScannerUnavailableError();
   const result = await DocumentScanner.scanDocument({ pageLimit: 10 });
   const pdf = await imagesToPdf(result.scannedImages ?? []);
   return new File([pdf], "contract-scan.pdf", { type: "application/pdf" });
