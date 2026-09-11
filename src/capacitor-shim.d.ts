@@ -1,4 +1,6 @@
-declare module "@capacitor/core" { export const Capacitor: { isNativePlatform(): boolean; convertFileSrc(path: string): string; getPlatform(): string }; }
+declare module "@capacitor/core" { /* BI_CLIENT_SCANNER_AVAILABILITY_v165 — isPluginAvailable is how a plugin that
+   was not linked into the binary is detected at runtime. */
+  export const Capacitor: { isNativePlatform(): boolean; convertFileSrc(path: string): string; getPlatform(): string; isPluginAvailable(name: string): boolean }; }
 declare module "@capacitor/preferences" { export const Preferences: { get(o:{key:string}):Promise<{value:string|null}>; set(o:{key:string,value:string}):Promise<void>; remove(o:{key:string}):Promise<void> }; }
 declare module "@aparajita/capacitor-secure-storage" { export const SecureStorage: { get(key:string):Promise<unknown>; set(key:string,value:string):Promise<void>; remove(key:string):Promise<void> }; }
 type CapHandle = { remove(): Promise<void> };
