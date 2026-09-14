@@ -104,8 +104,23 @@ export default function SignInPage() {
         <>
           <label style={{ fontSize: 13 }}>
             6-digit code
-            <input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code}
-              onChange={(e) => setCode(e.target.value)} className="bi-field" style={input} />
+            {/* BI_CLIENT_OTP_AUTOFILL_v168 — autoComplete="one-time-code" alone is
+                not enough: Chrome's SMS-autofill heuristic also reads type and name.
+                BF-client's PhoneOTPInline has type="text" name="otp" and its bubble
+                fires; this input had neither and never offered the code. Matching
+                that working field exactly, digits-only like BF-client so a pasted
+                code cannot carry stray characters. Do not remove these attributes. */}
+            <input
+              type="text"
+              name="otp"
+              autoComplete="one-time-code"
+              inputMode="numeric"
+              maxLength={6}
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D+/g, "").slice(0, 6))}
+              className="bi-field"
+              style={input}
+            />
           </label>
           <button type="button" style={button} disabled={busy || code.trim().length < 6} onClick={() => void check()}>
             {busy ? "Checking\u2026" : "Sign in"}
