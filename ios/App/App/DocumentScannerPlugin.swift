@@ -68,3 +68,14 @@ extension DocumentScannerPlugin: VNDocumentCameraViewControllerDelegate {
         call?.reject("Scan failed")
     }
 }
+
+// BI_CLIENT_NATIVE_WIRING_v237
+// Registers app-target plugins with the Capacitor bridge. Main.storyboard
+// points at this class instead of the stock CAPBridgeViewController.
+@objc(BorealBridgeViewController)
+final class BorealBridgeViewController: CAPBridgeViewController {
+    override func capacitorDidLoad() {
+        super.capacitorDidLoad()
+        bridge?.registerPluginInstance(DocumentScannerPlugin())
+    }
+}

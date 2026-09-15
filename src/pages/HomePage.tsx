@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { clearToken } from "@/auth/token";
 import { apiRequest } from "@/api/client";
+import ActionCenter from "@/components/ActionCenter"; // BI_CLIENT_NATIVE_WIRING_v237
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -29,6 +30,11 @@ export default function HomePage() {
     // BI_CLIENT_SHELL_v19 - shared shell; width and card come from chrome.css.
     <div className="bi-page">
       <div className="bi-page__inner bi-page__inner--narrow">
+        {/* BI_CLIENT_NATIVE_WIRING_v237 */}
+        <ActionCenter
+          applicationId="me"
+          onAction={(item, id) => navigate(item.kind === "document" ? `/requirements/${encodeURIComponent(id)}` : `/questions/${encodeURIComponent(id)}`)}
+        />
         <div className="bi-card">
       <h1>You are signed in</h1>
       <p className="bi-page__lede">
