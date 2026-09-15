@@ -33,6 +33,8 @@
 	<string>1</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Boreal Risk uses Face ID to unlock your application securely.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Take a photograph of a subcontract or contract document for insurance requirement review.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

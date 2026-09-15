@@ -15,14 +15,17 @@ type BiActionItem = {
   urgent: boolean;
 };
 
+// BI_CLIENT_NATIVE_WIRING_v237 - applicationId is the public id the server resolved (also for "me").
 type BiActionCenter = {
+  applicationId?: string;
   outstanding: BiActionItem[];
   completed: BiActionItem[];
   outstandingCount: number;
   canSubmit: boolean;
 };
 
-export default function ActionCenter({ applicationId }: { applicationId: string }) {
+export type BiActionHandler = (item: BiActionItem, applicationId: string) => void;
+export default function ActionCenter({ applicationId, onAction }: { applicationId: string; onAction?: BiActionHandler }) {
   const [data, setData] = useState<BiActionCenter | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -64,6 +67,15 @@ export default function ActionCenter({ applicationId }: { applicationId: string 
                 <div style={{ fontSize: 15, color: "#0B1F3A" }}>{item.label}</div>
                 {item.urgent && <div style={{ fontSize: 13, color: "#B00020", marginTop: 2 }}>Needs re-uploading — the last one was not accepted</div>}
               </div>
+              {onAction && data.applicationId ? (
+                <button
+                  type="button"
+                  onClick={() => onAction(item, String(data.applicationId))}
+                  style={{ border: "none", background: "#0B1F3A", color: "#fff", borderRadius: 8, padding: "8px 14px", fontSize: 14, fontWeight: 600, cursor: "pointer", flexShrink: 0 }}
+                >
+                  {item.kind === "document" ? "Upload" : "Answer"}
+                </button>
+              ) : null}
             </div>
           ))}
         </>
