@@ -20,4 +20,4 @@ declare module "@capacitor/network" {
 }
 declare module "@capacitor/camera" { export enum CameraResultType { Uri="uri" } export enum CameraSource { Photos="PHOTOS", Camera="CAMERA" } export const Camera:{getPhoto(o:any):Promise<{webPath?:string,format:string}>}; }
 declare module "@capawesome/capacitor-file-picker" { export const FilePicker:{pickFiles(o:any):Promise<{files:Array<{name:string,mimeType?:string,size?:number,path?:string}>}>}; }
-declare module "@capacitor/push-notifications" { export const PushNotifications:{addListener(name:string,cb:(event:any)=>void):Promise<CapHandle>;checkPermissions():Promise<{receive:string}>;register():Promise<void>}; }
+declare module "@capacitor/push-notifications" { export const PushNotifications:{addListener(name:string,cb:(event:any)=>void):Promise<CapHandle>;checkPermissions():Promise<{receive:string}>;requestPermissions():Promise<{receive:string}>;register():Promise<void>}; }

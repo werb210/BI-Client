@@ -1,10 +1,11 @@
 import UIKit
 import Capacitor
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool { true }
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool { BorealRiskPushCategories.register(); return true }
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool { ApplicationDelegateProxy.shared.application(app, open: url, options: options) }
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool { ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler) }
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) { NotificationCenter.default.post(name: .capacitorDidRegisterForRemoteNotifications, object: deviceToken) }
@@ -38,5 +39,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
         _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, continue: userActivity, restorationHandler: { _ in })
+    }
+}
+
+// BI_CLIENT_PUSH_OPT_IN_v241
+// Without registered categories iOS ignores aps.category and shows no buttons.
+// Both buttons open data.url through the existing pushNotificationActionPerformed listener.
+enum BorealRiskPushCategories {
+    static func register() {
+        let upload = UNNotificationAction(identifier: "UPLOAD_NOW", title: "Upload Now", options: [.foreground, .authenticationRequired])
+        let open = UNNotificationAction(identifier: "OPEN_APPLICATION", title: "Open", options: [.foreground, .authenticationRequired])
+        UNUserNotificationCenter.current().setNotificationCategories([
+            UNNotificationCategory(identifier: "DOCUMENT_REQUEST", actions: [upload, open], intentIdentifiers: [], options: []),
+            UNNotificationCategory(identifier: "APPLICATION_UPDATE", actions: [open], intentIdentifiers: [], options: [])
+        ])
     }
 }

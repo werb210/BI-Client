@@ -1,6 +1,7 @@
 // BI_CLIENT_SCAFFOLD_v1 - placeholder. The contract upload and the extracted
 // requirement list land here next.
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { enablePushAfterSignIn } from "@/native/pushNotifications"; // BI_CLIENT_PUSH_OPT_IN_v241
 import { useNavigate } from "react-router-dom";
 import { clearToken } from "@/auth/token";
 import { apiRequest } from "@/api/client";
@@ -8,6 +9,8 @@ import ActionCenter from "@/components/ActionCenter"; // BI_CLIENT_NATIVE_WIRING
 
 export default function HomePage() {
   const navigate = useNavigate();
+  // BI_CLIENT_PUSH_OPT_IN_v241 - signed in, so the token upload can authenticate.
+  useEffect(() => { void enablePushAfterSignIn(); }, []);
   // BI_CLIENT_ACCOUNT_DELETE_v1 - store-required in-app account deletion.
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
