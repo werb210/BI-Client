@@ -53,7 +53,34 @@ export async function initializePushNotifications(
     if (typeof url === "string") onUrl(url);
   }));
   const permission = await PushNotifications.checkPermissions();
-  if (permission.receive === "prompt") return handles; // request only from future user-facing opt-in UI
+  // BI_CLIENT_PUSH_OPT_IN_v241 - the prompt is shown after sign-in by enablePushAfterSignIn (HomePage).
+  if (permission.receive === "prompt") return handles;
   if (permission.receive === "granted") await PushNotifications.register();
   return handles;
+}
+
+// BI_CLIENT_PUSH_OPT_IN_v241
+export type PushPermissionApi = {
+  checkPermissions(): Promise<{ receive: string }>;
+  requestPermissions(): Promise<{ receive: string }>;
+  register(): Promise<void>;
+};
+
+/** Asks once (iOS remembers the answer) and registers, which fires the token upload listener. */
+export async function enablePushAfterSignIn(
+  api: PushPermissionApi = PushNotifications,
+  native: boolean = Capacitor.isNativePlatform(),
+): Promise<"granted" | "denied" | "unavailable"> {
+  if (!native) return "unavailable";
+  try {
+    let permission = await api.checkPermissions();
+    if (permission.receive === "prompt" || permission.receive === "prompt-with-rationale") {
+      permission = await api.requestPermissions();
+    }
+    if (permission.receive !== "granted") return "denied";
+    await api.register();
+    return "granted";
+  } catch {
+    return "unavailable";
+  }
 }
