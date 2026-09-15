@@ -9,6 +9,8 @@ import {
 } from "@/api/contract";
 import BackBar from "@/components/BackBar";
 import { getSelection } from "@/api/products";
+// BI_CLIENT_ACTION_CENTER_v200
+import ActionCenter from "@/components/ActionCenter";
 
 // BI_CLIENT_SHELL_v20 - width and ground come from chrome.css. No outer card
 // here: this page composes its own panels, and nesting them reads badly.
@@ -86,6 +88,8 @@ export default function RequirementsPage() {
 
   return (
     <div className="bi-page" style={wrap}>
+      {/* BI_CLIENT_ACTION_CENTER_v200 */}
+      {applicationId ? <ActionCenter applicationId={applicationId} /> : null}
       <div className="bi-page__inner">
       <BackBar to="/upload" />
       <h1>What your contract asks for</h1>
