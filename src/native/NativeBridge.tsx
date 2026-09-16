@@ -32,9 +32,13 @@ export default function NativeBridge() {
       }));
       // Keep lifecycle handling independent from completed requests. Resume only
       // announces the boundary so security-sensitive UI can reevaluate its lock.
-      handles.push(await NativeApp.addListener("appStateChange", () => undefined));
+      handles.push(await NativeApp.addListener("appStateChange", ({ isActive }: { isActive: boolean }) => {
+        // BI_CLIENT_BACKGROUND_SYNC_v308 - leaving the app hands pending sends to the phone.
+        if (!isActive) void import("@/native/backgroundSync").then((m) => m.handOffToBackground()).catch((): void => undefined);
+      }));
       handles.push(await NativeApp.addListener("resume", () => {
         window.dispatchEvent(new Event("boreal:native-resume"));
+        void import("@/native/backgroundSync").then((m) => m.reconcileBackground()).catch((): void => undefined); // v308
       }));
       await Keyboard.setAccessoryBarVisible({ isVisible: true }).catch(() => undefined);
       await StatusBar.setStyle({ style: Style.Light }).catch(() => undefined);

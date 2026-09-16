@@ -77,5 +77,6 @@ final class BorealBridgeViewController: CAPBridgeViewController {
     override func capacitorDidLoad() {
         super.capacitorDidLoad()
         bridge?.registerPluginInstance(DocumentScannerPlugin())
+        bridge?.registerPluginInstance(BackgroundSyncPlugin()) // BI_CLIENT_BACKGROUND_SYNC_v308
     }
 }
