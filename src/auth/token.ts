@@ -58,6 +58,8 @@ export function clearToken(): Promise<void> {
 
 async function clearApplicantSession(): Promise<void> {
   cachedToken = null;
+  // BI_CLIENT_OFFLINE_v302 - cached screens and unsent saves belong to this applicant only.
+  void import("@/offline/offlineStore").then((m) => m.clearOfflineData()).catch((): void => undefined);
   if (native()) {
     // Do not erase the entire Keychain/Preferences domains: they may later hold
     // other BI-only state. Remove only this applicant session.

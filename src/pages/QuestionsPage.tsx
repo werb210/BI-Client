@@ -7,6 +7,7 @@ import BackBar from "@/components/BackBar"; // BI_CLIENT_FLOW_v12
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuestions, saveAnswers, type AnswerInput, type Question } from "@/api/questions";
+import { OfflineQueuedError } from "@/offline/offlineStore"; // BI_CLIENT_OFFLINE_v302
 
 // BI_CLIENT_SHELL_v21 - width, ground and padding come from chrome.css. The
 // 120px bottom padding stays because the CTA bar below is position:fixed and
@@ -174,8 +175,8 @@ export default function QuestionsPage() {
       // BI_CLIENT_REVIEW_v7 - step 3 leads to review, not to the contract
       // requirements page, which is meaningless without an uploaded contract.
       navigate(`/review/${encodeURIComponent(id)}`);
-    } catch {
-      setError("We could not save your answers. Please try again.");
+    } catch (err) {
+      setError(err instanceof OfflineQueuedError ? "You're offline. This is saved on your phone and will be sent automatically when you're back online." : "We could not save your answers. Please try again.");
       setBusy(false);
     }
   }
