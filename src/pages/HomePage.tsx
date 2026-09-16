@@ -54,7 +54,7 @@ export default function HomePage() {
         Upload my subcontract
       </button>
       <div />
-      <button type="button" onClick={() => { void clearToken().finally(() => navigate("/")); }}
+      <button type="button" onClick={() => { /* BI_CLIENT_FACE_ID_SIGN_IN_v301 */ void import("@/native/deviceSignIn").then((m) => m.disableFaceIdSignIn()).catch((): void => undefined).finally(() => clearToken().finally(() => navigate("/"))); }}
         style={{ background: "none", border: "none", color: "#0B1F3A", cursor: "pointer", padding: 0, fontSize: 14 }}>
         Sign out
       </button>

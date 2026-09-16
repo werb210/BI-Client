@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { startOtp, verifyOtp } from "@/api/otp";
 import { ApiError } from "@/api/client";
 import { consumeNativeDestination } from "@/native/deepLinks";
+import { biometryAvailable, isEnrolled, offerFaceIdOnce, signInWithFaceId } from "@/native/deviceSignIn"; // BI_CLIENT_FACE_ID_SIGN_IN_v301
 
 function message(err: unknown): string {
   const code = err instanceof ApiError ? err.code : "";
@@ -32,6 +33,34 @@ export default function SignInPage() {
   const sentFor = useRef("");
   const checkedFor = useRef("");
   const digits = (value: string) => value.replace(/\D/g, "");
+  // BI_CLIENT_FACE_ID_SIGN_IN_v301
+  const [faceIdReady, setFaceIdReady] = useState(false);
+  useEffect(() => {
+    let alive = true;
+    void (async () => {
+      const ready = (await biometryAvailable()) && (await isEnrolled());
+      if (alive) setFaceIdReady(ready);
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  async function faceIdSignIn() {
+    setBusy(true);
+    setError(null);
+    try {
+      await signInWithFaceId();
+      navigate(consumeNativeDestination() ?? "/start");
+    } catch (err: any) {
+      if (err?.code === "expired" || err?.code === "not_enrolled") {
+        setFaceIdReady(false);
+        setError(err.message);
+      } else {
+        setError("Face ID didn't work. Sign in with a text code instead.");
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (phase !== "phone" || busy) return;
@@ -70,6 +99,7 @@ export default function SignInPage() {
     setError(null);
     try {
       await verifyOtp(phone, code);
+      await offerFaceIdOnce(); // BI_CLIENT_FACE_ID_SIGN_IN_v301
       // BI_CLIENT_STEP1_PROFILE_v3 - sign-in lands on step 1, not the stub home.
       navigate(consumeNativeDestination() ?? "/start");
     } catch (err) {
@@ -88,6 +118,15 @@ export default function SignInPage() {
       <p style={{ color: "#51617D", fontSize: 14, marginTop: 0 }}>
         Sign in with your mobile number. We will text you a code.
       </p>
+
+      {phase === "phone" && faceIdReady && (
+        <>
+          <button type="button" data-testid="face-id-sign-in" style={{ ...button, marginTop: 8 }} disabled={busy} onClick={() => void faceIdSignIn()}>
+            {busy ? "Signing in\u2026" : "Sign in with Face ID"}
+          </button>
+          <p style={{ textAlign: "center", color: "#51617D", fontSize: 13, margin: "10px 0 0" }}>or get a text code</p>
+        </>
+      )}
 
       {phase === "phone" ? (
         <>
