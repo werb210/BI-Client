@@ -6,6 +6,7 @@ import BackBar from "@/components/BackBar"; // BI_CLIENT_FLOW_v12
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSummary, submitApplication, type Summary } from "@/api/summary";
+import { ApiError } from "@/api/client"; // BI_CLIENT_OFFLINE_v302
 
 // BI_CLIENT_SHELL_v21 - width, ground and padding come from chrome.css. The
 // 120px bottom padding stays because the CTA bar below is position:fixed and
@@ -58,7 +59,13 @@ export default function ReviewPage() {
       setS(out);
       setDone(true);
       window.scrollTo(0, 0);
-    } catch {
+    } catch (err) {
+      // BI_CLIENT_OFFLINE_v302 - submitting needs a connection; say so plainly.
+      if (err instanceof ApiError && err.code === "offline") {
+        setError("You're offline. Connect to the internet to submit your application.");
+        setBusy(false);
+        return;
+      }
       // The server is the authority on completeness, so re-read rather than
       // guessing which gate failed.
       setError("We could not submit yet. Please check the items below.");

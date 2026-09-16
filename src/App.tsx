@@ -11,6 +11,8 @@ import { captureEntryParams } from "@/entry/entryContext"; // BI_CLIENT_INDUSTRY
 import { restoreToken } from "@/auth/token";
 import NativeBridge from "@/native/NativeBridge";
 import BiometricGate from "@/native/BiometricGate"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
+import OfflineBanner from "@/offline/OfflineBanner"; // BI_CLIENT_OFFLINE_v302
+import { useOutboxDrain } from "@/offline/useOutboxDrain";
 
 captureEntryParams(typeof window === "undefined" ? "" : window.location.search);
 
@@ -20,6 +22,7 @@ export default function App() {
     const blob = await (await fetch(item.dataUrl)).blob();
     await uploadContract(new File([blob], item.filename, { type: item.mimeType }));
   });
+  useOutboxDrain(); // BI_CLIENT_OFFLINE_v302
   const [ready, setReady] = useState(false);
   useEffect(() => { void restoreToken().finally(() => setReady(true)); }, []);
   if (!ready) return <div className="bi-auth-loading" role="status">Loading…</div>;
@@ -29,6 +32,7 @@ export default function App() {
         <NativeBridge />
         <div style={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}>
           <Header />
+          <OfflineBanner />
           <main style={{ flex: 1 }}>
             <AppRouter />
           </main>

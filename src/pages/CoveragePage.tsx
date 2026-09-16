@@ -5,6 +5,7 @@ import BackBar from "@/components/BackBar"; // BI_CLIENT_FLOW_v12
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSelection, listProducts, saveSelection, type Product, type Selected } from "@/api/products";
+import { OfflineQueuedError } from "@/offline/offlineStore"; // BI_CLIENT_OFFLINE_v302
 import { getChosenIndustry } from "@/entry/entryContext";
 
 // BI_CLIENT_SHELL_v21 - width, ground and padding come from chrome.css. The
@@ -80,8 +81,8 @@ export default function CoveragePage() {
       // BI_CLIENT_QUESTIONS_v5 - step 2 leads into step 3, not back to the
       // requirements summary.
       navigate(`/questions/${encodeURIComponent(id)}`);
-    } catch {
-      setError("That did not save. Please try again.");
+    } catch (err) {
+      setError(err instanceof OfflineQueuedError ? "You're offline. This is saved on your phone and will be sent automatically when you're back online." : "That did not save. Please try again.");
       setBusy(false);
     }
   }

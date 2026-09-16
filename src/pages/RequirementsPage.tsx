@@ -1,5 +1,6 @@
 // BI_CLIENT_CONTRACT_UPLOAD_v1
 import { useCallback, useEffect, useState } from "react";
+import { OfflineQueuedError } from "@/offline/offlineStore"; // BI_CLIENT_OFFLINE_v302
 import { useNavigate, useParams } from "react-router-dom";
 import {
   confirmRequirement,
@@ -75,7 +76,13 @@ export default function RequirementsPage() {
       setItems((prev) =>
         prev.map((x) => (x.id === req.id ? { ...x, confirmedByClient: confirmed } : x)),
       );
-    } catch {
+    } catch (err) {
+      // BI_CLIENT_OFFLINE_v302 - an offline answer is kept and shown as answered.
+      if (err instanceof OfflineQueuedError) {
+        setItems((prev) => prev.map((x) => (x.id === req.id ? { ...x, confirmedByClient: confirmed } : x)));
+        setError("You're offline. Your answer is saved on this phone and will be sent when you're back online.");
+        return;
+      }
       setError("That did not save. Please try again.");
     } finally {
       setSaving(null);
