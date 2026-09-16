@@ -9,6 +9,7 @@ const MAX_ATTEMPTS = 5;
 export type QueuedUpload = {
   id: string; documentType: string; filename: string; mimeType: string;
   dataUrl: string; attempts: number; queuedAt: number;
+  handedAt?: number; // BI_CLIENT_BACKGROUND_SYNC_v308 - the phone is sending it
 };
 
 export async function readQueue(): Promise<QueuedUpload[]> {
@@ -51,8 +52,15 @@ export async function recordFailure(id: string): Promise<"retry" | "abandoned"> 
 export async function drain(send: (item: QueuedUpload) => Promise<void>): Promise<{ sent: number; failed: number }> {
   let sent = 0, failed = 0;
   for (const item of await readQueue()) {
+    if (item.handedAt) continue; // BI_CLIENT_BACKGROUND_SYNC_v308
     try { await send(item); await dequeue(item.id); sent += 1; }
     catch { await recordFailure(item.id); failed += 1; }
   }
   return { sent, failed };
+}
+
+// BI_CLIENT_BACKGROUND_SYNC_v308
+export async function setUploadHanded(id: string, handedAt: number | undefined): Promise<void> {
+  const queue = await readQueue();
+  await writeQueue(queue.map((q) => (q.id === id ? { ...q, handedAt } : q)));
 }

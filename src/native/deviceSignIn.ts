@@ -85,3 +85,29 @@ export async function disableFaceIdSignIn(): Promise<void> {
   }
   await forget();
 }
+
+// BI_CLIENT_BACKGROUND_SYNC_v308
+// Just before background sending, swap the device credential for a fresh
+// one-hour session so the phone's sends are not refused with an expired one.
+// No Face ID prompt: the applicant was using the app a moment ago. Uses fetch
+// directly so a refused credential never signs the applicant out.
+export async function refreshSessionForBackground(apiBase: string): Promise<string | null> {
+  const stored = await read();
+  if (!stored) return getCachedToken();
+  try {
+    const res = await fetch(`${apiBase}/applicants/device-sign-in`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(stored),
+    });
+    if (res.status === 401) { await forget(); return getCachedToken(); }
+    if (!res.ok) return getCachedToken();
+    const r = (await res.json()) as { token?: string; phone?: string; secret?: string };
+    if (!r.token || !r.secret) return getCachedToken();
+    await write({ credentialId: stored.credentialId, secret: r.secret });
+    await setToken(r.token);
+    return r.token;
+  } catch {
+    return getCachedToken();
+  }
+}

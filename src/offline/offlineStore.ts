@@ -20,7 +20,7 @@ export class OfflineQueuedError extends Error {
   constructor() { super("saved_offline"); this.name = "OfflineQueuedError"; }
 }
 
-export type OutboxItem = { id: string; path: string; body: string; queuedAt: number; attempts: number };
+export type OutboxItem = { id: string; path: string; body: string; queuedAt: number; attempts: number; handedAt?: number };
 
 const QUEUEABLE = [
   /^\/applicants\/applications\/[^/]+\/answers$/,
@@ -99,17 +99,20 @@ export async function enqueueSave(path: string, body: string): Promise<void> {
 export async function drainOutbox(send: (item: OutboxItem) => Promise<void>): Promise<{ sent: number; left: number }> {
   let items = await readOutbox();
   let sent = 0;
-  while (items.length) {
-    const item = items[0];
+  let index = 0;
+  while (index < items.length) {
+    const item = items[index];
+    // BI_CLIENT_BACKGROUND_SYNC_v308 - the phone is already sending this save.
+    if (item.handedAt) { index += 1; continue; }
     try {
       await send(item);
       sent += 1;
-      items = items.slice(1);
+      items = items.filter((i) => i.id !== item.id);
       await writeOutbox(items);
     } catch (err) {
       const status = (err as { status?: number })?.status ?? 0;
       if (status >= 400 && status < 500) {
-        items = items.slice(1);
+        items = items.filter((i) => i.id !== item.id);
         await writeOutbox(items);
         continue;
       }
@@ -117,6 +120,15 @@ export async function drainOutbox(send: (item: OutboxItem) => Promise<void>): Pr
     }
   }
   return { sent, left: items.length };
+}
+
+// BI_CLIENT_BACKGROUND_SYNC_v308
+export async function setOutboxHanded(id: string, handedAt: number | undefined): Promise<void> {
+  await writeOutbox((await readOutbox()).map((i) => (i.id === id ? { ...i, handedAt } : i)));
+}
+
+export async function removeOutboxItem(id: string): Promise<void> {
+  await writeOutbox((await readOutbox()).filter((i) => i.id !== id));
 }
 
 /** Sign-out: nothing from this applicant stays on the phone. */

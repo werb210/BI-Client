@@ -17,3 +17,5 @@ export enum CameraSource { Photos = "PHOTOS", Camera = "CAMERA" }
 export const Camera = { getPhoto: async () => ({ format: "jpeg" }) };
 export const FilePicker = { pickFiles: async () => ({ files: [] }) };
 export const PushNotifications = { addListener: async () => ({ remove: async () => undefined }), checkPermissions: async () => ({ receive: "denied" }), register: async () => undefined };
+// BI_CLIENT_BACKGROUND_SYNC_v308 - web builds have no native plugins.
+export const registerPlugin = (_name: string): any => ({});
