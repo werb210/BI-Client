@@ -7,6 +7,7 @@ import { clearToken } from "@/auth/token";
 import { apiRequest } from "@/api/client";
 import ActionCenter from "@/components/ActionCenter"; // BI_CLIENT_NATIVE_WIRING_v237
 import ApplicationProgress from "@/components/ApplicationProgress"; // BI_CLIENT_APPLICATION_PROGRESS_v280
+import FaceIdSignInToggle from "@/components/FaceIdSignInToggle"; // BI_CLIENT_FACE_ID_SETTING_v330
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -54,6 +55,8 @@ export default function HomePage() {
         Upload my subcontract
       </button>
       <div />
+      {/* BI_CLIENT_FACE_ID_SETTING_v330 - visible Face ID enrollment controls. */}
+      <FaceIdSignInToggle />
       <button type="button" onClick={() => { /* BI_CLIENT_FACE_ID_SIGN_IN_v301 */ void import("@/native/deviceSignIn").then((m) => m.disableFaceIdSignIn()).catch((): void => undefined).finally(() => clearToken().finally(() => navigate("/"))); }}
         style={{ background: "none", border: "none", color: "#0B1F3A", cursor: "pointer", padding: 0, fontSize: 14 }}>
         Sign out

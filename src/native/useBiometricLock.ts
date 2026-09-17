@@ -35,7 +35,8 @@ export function tokenExpiresWithin(token: string | null, ms: number, now = Date.
 
 export function shouldLock(p: { session: boolean; sessionUsable: boolean; enrolled: boolean; biometry: boolean; coldStart: boolean; backgroundedAt: number | null; now: number }): boolean {
   if (!p.session || !p.biometry) return false;
-  if (!p.sessionUsable && !p.enrolled) return false;
+  // BI_CLIENT_LOCK_ONLY_ENROLLED_v330 - never prompt applicants who did not enroll.
+  if (!p.enrolled) return false;
   if (p.coldStart) return true;
   return p.backgroundedAt !== null && p.now - p.backgroundedAt >= LOCK_AFTER_MS;
 }

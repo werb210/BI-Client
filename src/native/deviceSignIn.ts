@@ -45,14 +45,45 @@ export async function isEnrolled(): Promise<boolean> {
   return !!(await read());
 }
 
-export async function offerFaceIdOnce(): Promise<void> {
+// BI_CLIENT_FACE_ID_SETTING_v330
+// biometryAvailable() collapses every reason to false, so a settings row gated
+// on it can only disappear, never explain itself. Keep the reason.
+export type BiometryStatus = { native: boolean; available: boolean; reason: string };
+
+export async function biometryStatus(): Promise<BiometryStatus> {
+  if (!Capacitor.isNativePlatform()) {
+    return { native: false, available: false, reason: "Face ID needs the Boreal app on your phone or tablet." };
+  }
   try {
-    if (localStorage.getItem(OFFERED_KEY) || !(await biometryAvailable()) || (await isEnrolled()) || !getCachedToken()) return;
-    localStorage.setItem(OFFERED_KEY, "1");
-    if (!window.confirm("Use Face ID to sign in next time? You won't need a text code.")) return;
+    const info: any = await BiometricAuth.checkBiometry();
+    if (info?.isAvailable) return { native: true, available: true, reason: "" };
+    return { native: true, available: false, reason: String(info?.reason || "Face ID is not set up on this device. Turn it on in Settings, then come back.") };
+  } catch (error: any) {
+    return { native: true, available: false, reason: String(error?.message || "Face ID is not available on this device.") };
+  }
+}
+
+export async function enrollThisDevice(): Promise<boolean> {
+  if (!(await biometryAvailable()) || !getCachedToken()) return false;
+  try {
     await BiometricAuth.authenticate({ reason: "Turn on Face ID sign-in", cancelTitle: "Not now", allowDeviceCredential: false });
     const r = await api.post<Stored>("/applicants/device-sign-in/enroll", { deviceLabel: Capacitor.getPlatform() });
-    if (r?.credentialId && r?.secret) await write({ credentialId: r.credentialId, secret: r.secret });
+    if (!r?.credentialId || !r?.secret) return false;
+    await write({ credentialId: r.credentialId, secret: r.secret });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export const HINT_KEY = "boreal_bi_face_id_hint";
+
+// BI_CLIENT_FACE_ID_SETTING_v330 - enrollment now lives on the home screen.
+export async function offerFaceIdOnce(): Promise<void> {
+  try {
+    localStorage.removeItem(OFFERED_KEY);
+    if (!(await biometryAvailable()) || (await isEnrolled()) || !getCachedToken()) return;
+    sessionStorage.setItem(HINT_KEY, "1");
   } catch {
     // Never block sign-in.
   }
