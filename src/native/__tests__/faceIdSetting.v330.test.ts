@@ -23,7 +23,9 @@ describe("there is a visible way to turn Face ID on", () => {
   it("the home screen renders the row", () => expect(home).toContain("<FaceIdSignInToggle />"));
   it("shows unavailable reasons", () => expect(toggle).toContain('data-testid="face-id-unavailable"'));
   it("offers both directions", () => {
-    expect(toggle).toContain("await enrollThisDevice()");
+    // BI_CLIENT_ENROLL_REASON_v336 - the row now calls the reporting form, so it
+    // can show WHY an enrollment failed instead of one generic sentence.
+    expect(toggle).toContain("await enrollDeviceWithReason()");
     expect(toggle).toContain("await disableFaceIdSignIn()");
   });
 });
