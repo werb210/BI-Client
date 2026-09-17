@@ -8,7 +8,7 @@ const src = join(__dirname, "..", "..");
 const read = (path: string) => readFileSync(join(src, path), "utf8");
 const toggle = read("components/FaceIdSignInToggle.tsx");
 const device = read("native/deviceSignIn.ts");
-const home = read("pages/HomePage.tsx");
+const accountBar = read("components/AccountBar.tsx");
 const base = { session: true, sessionUsable: true, enrolled: true, biometry: true, coldStart: true, backgroundedAt: null, now: 0 };
 
 describe("no Face ID prompt for an applicant who never turned it on", () => {
@@ -20,7 +20,7 @@ describe("no Face ID prompt for an applicant who never turned it on", () => {
 });
 
 describe("there is a visible way to turn Face ID on", () => {
-  it("the home screen renders the row", () => expect(home).toContain("<FaceIdSignInToggle />"));
+  it("the signed-in account bar renders the row", () => expect(accountBar).toContain("<FaceIdSignInToggle />"));
   it("shows unavailable reasons", () => expect(toggle).toContain('data-testid="face-id-unavailable"'));
   it("offers both directions", () => {
     // BI_CLIENT_ENROLL_REASON_v336 - the row now calls the reporting form, so it

@@ -14,9 +14,20 @@ import ReviewPage from "@/pages/ReviewPage";
 import UploadContractPage from "@/pages/UploadContractPage";
 import RequirementsPage from "@/pages/RequirementsPage";
 import { getCachedToken } from "@/auth/token";
+import AccountBar from "@/components/AccountBar"; // BI_CLIENT_ACCOUNT_BAR_v337
 
+// BI_CLIENT_ACCOUNT_BAR_v337 - this guard already wraps every signed-in route,
+// which makes it the one place that can put the account controls in front of an
+// applicant no matter which screen they are on. Before this they sat on "/home",
+// a route nothing navigates to.
 function RequireApplicant({ children }: { children: React.ReactNode }) {
-  return getCachedToken() ? <>{children}</> : <Navigate to="/" replace />;
+  if (!getCachedToken()) return <Navigate to="/" replace />;
+  return (
+    <>
+      <AccountBar />
+      {children}
+    </>
+  );
 }
 
 export default function AppRouter() {
