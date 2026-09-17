@@ -7,7 +7,8 @@ vi.mock("@/native/deviceSignIn", () => ({ isEnrolled: async () => true, refreshS
 import { LOCK_AFTER_MS, shouldLock, tokenExpiresWithin } from "../useBiometricLock";
 
 const jwt = (exp: number) => `x.${btoa(JSON.stringify({ exp }))}.y`;
-const base = { session: true, sessionUsable: true, enrolled: false, biometry: true, coldStart: false, backgroundedAt: null as number | null, now: 1_700_000_000_000 };
+// BI_CLIENT_LOCK_ONLY_ENROLLED_v330
+const base = { session: true, sessionUsable: true, enrolled: true, biometry: true, coldStart: false, backgroundedAt: null as number | null, now: 1_700_000_000_000 };
 
 describe("BI Face ID lock", () => {
   it("reads when the one-hour session runs out", () => {
@@ -23,6 +24,8 @@ describe("BI Face ID lock", () => {
   });
   it("locks on cold start or after a minute away, not after a brief switch", () => {
     expect(shouldLock({ ...base, coldStart: true })).toBe(true);
+    expect(shouldLock({ ...base, coldStart: true, enrolled: false })).toBe(false);
+    expect(shouldLock({ ...base, enrolled: false, backgroundedAt: base.now - LOCK_AFTER_MS })).toBe(false);
     expect(shouldLock({ ...base, backgroundedAt: base.now - 5_000 })).toBe(false);
     expect(shouldLock({ ...base, backgroundedAt: base.now - LOCK_AFTER_MS })).toBe(true);
   });
