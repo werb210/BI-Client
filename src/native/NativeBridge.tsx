@@ -36,6 +36,7 @@ export default function NativeBridge() {
         // BI_CLIENT_BACKGROUND_SYNC_v308 - leaving the app hands pending sends to the phone.
         if (!isActive) void import("@/native/backgroundSync").then((m) => m.handOffToBackground()).catch((): void => undefined);
       }));
+      handles.push(await NativeApp.addListener("pause", () => { window.dispatchEvent(new Event("boreal:native-pause")); })); // BI_CLIENT_LOCK_SESSION_v313
       handles.push(await NativeApp.addListener("resume", () => {
         window.dispatchEvent(new Event("boreal:native-resume"));
         void import("@/native/backgroundSync").then((m) => m.reconcileBackground()).catch((): void => undefined); // v308
