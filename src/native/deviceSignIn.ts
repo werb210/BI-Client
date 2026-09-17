@@ -63,17 +63,58 @@ export async function biometryStatus(): Promise<BiometryStatus> {
   }
 }
 
-export async function enrollThisDevice(): Promise<boolean> {
-  if (!(await biometryAvailable()) || !getCachedToken()) return false;
+// BI_CLIENT_ENROLL_REASON_v336
+// Parity with BF-client v335, which was written after a failed enrollment cost
+// an afternoon: a bare false collapsed four unrelated causes into one useless
+// sentence and wrote nothing to the console.
+//
+// The cause that matters most here is particular to BI. The applicant token
+// lasts ONE HOUR (bi-server signs it with expiresIn "1h"). Sign in, leave the
+// app open past the hour, then tap this, and the enroll POST answers 401 - not
+// because Face ID failed but because the session quietly aged out. Told plainly,
+// that is a ten-second fix by the applicant; told as "could not be turned on",
+// it looks like the feature is broken.
+export type EnrollResult =
+  | { ok: true }
+  | { ok: false; stage: "biometry" | "session" | "cancelled" | "server"; message: string };
+
+export async function enrollDeviceWithReason(): Promise<EnrollResult> {
+  const status = await biometryStatus();
+  if (!status.available) return { ok: false, stage: "biometry", message: status.reason };
+  if (!getCachedToken()) {
+    return { ok: false, stage: "session", message: "Sign in with a text code first, then turn Face ID on." };
+  }
   try {
     await BiometricAuth.authenticate({ reason: "Turn on Face ID sign-in", cancelTitle: "Not now", allowDeviceCredential: false });
-    const r = await api.post<Stored>("/applicants/device-sign-in/enroll", { deviceLabel: Capacitor.getPlatform() });
-    if (!r?.credentialId || !r?.secret) return false;
-    await write({ credentialId: r.credentialId, secret: r.secret });
-    return true;
-  } catch {
-    return false;
+  } catch (error: any) {
+    // "Not now" is a choice, not a failure - nothing belongs on screen.
+    console.warn("face_id_enroll_prompt_dismissed", { message: String(error?.message ?? error) });
+    return { ok: false, stage: "cancelled", message: "" };
   }
+  try {
+    const r = await api.post<Stored>("/applicants/device-sign-in/enroll", { deviceLabel: Capacitor.getPlatform() });
+    if (!r?.credentialId || !r?.secret) {
+      console.error("face_id_enroll_bad_response", { got: r ? Object.keys(r) : null });
+      return { ok: false, stage: "server", message: "Boreal did not return a Face ID credential. Try again." };
+    }
+    await write({ credentialId: r.credentialId, secret: r.secret });
+    return { ok: true };
+  } catch (error: any) {
+    const status401 = error instanceof ApiError && error.status === 401;
+    console.error("face_id_enroll_failed", {
+      status: error instanceof ApiError ? error.status : null,
+      code: error instanceof ApiError ? error.code : null,
+      message: String(error?.message ?? error),
+    });
+    if (status401) {
+      return { ok: false, stage: "session", message: "Your sign-in expired. Sign in with a text code again, then turn Face ID on." };
+    }
+    return { ok: false, stage: "server", message: `Boreal could not turn Face ID on: ${String(error?.message ?? error)}` };
+  }
+}
+
+export async function enrollThisDevice(): Promise<boolean> {
+  return (await enrollDeviceWithReason()).ok;
 }
 
 export const HINT_KEY = "boreal_bi_face_id_hint";
