@@ -2,12 +2,14 @@ import { useEffect, type ReactNode } from "react";
 import { useBiometricLock } from "./useBiometricLock";
 
 export function BiometricGate({ children }: { children: ReactNode }) {
-  const { locked, unlock } = useBiometricLock();
+  const { locked, ready, unlock } = useBiometricLock();
 
   useEffect(() => {
     if (locked) void unlock();
   }, [locked, unlock]);
 
+  // BI_CLIENT_LOCK_ORDER_v363 - hold the app back until the lock has decided.
+  if (!ready) return <div role="status" aria-label="Loading" style={{ position: "fixed", inset: 0, background: "#0b1f3a" }} />;
   if (!locked) return <>{children}</>;
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#0b1f3a", color: "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, padding: 24, textAlign: "center" }}>

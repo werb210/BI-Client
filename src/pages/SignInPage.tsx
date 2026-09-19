@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { startOtp, verifyOtp } from "@/api/otp";
 import { ApiError } from "@/api/client";
 import { consumeNativeDestination } from "@/native/deepLinks";
+import { getCachedToken } from "@/auth/token";
+import { tokenExpiresWithin } from "@/native/useBiometricLock";
 import { biometryAvailable, isEnrolled, offerFaceIdOnce, signInWithFaceId } from "@/native/deviceSignIn"; // BI_CLIENT_FACE_ID_SIGN_IN_v301
 
 function message(err: unknown): string {
@@ -43,6 +45,17 @@ export default function SignInPage() {
     })();
     return () => { alive = false; };
   }, []);
+
+  // BI_CLIENT_LOCK_ORDER_v363 - a valid session (for example one Face ID just
+  // renewed) never needs the sign-in page.
+  useEffect(() => {
+    const leaveIfSignedIn = () => {
+      if (!tokenExpiresWithin(getCachedToken(), 0)) navigate(consumeNativeDestination() ?? "/start", { replace: true });
+    };
+    leaveIfSignedIn();
+    window.addEventListener("boreal:session-renewed", leaveIfSignedIn);
+    return () => window.removeEventListener("boreal:session-renewed", leaveIfSignedIn);
+  }, [navigate]);
 
   async function faceIdSignIn() {
     setBusy(true);
