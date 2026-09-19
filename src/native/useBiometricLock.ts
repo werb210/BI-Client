@@ -43,6 +43,8 @@ export function shouldLock(p: { session: boolean; sessionUsable: boolean; enroll
 
 export function useBiometricLock() {
   const [locked, setLocked] = useState(false);
+  // BI_CLIENT_LOCK_ORDER_v363 - nothing renders until the first check has decided.
+  const [ready, setReady] = useState(!Capacitor.isNativePlatform());
   const coldStart = useRef(true);
   const backgroundedAt = useRef<number | null>(null);
 
@@ -51,7 +53,7 @@ export function useBiometricLock() {
     coldStart.current = false;
     const awayAt = backgroundedAt.current;
     backgroundedAt.current = null;
-    if (!Capacitor.isNativePlatform() || !hasSession()) { setLocked(false); return; }
+    if (!Capacitor.isNativePlatform() || !hasSession()) { setLocked(false); setReady(true); return; }
     let biometry = false;
     try { biometry = Boolean((await BiometricAuth.checkBiometry()).isAvailable); } catch { biometry = false; }
     const enrolled = await isEnrolled().catch(() => false);
@@ -65,6 +67,7 @@ export function useBiometricLock() {
       now: Date.now(),
     });
     if (lock) setLocked(true);
+    setReady(true);
   }, []);
 
   const unlock = useCallback(async () => {
@@ -78,6 +81,7 @@ export function useBiometricLock() {
       // The applicant just passed Face ID: renew a session that has run out.
       if (tokenExpiresWithin(getCachedToken(), RENEW_WITHIN_MS) && (await isEnrolled().catch(() => false))) {
         await refreshSessionForBackground(`${ENV.API_BASE}${ENV.API_PREFIX}`);
+        window.dispatchEvent(new Event("boreal:session-renewed")); // BI_CLIENT_LOCK_ORDER_v363
       }
       setLocked(false);
       return true;
@@ -98,5 +102,5 @@ export function useBiometricLock() {
     };
   }, [evaluate]);
 
-  return { locked, unlock };
+  return { locked, ready, unlock };
 }
