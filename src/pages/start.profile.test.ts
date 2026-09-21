@@ -35,11 +35,11 @@ describe("the phone survives the sign-in", () => {
 
 describe("sign-in leads into step 1", () => {
   it("uses /start as the normal post-OTP fallback", () => {
+    // BI_CLIENT_SIGNED_IN_DESTINATION_v368 - /start stays the fallback; a
+    // submitted applicant goes to /home instead.
+    expect(signIn).toContain("navigate(await signedInDestination())");
     expect(signIn).toContain(
-      'navigate(consumeNativeDestination() ?? "/start")'
-    );
-    expect(signIn).toContain(
-      'import { consumeNativeDestination } from "@/native/deepLinks"'
+      'import { signedInDestination } from "@/auth/signedInDestination"'
     );
     expect(router).toContain('path="/start"');
     expect(router).toContain("<StartPage />");
