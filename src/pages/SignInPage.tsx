@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { startOtp, verifyOtp } from "@/api/otp";
 import { ApiError } from "@/api/client";
-import { consumeNativeDestination } from "@/native/deepLinks";
+import { signedInDestination } from "@/auth/signedInDestination"; // BI_CLIENT_SIGNED_IN_DESTINATION_v368
 import { getCachedToken } from "@/auth/token";
 import { tokenExpiresWithin } from "@/native/useBiometricLock";
 import { biometryAvailable, isEnrolled, offerFaceIdOnce, signInWithFaceId } from "@/native/deviceSignIn"; // BI_CLIENT_FACE_ID_SIGN_IN_v301
@@ -50,7 +50,7 @@ export default function SignInPage() {
   // renewed) never needs the sign-in page.
   useEffect(() => {
     const leaveIfSignedIn = () => {
-      if (!tokenExpiresWithin(getCachedToken(), 0)) navigate(consumeNativeDestination() ?? "/start", { replace: true });
+      if (!tokenExpiresWithin(getCachedToken(), 0)) void signedInDestination().then((to) => navigate(to, { replace: true }));
     };
     leaveIfSignedIn();
     window.addEventListener("boreal:session-renewed", leaveIfSignedIn);
@@ -62,7 +62,7 @@ export default function SignInPage() {
     setError(null);
     try {
       await signInWithFaceId();
-      navigate(consumeNativeDestination() ?? "/start");
+      navigate(await signedInDestination());
     } catch (err: any) {
       if (err?.code === "expired" || err?.code === "not_enrolled") {
         setFaceIdReady(false);
@@ -114,7 +114,7 @@ export default function SignInPage() {
       await verifyOtp(phone, code);
       await offerFaceIdOnce(); // BI_CLIENT_FACE_ID_SIGN_IN_v301
       // BI_CLIENT_STEP1_PROFILE_v3 - sign-in lands on step 1, not the stub home.
-      navigate(consumeNativeDestination() ?? "/start");
+      navigate(await signedInDestination());
     } catch (err) {
       checkedFor.current = ""; // a mistyped code must be retryable
       setError(message(err));

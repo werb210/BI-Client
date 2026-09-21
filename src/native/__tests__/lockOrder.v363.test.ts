@@ -24,6 +24,6 @@ describe("Face ID lock decides before the app renders", () => {
   it("a renewed session is announced and the sign-in page leaves", () => {
     expect(hook).toContain('window.dispatchEvent(new Event("boreal:session-renewed"))');
     expect(signIn).toContain('window.addEventListener("boreal:session-renewed", leaveIfSignedIn);');
-    expect(signIn).toContain("if (!tokenExpiresWithin(getCachedToken(), 0)) navigate(");
+    expect(signIn).toContain("if (!tokenExpiresWithin(getCachedToken(), 0)) void signedInDestination()");
   });
 });
