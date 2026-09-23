@@ -5,7 +5,7 @@ declare module "@capacitor/core" { /* BI_CLIENT_SCANNER_AVAILABILITY_v165 — is
 declare module "@capacitor/preferences" { export const Preferences: { get(o:{key:string}):Promise<{value:string|null}>; set(o:{key:string,value:string}):Promise<void>; remove(o:{key:string}):Promise<void> }; }
 declare module "@aparajita/capacitor-secure-storage" { export const SecureStorage: { get(key:string):Promise<unknown>; set(key:string,value:string):Promise<void>; remove(key:string):Promise<void> }; }
 type CapHandle = { remove(): Promise<void> };
-declare module "@capacitor/app" { export const App: { addListener(name:string, cb:(event:any)=>void):Promise<CapHandle>; exitApp():Promise<void> }; }
+declare module "@capacitor/app" { export const App: { addListener(name:string, cb:(event:any)=>void):Promise<CapHandle>; getLaunchUrl():Promise<{ url: string } | undefined>; exitApp():Promise<void> }; }
 declare module "@capacitor/keyboard" {
   export enum KeyboardResize { Body="body", Ionic="ionic", Native="native", None="none" }
   export const Keyboard: { setAccessoryBarVisible(o:{isVisible:boolean}):Promise<void> };

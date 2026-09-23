@@ -23,6 +23,16 @@ export default function NativeBridge() {
         if (!authenticated && destination !== "/") retainNativeDestination(destination);
         navigate(authenticated ? destination : "/");
       };
+      // BI_CLIENT_COLD_LAUNCH_DEEPLINK_v427 - iOS hands the launching URL to a
+      // terminated app through launch options, never through appUrlOpen. Read it
+      // BEFORE attaching the listener, so a real appUrlOpen arriving during
+      // startup wins over the stale launch URL rather than being overwritten by it.
+      try {
+        const launch = await NativeApp.getLaunchUrl();
+        if (launch?.url) openUrl(launch.url);
+      } catch {
+        /* ordinary start - no launch URL */
+      }
       handles.push(await NativeApp.addListener("appUrlOpen", ({ url }) => openUrl(url)));
       handles.push(await NativeApp.addListener("backButton", ({ canGoBack }) => {
         const openDialog = document.querySelector<HTMLDialogElement>("dialog[open]");
