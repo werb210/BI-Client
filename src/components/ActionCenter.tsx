@@ -32,7 +32,9 @@ export default function ActionCenter({ applicationId, onAction }: { applicationI
   const load = useCallback(async () => {
     if (!applicationId) return;
     try {
-      setData(await api.get<BiActionCenter>(`/applicants/action-center/${encodeURIComponent(applicationId)}`));
+      const d = await api.get<BiActionCenter>(`/applicants/action-center/${encodeURIComponent(applicationId)}`);
+      setData(d);
+      void import("@/native/appBadge").then((m) => m.setAppBadge(d?.outstandingCount)); // BI_CLIENT_BLOCK_v551_APP_BADGE
       setFailed(false);
     } catch {
       // Never blank the page the applicant is working on.
