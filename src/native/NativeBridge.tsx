@@ -7,6 +7,7 @@ import { StatusBar, Style } from "@capacitor/status-bar";
 import { getCachedToken } from "@/auth/token";
 import { parseNativeUrl, retainNativeDestination } from "@/native/deepLinks";
 import { initializePushNotifications } from "@/native/pushNotifications";
+import { collectAndroidShares, holdSharedUrl, isSharedFileUrl } from "@/native/sharedFiles"; // BI_CLIENT_BLOCK_v554_SHARE_TO_BOREAL
 
 export default function NativeBridge() {
   const navigate = useNavigate();
@@ -17,7 +18,16 @@ export default function NativeBridge() {
     if (!Capacitor.isNativePlatform()) return;
     const handles: Array<{ remove: () => Promise<void> }> = [];
     const add = async () => {
+      // BI_CLIENT_BLOCK_v554_SHARE_TO_BOREAL - a shared file goes to the upload page
+      // (after sign-in if needed), never to the router as a link.
+      const openUpload = () => {
+        const authed = Boolean(getCachedToken());
+        if (!authed) retainNativeDestination("/upload");
+        navigate(authed ? "/upload" : "/");
+      };
+      const collectShares = () => void collectAndroidShares().then((n) => { if (n > 0) openUpload(); });
       const openUrl = (url: string) => {
+        if (isSharedFileUrl(url)) { holdSharedUrl(url); openUpload(); return; }
         const authenticated = Boolean(getCachedToken());
         const destination = parseNativeUrl(url, authenticated);
         if (!authenticated && destination !== "/") retainNativeDestination(destination);
@@ -34,6 +44,7 @@ export default function NativeBridge() {
         /* ordinary start - no launch URL */
       }
       handles.push(await NativeApp.addListener("appUrlOpen", ({ url }) => openUrl(url)));
+      collectShares();
       handles.push(await NativeApp.addListener("backButton", ({ canGoBack }) => {
         const openDialog = document.querySelector<HTMLDialogElement>("dialog[open]");
         if (openDialog) return openDialog.close();
@@ -49,6 +60,7 @@ export default function NativeBridge() {
       handles.push(await NativeApp.addListener("pause", () => { window.dispatchEvent(new Event("boreal:native-pause")); })); // BI_CLIENT_LOCK_SESSION_v313
       handles.push(await NativeApp.addListener("resume", () => {
         window.dispatchEvent(new Event("boreal:native-resume"));
+        collectShares(); // BI_CLIENT_BLOCK_v554_SHARE_TO_BOREAL
         void import("@/native/backgroundSync").then((m) => m.reconcileBackground()).catch((): void => undefined); // v308
       }));
       await Keyboard.setAccessoryBarVisible({ isVisible: true }).catch(() => undefined);
