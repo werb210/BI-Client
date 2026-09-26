@@ -1,5 +1,6 @@
 // BI_CLIENT_CONTRACT_UPLOAD_v1
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { SHARED_EVENT, takeShared } from "@/native/sharedFiles"; // BI_CLIENT_BLOCK_v554_SHARE_TO_BOREAL
 import { useNavigate } from "react-router-dom";
 import { uploadContract } from "@/api/contract";
 import { ApiError } from "@/api/client";
@@ -102,6 +103,22 @@ export default function UploadContractPage() {
       setBusy(false);
     }
   }
+
+  // BI_CLIENT_BLOCK_v554_SHARE_TO_BOREAL - a contract shared to the app is sent
+  // exactly as if it had been picked here.
+  useEffect(() => {
+    const pick = () => {
+      const shared = takeShared();
+      if (!shared) return;
+      void normalizeNativeSource({ name: shared.name, mimeType: shared.mimeType, path: shared.path })
+        .then((file) => send(file))
+        .catch((err) => setError(message(err)));
+    };
+    pick();
+    window.addEventListener(SHARED_EVENT, pick);
+    return () => window.removeEventListener(SHARED_EVENT, pick);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function chooseNativeFile() {
     try {

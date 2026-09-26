@@ -39,6 +39,27 @@
 	<string>Take a photograph of a subcontract or contract document for insurance requirement review.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Select a subcontract or contract document image for insurance requirement review.</string>
+	<!-- BI_CLIENT_BLOCK_v554_SHARE_TO_BOREAL -->
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Subcontract</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.adobe.pdf</string>
+				<string>public.image</string>
+				<string>org.openxmlformats.wordprocessingml.document</string>
+				<string>com.microsoft.word.doc</string>
+			</array>
+		</dict>
+	</array>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
