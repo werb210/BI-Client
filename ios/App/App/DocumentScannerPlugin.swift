@@ -78,5 +78,6 @@ final class BorealBridgeViewController: CAPBridgeViewController {
         super.capacitorDidLoad()
         bridge?.registerPluginInstance(DocumentScannerPlugin())
         bridge?.registerPluginInstance(BackgroundSyncPlugin()) // BI_CLIENT_BACKGROUND_SYNC_v308
+        bridge?.registerPluginInstance(AppBadgePlugin()) // BI_CLIENT_BLOCK_v551_APP_BADGE
     }
 }
