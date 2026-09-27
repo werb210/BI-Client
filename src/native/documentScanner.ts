@@ -122,3 +122,39 @@ export async function scanContractAsPdf(): Promise<File | null> {
   const pdf = await imagesToPdf(result.scannedImages ?? []);
   return new File([pdf], "contract-scan.pdf", { type: "application/pdf" });
 }
+
+// BI_CLIENT_BLOCK_v604_SCAN_QUALITY
+// Photos were already checked for blur and resolution (v092/v094), but a scanned
+// contract arrives as a PDF, so a blurred or low-resolution scan went through
+// unchecked. Each scanned page is now measured before it becomes a PDF and the
+// worst page is reported. Advisory only: the scan is always uploaded.
+import type { QualityReport } from "@/upload/quality";
+
+export function worstPage(reports: Array<QualityReport | null>): QualityReport | null {
+  let worst: QualityReport | null = null;
+  for (const r of reports) {
+    if (!r || r.ok) continue;
+    if (!worst || r.issues.length > worst.issues.length || (r.issues.length === worst.issues.length && r.sharpness < worst.sharpness)) worst = r;
+  }
+  return worst;
+}
+
+export async function scanContractAsPdfWithQuality(): Promise<{ file: File | null; quality: QualityReport | null }> {
+  if (!Capacitor.isNativePlatform()) return { file: null, quality: null };
+  if (!isScannerAvailable()) throw new ScannerUnavailableError();
+  const result = await DocumentScanner.scanDocument({ pageLimit: 10 });
+  const images = result.scannedImages ?? [];
+  let quality: QualityReport | null = null;
+  try {
+    const { assessImage } = await import("@/upload/quality");
+    const reports = await Promise.all(images.map(async (image, i) => {
+      const blob = await readNativeAsset(image);
+      return assessImage(new File([blob], `page-${i + 1}.jpg`, { type: blob.type || "image/jpeg" }));
+    }));
+    quality = worstPage(reports);
+  } catch {
+    quality = null; // Never let the check itself stop an upload.
+  }
+  const pdf = await imagesToPdf(images);
+  return { file: new File([pdf], "contract-scan.pdf", { type: "application/pdf" }), quality };
+}
