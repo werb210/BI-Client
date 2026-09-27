@@ -59,6 +59,7 @@ export function clearToken(): Promise<void> {
 async function clearApplicantSession(): Promise<void> {
   cachedToken = null;
   void import("@/native/appBadge").then((m) => m.clearAppBadge()).catch((): void => undefined); // BI_CLIENT_BLOCK_v551_APP_BADGE
+  void import("@/native/clientWidget").then((m) => m.clearClientWidget()).catch((): void => undefined); // BI_CLIENT_BLOCK_v603_HOME_WIDGET
   // BI_CLIENT_BACKGROUND_SYNC_v308 - stop anything the phone was still sending.
   void import("@/native/backgroundSync").then((m) => m.cancelBackgroundSync()).catch((): void => undefined);
   // BI_CLIENT_OFFLINE_v302 - cached screens and unsent saves belong to this applicant only.

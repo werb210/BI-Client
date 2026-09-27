@@ -23,6 +23,8 @@
         <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
       </intent-filter>
     </activity>
+    <!-- BI_CLIENT_BLOCK_v603_HOME_WIDGET -->
+    <receiver android:name=".ClientWidgetProvider" android:exported="true"><intent-filter><action android:name="android.appwidget.action.APPWIDGET_UPDATE" /></intent-filter><meta-data android:name="android.appwidget.provider" android:resource="@xml/client_widget_info" /></receiver>
     <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.fileprovider" android:exported="false" android:grantUriPermissions="true"><meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/></provider>
   </application>
 </manifest>

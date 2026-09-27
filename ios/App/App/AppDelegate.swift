@@ -202,3 +202,29 @@ public class AppBadgePlugin: CAPPlugin, CAPBridgedPlugin {
         }
     }
 }
+
+// BI_CLIENT_BLOCK_v603_HOME_WIDGET - shared snapshot and home-screen shortcuts.
+import WidgetKit
+@objc(ClientWidgetPlugin)
+public class ClientWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "ClientWidgetPlugin"
+    public let jsName = "ClientWidget"
+    public let pluginMethods = [CAPPluginMethod(name: "update", returnType: CAPPluginReturnPromise), CAPPluginMethod(name: "clear", returnType: CAPPluginReturnPromise)]
+    private let suite = "group.com.boreal.risk.client"
+    @objc func update(_ call: CAPPluginCall) {
+        let stage = call.getString("stage") ?? "Application in progress"
+        let count = max(0, min(99, call.getInt("toDoCount") ?? 0))
+        let defaults = UserDefaults(suiteName: suite); defaults?.set(stage, forKey: "stage"); defaults?.set(count, forKey: "todo_count")
+        publishShortcuts(stage: stage, count: count); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
+    }
+    @objc func clear(_ call: CAPPluginCall) {
+        let defaults = UserDefaults(suiteName: suite); defaults?.removeObject(forKey: "stage"); defaults?.removeObject(forKey: "todo_count")
+        publishShortcuts(stage: "Application in progress", count: 0); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
+    }
+    private func publishShortcuts(stage: String, count: Int) {
+        UIApplication.shared.shortcutItems = [
+            UIApplicationShortcutItem(type: "com.boreal.risk.client.status", localizedTitle: "Application status", localizedSubtitle: "\(stage) · \(count) to do", icon: UIApplicationShortcutIcon(systemImageName: "checklist"), userInfo: ["url": "borealrisk://home" as NSSecureCoding]),
+            UIApplicationShortcutItem(type: "com.boreal.risk.client.upload", localizedTitle: "Upload document", localizedSubtitle: "Upload a requested document", icon: UIApplicationShortcutIcon(type: .capturePhoto), userInfo: ["url": "borealrisk://upload" as NSSecureCoding])
+        ]
+    }
+}
