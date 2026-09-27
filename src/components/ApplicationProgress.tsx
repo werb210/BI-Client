@@ -28,6 +28,7 @@ export default function ApplicationProgress() {
     try {
       const r = await api.get<{ progress: ApplicantProgress | null }>("/applicants/me/progress");
       setProgress(r?.progress && Array.isArray(r.progress.steps) ? r.progress : null);
+      if (r?.progress?.headline) void import("@/native/clientWidget").then((m) => m.updateClientWidget(r.progress?.headline, undefined)); // BI_CLIENT_BLOCK_v605
     } catch {
       // Keep whatever was showing; never blank the home screen over this.
     }

@@ -17,7 +17,9 @@ const projectPath = "ios/App/App.xcodeproj/project.pbxproj";
 assert(statSync(new URL(projectPath, root)).isFile(), `${projectPath} is missing`);
 
 const project = read(projectPath);
-const appTarget = project.match(/PBXNativeTarget;[\s\S]*?buildConfigurationList = ([A-F0-9]+)(?: \/\*[^*]*\*\/)?;[\s\S]*?name = App;[\s\S]*?};/);
+// BI_CLIENT_BLOCK_v605 - scoped to one native-target object: with a second target (the v603 widget)
+// listed first, the old lazy match started there and read the widget's configuration list.
+const appTarget = project.match(/isa\s*=\s*PBXNativeTarget;(?:(?!isa\s*=\s*PBXNativeTarget;)[\s\S])*?buildConfigurationList\s*=\s*([A-F0-9]+)(?:\s*\/\*[^*]*\*\/)?;(?:(?!isa\s*=\s*PBXNativeTarget;)[\s\S])*?name\s*=\s*App;[\s\S]*?};/);
 assert(appTarget, "The App native target is missing");
 
 const configurationList = project.match(
