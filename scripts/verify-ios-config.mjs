@@ -45,6 +45,13 @@ for (const { name, settings: rawSettings } of configurations) {
   assert(settings.includes("SUPPORTS_MACCATALYST = NO;"), `${name} App must not enable Mac Catalyst`);
 }
 
+// BI_CLIENT_BLOCK_v609 - Capacitor sets the Swift package platform from the FIRST
+// IPHONEOS_DEPLOYMENT_TARGET in the project file. An extension listed first (the widget, iOS 17)
+// silently raises it, so the first one must be the App's own.
+const appDeploymentTarget = normalise(configurations[0].settings).match(/IPHONEOS_DEPLOYMENT_TARGET = ([0-9.]+);/)?.[1];
+const firstDeploymentTarget = project.match(/IPHONEOS_DEPLOYMENT_TARGET = ([0-9.]+);/)?.[1];
+assert(appDeploymentTarget && firstDeploymentTarget === appDeploymentTarget,
+  `The first IPHONEOS_DEPLOYMENT_TARGET (${firstDeploymentTarget}) must be the App target's (${appDeploymentTarget}) - move extension build configurations below the App's`);
 const projectObject = project.match(/PBXProject;[\s\S]*?buildConfigurationList = ([A-F0-9]+)(?: \/\*[^*]*\*\/)?;/);
 assert(projectObject, "The Xcode project configuration list is missing");
 const projectConfigurationList = project.match(
