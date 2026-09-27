@@ -7,6 +7,7 @@ import { signedInDestination } from "@/auth/signedInDestination"; // BI_CLIENT_S
 import { getCachedToken } from "@/auth/token";
 import { tokenExpiresWithin } from "@/native/useBiometricLock";
 import { biometryAvailable, isEnrolled, offerFaceIdOnce, signInWithFaceId } from "@/native/deviceSignIn"; // BI_CLIENT_FACE_ID_SIGN_IN_v301
+import { passkeysSupported, signInWithPasskey, PasskeyError } from "@/auth/passkeys"; // BI_CLIENT_BLOCK_v602
 
 function message(err: unknown): string {
   const code = err instanceof ApiError ? err.code : "";
@@ -56,6 +57,21 @@ export default function SignInPage() {
     window.addEventListener("boreal:session-renewed", leaveIfSignedIn);
     return () => window.removeEventListener("boreal:session-renewed", leaveIfSignedIn);
   }, [navigate]);
+
+  // BI_CLIENT_BLOCK_v602 - passkey sign-in (browser only; the app uses Face ID sign-in).
+  const [passkeyReady] = useState(passkeysSupported);
+  async function passkeySignIn() {
+    setBusy(true);
+    setError(null);
+    try {
+      await signInWithPasskey();
+      navigate(await signedInDestination());
+    } catch (err) {
+      setError(err instanceof PasskeyError ? err.message : "Passkey sign-in didn't work. Sign in with a text code instead.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   async function faceIdSignIn() {
     setBusy(true);
@@ -136,6 +152,15 @@ export default function SignInPage() {
         <>
           <button type="button" data-testid="face-id-sign-in" style={{ ...button, marginTop: 8 }} disabled={busy} onClick={() => void faceIdSignIn()}>
             {busy ? "Signing in\u2026" : "Sign in with Face ID"}
+          </button>
+          <p style={{ textAlign: "center", color: "#51617D", fontSize: 13, margin: "10px 0 0" }}>or get a text code</p>
+        </>
+      )}
+
+      {phase === "phone" && passkeyReady && !faceIdReady && (
+        <>
+          <button type="button" data-testid="passkey-sign-in" style={{ ...button, marginTop: 8 }} disabled={busy} onClick={() => void passkeySignIn()}>
+            {busy ? "Signing in\u2026" : "Sign in with a passkey"}
           </button>
           <p style={{ textAlign: "center", color: "#51617D", fontSize: 13, margin: "10px 0 0" }}>or get a text code</p>
         </>

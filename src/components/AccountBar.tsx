@@ -11,6 +11,7 @@
 // So the controls move to where the applicant already is: this bar renders
 // inside the signed-in guard, which wraps every authenticated route.
 import FaceIdSignInToggle from "@/components/FaceIdSignInToggle";
+import PasskeySignInToggle from "@/components/PasskeySignInToggle"; // BI_CLIENT_BLOCK_v602
 import { useNavigate } from "react-router-dom";
 
 export default function AccountBar() {
@@ -30,6 +31,7 @@ export default function AccountBar() {
       }}
     >
       <FaceIdSignInToggle />
+      <PasskeySignInToggle />
       <button
         type="button"
         onClick={() => navigate("/home")}
