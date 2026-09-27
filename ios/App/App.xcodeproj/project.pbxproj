@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B6030001 /* ClientWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6030011 /* ClientWidget.swift */; };
+		B6030002 /* ClientWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = B6030010 /* ClientWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA000040 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000030 /* AppDelegate.swift */; };
 		AA000048 /* DocumentScannerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000038 /* DocumentScannerPlugin.swift */; };
 		AA000041 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA000032 /* Main.storyboard */; };
@@ -19,6 +21,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B6030010 /* ClientWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ClientWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B6030011 /* ClientWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientWidget.swift; sourceTree = "<group>"; };
+		B6030012 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B6030013 /* ClientWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClientWidgetExtension.entitlements; sourceTree = "<group>"; };
 		AA000006 /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA000030 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AA000038 /* DocumentScannerPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentScannerPlugin.swift; sourceTree = "<group>"; };
@@ -31,7 +37,16 @@
 		AA000037 /* capacitor.config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXContainerItemProxy section */
+		B6030060 = {isa = PBXContainerItemProxy; containerPortal = AA000001 /* Project object */; proxyType = 1; remoteGlobalIDString = B6030030; remoteInfo = ClientWidgetExtension; };
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B6030023 /* Embed App Extensions */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 13; files = (B6030002 /* ClientWidgetExtension.appex in Embed App Extensions */,); name = "Embed App Extensions"; runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		B6030021 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
 		AA000013 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -43,10 +58,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B6030020 /* ClientWidgetExtension */ = {isa = PBXGroup; children = (B6030011 /* ClientWidget.swift */, B6030012 /* Info.plist */, B6030013 /* ClientWidgetExtension.entitlements */,); path = ClientWidgetExtension; sourceTree = "<group>"; };
 		AA000003 = {
 			isa = PBXGroup;
 			children = (
 				AA000005 /* App */,
+				B6030020 /* ClientWidgetExtension */,
 				AA000004 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				AA000006 /* App.app */,
+				B6030010 /* ClientWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -78,17 +96,20 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		B6030030 /* ClientWidgetExtension */ = {isa = PBXNativeTarget; buildConfigurationList = B6030050; buildPhases = (B6030022 /* Sources */, B6030021 /* Frameworks */,); buildRules = (); dependencies = (); name = ClientWidgetExtension; productName = ClientWidgetExtension; productReference = B6030010 /* ClientWidgetExtension.appex */; productType = "com.apple.product-type.app-extension"; };
 		AA000010 /* App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA000011 /* Build configuration list for PBXNativeTarget "App" */;
 			buildPhases = (
 				AA000012 /* Sources */,
+				B6030023 /* Embed App Extensions */,
 				AA000013 /* Frameworks */,
 				AA000014 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				B6030061 /* PBXTargetDependency */,
 			);
 			name = App;
 			packageProductDependencies = (
@@ -124,6 +145,7 @@
 			projectRoot = "";
 			targets = (
 				AA000010 /* App */,
+				B6030030 /* ClientWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -145,6 +167,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		B6030022 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (B6030001 /* ClientWidget.swift in Sources */,); runOnlyForDeploymentPostprocessing = 0; };
 		AA000012 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -156,7 +179,13 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		B6030061 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = B6030030 /* ClientWidgetExtension */; targetProxy = B6030060; };
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		B6030041 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_ENTITLEMENTS = ClientWidgetExtension/ClientWidgetExtension.entitlements; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = 547H2X5ZG3; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ClientWidgetExtension/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client.widget; PRODUCT_NAME = "$(TARGET_NAME)"; SKIP_INSTALL = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
+		B6030042 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_ENTITLEMENTS = ClientWidgetExtension/ClientWidgetExtension.entitlements; CODE_SIGN_STYLE = Automatic; DEVELOPMENT_TEAM = 547H2X5ZG3; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ClientWidgetExtension/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client.widget; PRODUCT_NAME = "$(TARGET_NAME)"; SKIP_INSTALL = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
 		AA000021 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -191,6 +220,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -217,6 +247,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				CODE_SIGN_ENTITLEMENTS = App/App.entitlements;
 				PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -230,6 +261,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		B6030050 /* Build configuration list for PBXNativeTarget "ClientWidgetExtension" */ = {isa = XCConfigurationList; buildConfigurations = (B6030041 /* Debug */, B6030042 /* Release */,); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
 		AA000002 /* Build configuration list for PBXProject "App" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

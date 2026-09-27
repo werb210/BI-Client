@@ -22,6 +22,7 @@ type BiActionCenter = {
   completed: BiActionItem[];
   outstandingCount: number;
   canSubmit: boolean;
+  stage?: string;
 };
 
 export type BiActionHandler = (item: BiActionItem, applicationId: string) => void;
@@ -35,6 +36,7 @@ export default function ActionCenter({ applicationId, onAction }: { applicationI
       const d = await api.get<BiActionCenter>(`/applicants/action-center/${encodeURIComponent(applicationId)}`);
       setData(d);
       void import("@/native/appBadge").then((m) => m.setAppBadge(d?.outstandingCount)); // BI_CLIENT_BLOCK_v551_APP_BADGE
+      void import("@/native/clientWidget").then((m) => m.updateClientWidget(d?.stage, d?.outstandingCount)); // BI_CLIENT_BLOCK_v603_HOME_WIDGET
       setFailed(false);
     } catch {
       // Never blank the page the applicant is working on.
