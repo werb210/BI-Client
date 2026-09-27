@@ -13,6 +13,7 @@ import ReviewPage from "@/pages/ReviewPage";
 // BI_CLIENT_CONTRACT_UPLOAD_v1
 import UploadContractPage from "@/pages/UploadContractPage";
 import RequirementsPage from "@/pages/RequirementsPage";
+import MessagesPage from "@/pages/MessagesPage"; // BI_CLIENT_BLOCK_v608
 import { getCachedToken } from "@/auth/token";
 import AccountBar from "@/components/AccountBar"; // BI_CLIENT_ACCOUNT_BAR_v337
 
@@ -41,6 +42,7 @@ export default function AppRouter() {
       <Route path="/questions/:applicationId" element={<RequireApplicant><QuestionsPage /></RequireApplicant>} />
       <Route path="/review/:applicationId" element={<RequireApplicant><ReviewPage /></RequireApplicant>} />
       <Route path="/requirements/:applicationId" element={<RequireApplicant><RequirementsPage /></RequireApplicant>} />
+      <Route path="/messages" element={<RequireApplicant><MessagesPage /></RequireApplicant>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -16,6 +16,15 @@ export default function HomePage() {
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [unreadMessages, setUnreadMessages] = useState(0); // BI_CLIENT_BLOCK_v608
+
+  useEffect(() => {
+    let active = true;
+    void apiRequest<{ unreadCount?: number }>("/applicants/messages/unread-count")
+      .then((result) => { if (active) setUnreadMessages(Math.max(0, result.unreadCount ?? 0)); })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
 
   async function deleteAccount() {
     setDeleting(true);
@@ -46,6 +55,11 @@ export default function HomePage() {
       <p className="bi-page__lede">
         Upload your subcontract and we will tell you which coverages it requires.
       </p>
+      <button type="button" onClick={() => navigate("/messages")}
+        style={{ width: "100%", padding: "12px 16px", fontSize: 16, fontWeight: 600, borderRadius: 8, border: "1px solid #E4EAF2", background: "#fff", color: "#0B1F3A", cursor: "pointer", marginBottom: 16, textAlign: "left", display: "flex", justifyContent: "space-between" }}>
+        <span>Messages</span>
+        {unreadMessages > 0 && <span aria-label={`${unreadMessages} unread messages`} style={{ minWidth: 24, height: 24, padding: "0 6px", boxSizing: "border-box", borderRadius: "50%", background: "#BF9B49", display: "inline-grid", placeItems: "center", fontSize: 13 }}>{unreadMessages > 99 ? "99+" : unreadMessages}</span>}
+      </button>
       <button
         type="button"
         onClick={() => navigate("/upload")}
