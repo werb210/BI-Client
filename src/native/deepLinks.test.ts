@@ -4,6 +4,7 @@ import { consumeNativeDestination, parseNativeUrl, retainNativeDestination } fro
 describe("BI native URLs", () => {
   it.each([
     ["borealrisk://home", "/home"], ["borealrisk://upload", "/upload"],
+    ["borealrisk://messages", "/messages"],
     ["borealrisk://coverage/abc123", "/coverage/abc123"],
     ["borealrisk://questions/abc123", "/questions/abc123"],
     ["borealrisk://review/abc123", "/review/abc123"],

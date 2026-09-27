@@ -1,4 +1,4 @@
-const STATIC_ROUTES = new Set(["home", "start", "upload"]);
+const STATIC_ROUTES = new Set(["home", "start", "upload", "messages"]);
 const ID_ROUTES = new Set(["coverage", "questions", "review", "requirements"]);
 const SAFE_ID = /^[A-Za-z0-9_-]{1,128}$/;
 let pendingDestination: string | null = null;
