@@ -10,7 +10,7 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
 import { Network } from "@capacitor/network";
 import { normalizeBrowserFile, normalizeNativeSource } from "@/upload/normalize";
-import { scanContractAsPdf, ScannerUnavailableError } from "@/native/documentScanner"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
+import { scanContractAsPdfWithQuality, ScannerUnavailableError } from "@/native/documentScanner"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
 // BI_CLIENT_BLOCK_v094_WIRE_UPLOAD_QUEUE_v1
 import { assessImage, ISSUE_MESSAGES } from "@/upload/quality";
 import { enqueue, drain } from "@/upload/queue";
@@ -138,8 +138,10 @@ export default function UploadContractPage() {
 
   async function scanDocument() {
     try {
-      const file = await scanContractAsPdf();
+      // BI_CLIENT_BLOCK_v604_SCAN_QUALITY - scanned pages are checked too.
+      const { file, quality } = await scanContractAsPdfWithQuality();
       if (file) await send(file);
+      if (quality && !quality.ok) setWarning(`Scanned page: ${quality.issues.map((issue) => ISSUE_MESSAGES[issue]).join(" ")}`);
     } catch (err) {
       // BI_CLIENT_SCANNER_AVAILABILITY_v165 — the scanner plugin is not linked
       // under SPM. Say so plainly and point at the route that still works,
