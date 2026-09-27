@@ -209,7 +209,8 @@ import WidgetKit
 public class ClientWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "ClientWidgetPlugin"
     public let jsName = "ClientWidget"
-    public let pluginMethods = [CAPPluginMethod(name: "update", returnType: CAPPluginReturnPromise), CAPPluginMethod(name: "clear", returnType: CAPPluginReturnPromise)]
+    // BI_CLIENT_BLOCK_v613 - explicit type: an inferred [CAPPluginMethod?] breaks CAPBridgedPlugin conformance.
+    public let pluginMethods: [CAPPluginMethod] = [CAPPluginMethod(name: "update", returnType: CAPPluginReturnPromise), CAPPluginMethod(name: "clear", returnType: CAPPluginReturnPromise)]
     private let suite = "group.com.boreal.risk.client"
     @objc func update(_ call: CAPPluginCall) {
         let stage = call.getString("stage") ?? "Application in progress"
@@ -222,9 +223,11 @@ public class ClientWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
         publishShortcuts(stage: "Application in progress", count: 0); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
     }
     private func publishShortcuts(stage: String, count: Int) {
+        DispatchQueue.main.async { // BI_CLIENT_BLOCK_v613 - UIKit on the main thread
         UIApplication.shared.shortcutItems = [
             UIApplicationShortcutItem(type: "com.boreal.risk.client.status", localizedTitle: "Application status", localizedSubtitle: "\(stage) · \(count) to do", icon: UIApplicationShortcutIcon(systemImageName: "checklist"), userInfo: ["url": "borealrisk://home" as NSSecureCoding]),
             UIApplicationShortcutItem(type: "com.boreal.risk.client.upload", localizedTitle: "Upload document", localizedSubtitle: "Upload a requested document", icon: UIApplicationShortcutIcon(type: .capturePhoto), userInfo: ["url": "borealrisk://upload" as NSSecureCoding])
         ]
+        }
     }
 }
