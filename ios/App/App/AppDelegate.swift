@@ -216,10 +216,11 @@ public class ClientWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
         let stage = call.getString("stage") ?? "Application in progress"
         let count = max(0, min(99, call.getInt("toDoCount") ?? 0))
         let defaults = UserDefaults(suiteName: suite); defaults?.set(stage, forKey: "stage"); defaults?.set(count, forKey: "todo_count")
+        if let action = call.getString("action") { defaults?.set(action, forKey: "action") } // BI_CLIENT_WIDGET_BRAND_v631
         publishShortcuts(stage: stage, count: count); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
     }
     @objc func clear(_ call: CAPPluginCall) {
-        let defaults = UserDefaults(suiteName: suite); defaults?.removeObject(forKey: "stage"); defaults?.removeObject(forKey: "todo_count")
+        let defaults = UserDefaults(suiteName: suite); defaults?.removeObject(forKey: "stage"); defaults?.removeObject(forKey: "todo_count"); defaults?.removeObject(forKey: "action")
         publishShortcuts(stage: "Application in progress", count: 0); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
     }
     private func publishShortcuts(stage: String, count: Int) {
