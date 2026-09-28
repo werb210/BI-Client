@@ -18,6 +18,8 @@
 		AA000045 /* public in Resources */ = {isa = PBXBuildFile; fileRef = AA000036 /* public */; };
 		AA000046 /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = AA000037 /* capacitor.config.json */; };
 		AA000047 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = AA000051 /* CapApp-SPM */; };
+		01ED1EEC2FFC4E67B4AD41BD /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFFFAC248A93C67E700B5CF /* ShareViewController.swift */; };
+		F544AEF3BA97BA0164035946 /* BorealShare.appex in Embed */ = {isa = PBXBuildFile; fileRef = 5956E7A7A89098B6C4C01AE2 /* BorealShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,14 +37,19 @@
 		AA000035 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AA000036 /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		AA000037 /* capacitor.config.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
+		EDFFFAC248A93C67E700B5CF /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		5956E7A7A89098B6C4C01AE2 /* BorealShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BorealShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		29DCBA84EF6ADE1E86025544 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		39344AF411DE0BA018BDAB7C /* BorealShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BorealShare.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXContainerItemProxy section */
 		B6030060 = {isa = PBXContainerItemProxy; containerPortal = AA000001 /* Project object */; proxyType = 1; remoteGlobalIDString = B6030030; remoteInfo = ClientWidgetExtension; };
+		FBE4A90D68B1DA37A77231C6 /* PBXContainerItemProxy */ = {isa = PBXContainerItemProxy; containerPortal = AA000001 /* Project object */; proxyType = 1; remoteGlobalIDString = 215873B1FFC2E32CBB583B38; remoteInfo = BorealShare; };
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		B6030023 /* Embed App Extensions */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 13; files = (B6030002 /* ClientWidgetExtension.appex in Embed App Extensions */,); name = "Embed App Extensions"; runOnlyForDeploymentPostprocessing = 0; };
+		B6030023 /* Embed App Extensions */ = {isa = PBXCopyFilesBuildPhase; buildActionMask = 2147483647; dstPath = ""; dstSubfolderSpec = 13; files = ( F544AEF3BA97BA0164035946 /* BorealShare.appex in Embed */,B6030002 /* ClientWidgetExtension.appex in Embed App Extensions */,); name = "Embed App Extensions"; runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,13 +62,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		72F7CCEC07CCD358F94F1EDB /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = ( ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		B6030020 /* ClientWidgetExtension */ = {isa = PBXGroup; children = (B6030011 /* ClientWidget.swift */, B6030012 /* Info.plist */, B6030013 /* ClientWidgetExtension.entitlements */,); path = ClientWidgetExtension; sourceTree = "<group>"; };
 		AA000003 = {
 			isa = PBXGroup;
-			children = (
+			children = ( E311015A44E3F0E2223CB214 /* BorealShare */,
 				AA000005 /* App */,
 				B6030020 /* ClientWidgetExtension */,
 				AA000004 /* Products */,
@@ -70,7 +78,7 @@
 		};
 		AA000004 /* Products */ = {
 			isa = PBXGroup;
-			children = (
+			children = ( 5956E7A7A89098B6C4C01AE2 /* BorealShare.appex */,
 				AA000006 /* App.app */,
 				B6030010 /* ClientWidgetExtension.appex */,
 			);
@@ -93,6 +101,7 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		E311015A44E3F0E2223CB214 /* BorealShare */ = {isa = PBXGroup; children = ( EDFFFAC248A93C67E700B5CF /* ShareViewController.swift */, 29DCBA84EF6ADE1E86025544 /* Info.plist */, 39344AF411DE0BA018BDAB7C /* BorealShare.entitlements */, ); path = BorealShare; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -108,7 +117,7 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
+			dependencies = ( 61C2ADA0B42AE345ACEE8BE5 /* PBXTargetDependency */,
 				B6030061 /* PBXTargetDependency */,
 			);
 			name = App;
@@ -119,6 +128,7 @@
 			productReference = AA000006 /* App.app */;
 			productType = "com.apple.product-type.application";
 		};
+		215873B1FFC2E32CBB583B38 /* BorealShare */ = {isa = PBXNativeTarget; buildConfigurationList = 07E3C7ED59E682D967AEBD9A /* Build configuration list for PBXNativeTarget "BorealShare" */; buildPhases = ( DF05977A00800DCE5EF5E7FE /* Sources */, 72F7CCEC07CCD358F94F1EDB /* Frameworks */, BA621ED3F441128DC41BC60C /* Resources */, ); buildRules = ( ); dependencies = ( ); name = BorealShare; productName = BorealShare; productReference = 5956E7A7A89098B6C4C01AE2 /* BorealShare.appex */; productType = "com.apple.product-type.app-extension"; };
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -143,7 +153,7 @@
 			productRefGroup = AA000004 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
-			targets = (
+			targets = ( 215873B1FFC2E32CBB583B38 /* BorealShare */,
 				AA000010 /* App */,
 				B6030030 /* ClientWidgetExtension */,
 			);
@@ -164,6 +174,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BA621ED3F441128DC41BC60C /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = ( ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -177,10 +188,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DF05977A00800DCE5EF5E7FE /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ( 01ED1EEC2FFC4E67B4AD41BD /* ShareViewController.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		B6030061 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = B6030030 /* ClientWidgetExtension */; targetProxy = B6030060; };
+		61C2ADA0B42AE345ACEE8BE5 /* PBXTargetDependency */ = {isa = PBXTargetDependency; target = 215873B1FFC2E32CBB583B38 /* BorealShare */; targetProxy = FBE4A90D68B1DA37A77231C6 /* PBXContainerItemProxy */; };
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -258,6 +271,8 @@
 		};
 		B6030041 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CODE_SIGN_ENTITLEMENTS = ClientWidgetExtension/ClientWidgetExtension.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 1.0; SDKROOT = iphoneos; SUPPORTS_MACCATALYST = NO; LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", ); DEVELOPMENT_TEAM = 547H2X5ZG3; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ClientWidgetExtension/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client.widget; PRODUCT_NAME = "$(TARGET_NAME)"; SKIP_INSTALL = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Debug; };
 		B6030042 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CODE_SIGN_ENTITLEMENTS = ClientWidgetExtension/ClientWidgetExtension.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; MARKETING_VERSION = 1.0; SDKROOT = iphoneos; SUPPORTS_MACCATALYST = NO; LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", ); DEVELOPMENT_TEAM = 547H2X5ZG3; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = ClientWidgetExtension/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 17.0; PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client.widget; PRODUCT_NAME = "$(TARGET_NAME)"; SKIP_INSTALL = YES; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; }; name = Release; };
+		ADF93E7DAAAE7A5E2772D73D /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_ENTITLEMENTS = BorealShare/BorealShare.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = 547H2X5ZG3; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = BorealShare/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 15.0; LD_RUNPATH_SEARCH_PATHS = ( "$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", ); MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client.share; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SKIP_INSTALL = YES; SUPPORTS_MACCATALYST = NO; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG; }; name = Debug; };
+		243705199BDB9D960086B7A4 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_ENTITLEMENTS = BorealShare/BorealShare.entitlements; CODE_SIGN_STYLE = Automatic; CURRENT_PROJECT_VERSION = 1; DEVELOPMENT_TEAM = 547H2X5ZG3; GENERATE_INFOPLIST_FILE = NO; INFOPLIST_FILE = BorealShare/Info.plist; IPHONEOS_DEPLOYMENT_TARGET = 15.0; LD_RUNPATH_SEARCH_PATHS = ( "$(inherited)", "@executable_path/Frameworks", "@executable_path/../../Frameworks", ); MARKETING_VERSION = 1.0; PRODUCT_BUNDLE_IDENTIFIER = com.boreal.risk.client.share; PRODUCT_NAME = "$(TARGET_NAME)"; SDKROOT = iphoneos; SKIP_INSTALL = YES; SUPPORTS_MACCATALYST = NO; SWIFT_VERSION = 5.0; TARGETED_DEVICE_FAMILY = "1,2"; SWIFT_COMPILATION_MODE = wholemodule; }; name = Release; };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -280,6 +295,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		07E3C7ED59E682D967AEBD9A /* Build configuration list for PBXNativeTarget "BorealShare" */ = {isa = XCConfigurationList; buildConfigurations = ( ADF93E7DAAAE7A5E2772D73D /* Debug */, 243705199BDB9D960086B7A4 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
