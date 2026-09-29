@@ -16,7 +16,7 @@ describe("v605 widget fixes", () => {
 
   it("stage comes from progress, count from the action centre", () => {
     expect(readFileSync("src/components/ApplicationProgress.tsx", "utf8")).toContain("updateClientWidget(r.progress?.headline, undefined)");
-    expect(readFileSync("src/components/ActionCenter.tsx", "utf8")).toContain("updateClientWidget(undefined, d?.outstandingCount, m.actionLine(d?.outstanding))"); // BI_CLIENT_WIDGET_BRAND_v631
+    expect(readFileSync("src/components/ActionCenter.tsx", "utf8")).toContain("updateClientWidget(undefined, d?.outstandingCount, m.actionLine(d?.outstanding), applicationId)"); // BI_CLIENT_WIDGET_SELF_REFRESH_v675 // BI_CLIENT_WIDGET_BRAND_v631
   });
 
   it("widget extension has its identity keys and matching versions", () => {

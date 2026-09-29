@@ -42,13 +42,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, continue: activity, restorationHandler: { _ in })
         }
     }
-    func sceneDidBecomeActive(_ scene: UIScene) { SharedInboxDelivery.deliver() } // BOREAL_SHARE_EXTENSION_v640
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        PrivacyCover.hide(on: window) // BI_CLIENT_SCENE_PRIVACY_v675
+        SharedInboxDelivery.deliver() // BOREAL_SHARE_EXTENSION_v640
+    }
+    // BI_CLIENT_SCENE_PRIVACY_v675 - the app switcher shows the Boreal Risk cover, not the applicant's details.
+    func sceneWillResignActive(_ scene: UIScene) { PrivacyCover.show(on: window, title: "Boreal Risk") }
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let url = URLContexts.first?.url else { return }
         _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, open: url, options: [:])
     }
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
         _ = ApplicationDelegateProxy.shared.application(UIApplication.shared, continue: userActivity, restorationHandler: { _ in })
+    }
+}
+
+// BI_CLIENT_SCENE_PRIVACY_v675 - navy cover with the brand name while the app is not active.
+enum PrivacyCover {
+    static let tag = 0x0B0EA2
+    static func show(on window: UIWindow?, title: String) {
+        guard let window, window.viewWithTag(tag) == nil else { return }
+        let cover = UIView(frame: window.bounds)
+        cover.tag = tag
+        cover.backgroundColor = UIColor(red: 11 / 255, green: 31 / 255, blue: 58 / 255, alpha: 1)
+        cover.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        let label = UILabel(frame: cover.bounds)
+        label.text = title
+        label.textColor = .white
+        label.font = .boldSystemFont(ofSize: 24)
+        label.textAlignment = .center
+        label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        cover.addSubview(label)
+        window.addSubview(cover)
+    }
+    static func hide(on window: UIWindow?) {
+        window?.viewWithTag(tag)?.removeFromSuperview()
     }
 }
 
@@ -218,10 +246,15 @@ public class ClientWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
         let count = max(0, min(99, call.getInt("toDoCount") ?? 0))
         let defaults = UserDefaults(suiteName: suite); defaults?.set(stage, forKey: "stage"); defaults?.set(count, forKey: "todo_count")
         if let action = call.getString("action") { defaults?.set(action, forKey: "action") } // BI_CLIENT_WIDGET_BRAND_v631
+        // BI_CLIENT_WIDGET_SELF_REFRESH_v675 - what the widget needs to ask BI-Server itself.
+        if let id = call.getString("applicationId"), !id.isEmpty { defaults?.set(id, forKey: "application_id") }
+        if let token = call.getString("token"), !token.isEmpty { defaults?.set(token, forKey: "token") }
+        if let api = call.getString("apiUrl"), !api.isEmpty { defaults?.set(api, forKey: "api_url") }
         publishShortcuts(stage: stage, count: count); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
     }
     @objc func clear(_ call: CAPPluginCall) {
         let defaults = UserDefaults(suiteName: suite); defaults?.removeObject(forKey: "stage"); defaults?.removeObject(forKey: "todo_count"); defaults?.removeObject(forKey: "action")
+        ["application_id", "token", "api_url"].forEach { defaults?.removeObject(forKey: $0) } // BI_CLIENT_WIDGET_SELF_REFRESH_v675
         publishShortcuts(stage: "Application in progress", count: 0); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
     }
     private func publishShortcuts(stage: String, count: Int) {
