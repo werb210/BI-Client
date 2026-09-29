@@ -1,7 +1,7 @@
 // BI_CLIENT_BLOCK_v603_HOME_WIDGET
 // Native-only snapshot: applicant information is never persisted by the browser.
 import { Capacitor, registerPlugin } from "@capacitor/core";
-export type ClientWidgetSnapshot = { stage: string; toDoCount: number; action?: string };
+export type ClientWidgetSnapshot = { stage: string; toDoCount: number; action?: string; applicationId?: string; token?: string; apiUrl?: string };
 
 // BI_CLIENT_WIDGET_BRAND_v631 - the widget's action line in plain words.
 export function actionLine(items: Array<{ kind?: string }> | null | undefined): string {
@@ -39,10 +39,20 @@ export function mergeWidget(stage: unknown, toDoCount: unknown, action?: unknown
   if (lastAction) snap.action = lastAction;
   return snap;
 }
-export async function updateClientWidget(stage: unknown, toDoCount: unknown, action?: unknown): Promise<void> {
+export async function updateClientWidget(stage: unknown, toDoCount: unknown, action?: unknown, applicationId?: unknown): Promise<void> {
   const snapshot = mergeWidget(stage, toDoCount, action);
   if (!Capacitor.isNativePlatform() || !Capacitor.isPluginAvailable("ClientWidget")) return;
-  await ClientWidget.update(snapshot).catch((): void => undefined);
+  // BI_CLIENT_WIDGET_SELF_REFRESH_v675 - lets the widget refresh the to-do count on its own.
+  const payload: ClientWidgetSnapshot = { ...snapshot };
+  if (typeof applicationId === "string" && applicationId.trim()) payload.applicationId = applicationId.trim();
+  try {
+    const { getCachedToken } = await import("@/auth/token");
+    const { ENV } = await import("@/env");
+    const token = getCachedToken();
+    if (token) payload.token = token;
+    if (ENV.API_BASE) payload.apiUrl = String(ENV.API_BASE).replace(/[/]+$/, "") + ENV.API_PREFIX;
+  } catch { /* the widget still shows the app's last values */ }
+  await ClientWidget.update(payload).catch((): void => undefined);
 }
 export async function clearClientWidget(): Promise<void> {
   lastStage = undefined; lastCount = undefined; lastAction = undefined;

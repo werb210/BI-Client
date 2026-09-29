@@ -15,7 +15,10 @@ struct ClientProvider: TimelineProvider {
     func placeholder(in context: Context) -> ClientEntry { ClientEntry(date: .now, stage: "Application in progress", toDoCount: 1, action: "Upload 1 document") }
     func getSnapshot(in context: Context, completion: @escaping (ClientEntry) -> Void) { completion(read()) }
     func getTimeline(in context: Context, completion: @escaping (Timeline<ClientEntry>) -> Void) {
-        completion(Timeline(entries: [read()], policy: .after(Date().addingTimeInterval(60 * 60))))
+        Task { // BI_CLIENT_WIDGET_SELF_REFRESH_v675
+            await RiskWidgetRefresher.refresh()
+            completion(Timeline(entries: [read()], policy: .after(Date().addingTimeInterval(30 * 60))))
+        }
     }
     private func read() -> ClientEntry {
         let defaults = UserDefaults(suiteName: suite)
@@ -77,3 +80,39 @@ struct ClientWidget: Widget {
 }
 
 @main struct ClientWidgetBundle: WidgetBundle { var body: some Widget { ClientWidget() } }
+
+// BI_CLIENT_WIDGET_SELF_REFRESH_v675 - the widget checks the applicant's to-do list on BI-Server
+// itself every 30 minutes (while the one-hour sign-in is still valid), so a new request shows
+// without opening the app.
+enum RiskWidgetRefresher {
+    static func actionLine(_ items: [[String: Any]]) -> String {
+        let docs = items.filter { ($0["kind"] as? String) == "document" }.count
+        let questions = items.filter { ($0["kind"] as? String) == "question" }.count
+        var parts: [String] = []
+        if docs > 0 { parts.append(docs == 1 ? "Upload 1 document" : "Upload \(docs) documents") }
+        if questions > 0 { parts.append(questions == 1 ? "Answer 1 question" : "Answer \(questions) questions") }
+        return parts.isEmpty ? "Nothing to do" : parts.joined(separator: " \u{00B7} ")
+    }
+
+    static func refresh() async {
+        guard let defaults = UserDefaults(suiteName: suite),
+              let id = defaults.string(forKey: "application_id"), !id.isEmpty,
+              let token = defaults.string(forKey: "token"), !token.isEmpty,
+              var api = defaults.string(forKey: "api_url"), !api.isEmpty else { return }
+        while api.hasSuffix("/") { api.removeLast() }
+        let path = id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id
+        guard let url = URL(string: api + "/applicants/action-center/" + path) else { return }
+        var req = URLRequest(url: url, timeoutInterval: 10)
+        req.setValue("Bearer " + token, forHTTPHeaderField: "Authorization")
+        guard let result = try? await URLSession.shared.data(for: req) else { return }
+        let (data, resp) = result
+        let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
+        if status == 401 { defaults.removeObject(forKey: "token"); return }
+        guard status == 200, let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
+        let body = (obj["data"] as? [String: Any]) ?? obj
+        let items = body["outstanding"] as? [[String: Any]] ?? []
+        let count = (body["outstandingCount"] as? Int) ?? items.count
+        defaults.set(max(0, min(99, count)), forKey: "todo_count")
+        defaults.set(actionLine(items), forKey: "action")
+    }
+}
