@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { clearToken } from "@/auth/token";
 import { apiRequest } from "@/api/client";
 import ActionCenter from "@/components/ActionCenter"; // BI_CLIENT_NATIVE_WIRING_v237
+import FeatureTour from "@/components/onboarding/FeatureTour"; // BI_CLIENT_FEATURE_TOUR_v720
 import ApplicationProgress from "@/components/ApplicationProgress"; // BI_CLIENT_APPLICATION_PROGRESS_v280
 
 export default function HomePage() {
@@ -43,6 +44,7 @@ export default function HomePage() {
     // BI_CLIENT_SHELL_v19 - shared shell; width and card come from chrome.css.
     <div className="bi-page">
       <div className="bi-page__inner bi-page__inner--narrow">
+        <FeatureTour />{/* BI_CLIENT_FEATURE_TOUR_v720 - once, first time on the home screen, app only */}
         {/* BI_CLIENT_APPLICATION_PROGRESS_v280 */}
         <ApplicationProgress />
         {/* BI_CLIENT_NATIVE_WIRING_v237 */}
