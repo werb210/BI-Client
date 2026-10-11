@@ -10,7 +10,7 @@
   --boreal-mist: #F5F8FC;
   --boreal-line: #E4EAF2;
   --boreal-body: #51617D;
-  --boreal-muted: #8593aa;
+  --boreal-muted: #4b5563; /* BI_CLIENT_v789 - was #8593aa (3.2:1 on white); now 7.6:1 */
 }
 
 html,
@@ -157,7 +157,7 @@ textarea.bi-field {
 
 .bi-cta:disabled {
   background: var(--boreal-line);
-  color: var(--boreal-muted);
+  color: #374151; /* BI_CLIENT_v789 - 9:1 on the disabled grey */
   cursor: not-allowed;
   transform: none;
 }

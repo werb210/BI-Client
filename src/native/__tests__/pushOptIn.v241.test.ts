@@ -42,7 +42,7 @@ describe("push opt-in after sign-in", () => {
 describe("iOS notification buttons", () => {
   const swift = readFileSync("ios/App/App/AppDelegate.swift", "utf-8");
   it("registers the categories BI-Server sends at launch", () => {
-    expect(swift).toContain("BorealRiskPushCategories.register(); return true");
+    expect(swift).toMatch(/didFinishLaunchingWithOptions[^{]*\{\s*BorealRiskPushCategories\.register\(\)/);
     expect(swift).toContain('identifier: "DOCUMENT_REQUEST"');
     expect(swift).toContain('identifier: "APPLICATION_UPDATE"');
     expect(swift).toContain("import UserNotifications");

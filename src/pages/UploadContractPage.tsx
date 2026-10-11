@@ -14,6 +14,8 @@ import { scanContractAsPdfWithQuality, ScannerUnavailableError } from "@/native/
 // BI_CLIENT_BLOCK_v094_WIRE_UPLOAD_QUEUE_v1
 import { assessImage, ISSUE_MESSAGES } from "@/upload/quality";
 import { enqueue, drain } from "@/upload/queue";
+import { currentApplicantId } from "@/auth/token";
+import { HINT_TEXT } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - #4b5563
 
 const ACCEPT = ".pdf,.doc,.docx,.png,.jpg,.jpeg";
 
@@ -79,6 +81,7 @@ export default function UploadContractPage() {
           filename: file.name,
           mimeType: file.type,
           dataUrl,
+          applicantId: currentApplicantId() ?? undefined, // BI_CLIENT_v789
         });
         throw new Error("queued");
       }
@@ -88,7 +91,7 @@ export default function UploadContractPage() {
       void drain(async (item) => {
         const blob = await (await fetch(item.dataUrl)).blob();
         await uploadContract(new File([blob], item.filename, { type: item.mimeType }));
-      });
+      }, currentApplicantId()); // BI_CLIENT_v789 - this applicant's uploads only
       // BI_CLIENT_FLOW_v12 - the subcontract is the only document we ask for.
       navigate(`/requirements/${result.applicationId}`);
     } catch (err) {
@@ -176,7 +179,7 @@ export default function UploadContractPage() {
         <div style={{ fontWeight: 600, marginBottom: 6 }}>
           {busy ? "Reading your contract…" : native ? "Choose a contract document" : "Choose a file or drop it here"}
         </div>
-        <div style={{ fontSize: 13, color: "#8593aa" }}>PDF, Word or a photo. Up to 25 MB.</div>
+        <div style={{ fontSize: 13, color: HINT_TEXT }}>PDF, Word or a photo. Up to 25 MB.</div>
         <input
           ref={inputRef}
           type="file"

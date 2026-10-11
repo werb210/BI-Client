@@ -15,7 +15,8 @@
     "cap:sync:android": "npm run build && cap sync android",
     "cap:open:ios": "cap open ios",
     "cap:open:android": "cap open android",
-    "check:config": "node scripts/check-capacitor-config-sync.mjs"
+    "check:config": "node scripts/check-capacitor-config-sync.mjs",
+    "check:source-grep": "node scripts/check-source-grep-tests.mjs"
   },
   "dependencies": {
     "@aparajita/capacitor-biometric-auth": "^10.0.0",
@@ -41,6 +42,8 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^8.0.0",
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/react": "^16.1.0",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",

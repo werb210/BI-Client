@@ -13,7 +13,8 @@ android {
         applicationId 'com.boreal.risk.client'
         minSdk rootProject.ext.minSdkVersion
         targetSdk rootProject.ext.targetSdkVersion
-        versionCode 1
+        // BI_CLIENT_v789 - CI passes GITHUB_RUN_NUMBER so every build has a new versionCode; 1 locally.
+        versionCode((System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer)
         versionName '1.0'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }

@@ -7,6 +7,7 @@
 // them the first time one of those rules changes.
 import { useCallback, useEffect, useState } from "react";
 import { api } from "@/api/client";
+import { NAVY_SECONDARY } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - navy at 75%
 
 type BiActionItem = {
   key: string;
@@ -61,12 +62,12 @@ export default function ActionCenter({ applicationId, onAction }: { applicationI
       {outstanding.length > 0 ? (
         <>
           <div style={{ fontSize: 18, fontWeight: 600, color: "#0B1F3A" }}>What you need to do</div>
-          <div style={{ fontSize: 14, color: "rgba(11,31,58,0.65)", marginTop: 4, marginBottom: 14 }}>
+          <div style={{ fontSize: 14, color: NAVY_SECONDARY, marginTop: 4, marginBottom: 14 }}>
             {outstanding.length} item{outstanding.length === 1 ? "" : "s"} remaining
           </div>
           {outstanding.map((item, i) => (
             <div key={item.key} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 0", borderTop: i === 0 ? "none" : "1px solid rgba(11,31,58,0.08)" }}>
-              <span style={{ width: 22, height: 22, flexShrink: 0, borderRadius: "50%", marginTop: 1, background: item.urgent ? "rgba(176,0,32,0.12)" : "rgba(11,31,58,0.08)", color: item.urgent ? "#B00020" : "rgba(11,31,58,0.7)", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
+              <span style={{ width: 22, height: 22, flexShrink: 0, borderRadius: "50%", marginTop: 1, background: item.urgent ? "rgba(176,0,32,0.12)" : "rgba(11,31,58,0.08)", color: item.urgent ? "#B00020" : NAVY_SECONDARY, fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 15, color: "#0B1F3A" }}>{item.label}</div>
                 {item.urgent && <div style={{ fontSize: 13, color: "#B00020", marginTop: 2 }}>Needs re-uploading — the last one was not accepted</div>}
@@ -88,9 +89,9 @@ export default function ActionCenter({ applicationId, onAction }: { applicationI
       )}
       {completed.length > 0 && (
         <div style={{ marginTop: outstanding.length > 0 ? 18 : 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 600, color: "rgba(11,31,58,0.6)", marginBottom: 6 }}>Completed</div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: NAVY_SECONDARY, marginBottom: 6 }}>Completed</div>
           {completed.map((item) => (
-            <div key={item.key} style={{ fontSize: 14, color: "rgba(11,31,58,0.65)", padding: "3px 0" }}><span style={{ color: "#1B7F4B", marginRight: 8 }}>✓</span>{item.label}</div>
+            <div key={item.key} style={{ fontSize: 14, color: NAVY_SECONDARY, padding: "3px 0" }}><span style={{ color: "#1B7F4B", marginRight: 8 }}>{"\u2713"}</span>{item.label}</div>
           ))}
         </div>
       )}

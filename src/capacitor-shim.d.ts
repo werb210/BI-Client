@@ -2,7 +2,7 @@ declare module "@capacitor/core" { /* BI_CLIENT_SCANNER_AVAILABILITY_v165 — is
    was not linked into the binary is detected at runtime. */
   export const Capacitor: { isNativePlatform(): boolean; convertFileSrc(path: string): string; getPlatform(): string; isPluginAvailable(name: string): boolean };
   export function registerPlugin<T>(name: string): T; /* BI_CLIENT_BACKGROUND_SYNC_v308 */ }
-declare module "@capacitor/preferences" { export const Preferences: { get(o:{key:string}):Promise<{value:string|null}>; set(o:{key:string,value:string}):Promise<void>; remove(o:{key:string}):Promise<void> }; }
+declare module "@capacitor/preferences" { export const Preferences: { get(o:{key:string}):Promise<{value:string|null}>; set(o:{key:string,value:string}):Promise<void>; remove(o:{key:string}):Promise<void>; clear():Promise<void>; keys():Promise<{keys:string[]}> }; }
 declare module "@aparajita/capacitor-secure-storage" { export const SecureStorage: { get(key:string):Promise<unknown>; set(key:string,value:string):Promise<void>; remove(key:string):Promise<void> }; }
 type CapHandle = { remove(): Promise<void> };
 declare module "@capacitor/app" { export const App: { addListener(name:string, cb:(event:any)=>void):Promise<CapHandle>; getLaunchUrl():Promise<{ url: string } | undefined>; exitApp():Promise<void> }; }

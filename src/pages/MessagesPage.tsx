@@ -2,6 +2,7 @@
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { apiRequest } from "@/api/client";
 import BackBar from "@/components/BackBar";
+import { HINT_TEXT } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - #4b5563
 
 type Message = {
   id: string;
@@ -97,7 +98,7 @@ export default function MessagesPage() {
                 {message.attachments?.map((attachment, index) => attachment.url ? (
                   <a key={attachment.id ?? index} href={attachment.url} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: 14 }}>{attachment.name}</a>
                 ) : <span key={attachment.id ?? index} style={{ display: "block", fontSize: 14 }}>{attachment.name}</span>)}
-                <time dateTime={message.createdAt} style={{ color: "#8593aa", fontSize: 12 }}>{displayedDate(message.createdAt)}</time>
+                <time dateTime={message.createdAt} style={{ color: HINT_TEXT, fontSize: 12 }}>{displayedDate(message.createdAt)}</time>
               </article>
             );
           })}

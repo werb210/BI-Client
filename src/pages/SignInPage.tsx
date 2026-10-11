@@ -9,14 +9,28 @@ import { tokenExpiresWithin } from "@/native/useBiometricLock";
 import { biometryAvailable, isEnrolled, offerFaceIdOnce, signInWithFaceId } from "@/native/deviceSignIn"; // BI_CLIENT_FACE_ID_SIGN_IN_v301
 import { passkeysSupported, signInWithPasskey, PasskeyError } from "@/auth/passkeys"; // BI_CLIENT_BLOCK_v602
 
-function message(err: unknown): string {
-  const code = err instanceof ApiError ? err.code : "";
-  if (code === "otp_rate_limited") return "Too many attempts. Request a new code in about 10 minutes.";
-  if (code === "invalid_otp") return "That code was not right. Check it and try again.";
-  if (code === "invalid_phone") return "That does not look like a mobile number.";
-  if (code === "otp_verify_failed") return "We could not check that code just now. Please try again.";
-  return "Something went wrong. Please try again.";
+// BI_CLIENT_v789 - the server's own `message` wins when it sent one; the
+// generic sentence is only for an error that came with no words at all.
+export const SIGN_IN_FALLBACK = "Something went wrong. Please try again.";
+const SIGN_IN_MESSAGES: Record<string, string> = {
+  otp_rate_limited: "Too many attempts. Request a new code in about 10 minutes.",
+  invalid_otp: "That code was not right. Check it and try again.",
+  invalid_phone: "That does not look like a mobile number.",
+  otp_verify_failed: "We could not check that code just now. Please try again.",
+  unsupported_country: "Boreal Risk sign-in works with Canadian and US mobile numbers only.",
+  otp_phone_daily_limit: "This number has had too many codes today. Try again tomorrow.",
+  otp_busy: "We are sending a lot of codes right now. Wait a minute and try again.",
+  missing_code: "Enter the 6-digit code we texted you.",
+};
+
+export function signInErrorMessage(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.serverMessage) return err.serverMessage;
+    if (SIGN_IN_MESSAGES[err.code]) return SIGN_IN_MESSAGES[err.code];
+  }
+  return SIGN_IN_FALLBACK;
 }
+const message = signInErrorMessage;
 
 // BI_CLIENT_SHELL_v18 - layout comes from chrome.css now, so the width matches
 // every other page in the flow instead of being the narrowest of four.
@@ -116,7 +130,9 @@ export default function SignInPage() {
       await startOtp(phone);
       setPhase("code");
     } catch (err) {
-      sentFor.current = ""; // let a corrected number try again
+      // BI_CLIENT_v789 - the guard is kept: clearing it here let the auto-send effect
+      // retry the same number in a loop (busy flips back to false). A corrected number
+      // has new digits and sends on its own; "Send code" retries this one.
       setError(message(err));
     } finally {
       setBusy(false);
@@ -132,7 +148,8 @@ export default function SignInPage() {
       // BI_CLIENT_STEP1_PROFILE_v3 - sign-in lands on step 1, not the stub home.
       navigate(await signedInDestination());
     } catch (err) {
-      checkedFor.current = ""; // a mistyped code must be retryable
+      // BI_CLIENT_v789 - kept for the same reason: a corrected code verifies on its own,
+      // "Sign in" retries this one.
       setError(message(err));
     } finally {
       setBusy(false);

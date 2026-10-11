@@ -1,11 +1,17 @@
 import UIKit
 import Capacitor
 import UserNotifications
+import Security
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool { BorealRiskPushCategories.register(); return true }
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        BorealRiskPushCategories.register()
+        // BI_CLIENT_v789_WIDGET_KEYCHAIN - older builds left the sign-in token in shared UserDefaults.
+        WidgetTokenKeychain.removeLegacyDefaultsToken()
+        return true
+    }
     // BI_CLIENT_BACKGROUND_SYNC_v308 - iOS relaunches the app to report finished background sends.
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         if identifier == BackgroundSender.sessionIdentifier {
@@ -248,13 +254,15 @@ public class ClientWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
         if let action = call.getString("action") { defaults?.set(action, forKey: "action") } // BI_CLIENT_WIDGET_BRAND_v631
         // BI_CLIENT_WIDGET_SELF_REFRESH_v675 - what the widget needs to ask BI-Server itself.
         if let id = call.getString("applicationId"), !id.isEmpty { defaults?.set(id, forKey: "application_id") }
-        if let token = call.getString("token"), !token.isEmpty { defaults?.set(token, forKey: "token") }
+        // BI_CLIENT_v789_WIDGET_KEYCHAIN - the sign-in token goes to the App Group Keychain, never to UserDefaults.
+        if let token = call.getString("token"), !token.isEmpty { WidgetTokenKeychain.save(token) }
         if let api = call.getString("apiUrl"), !api.isEmpty { defaults?.set(api, forKey: "api_url") }
         publishShortcuts(stage: stage, count: count); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
     }
     @objc func clear(_ call: CAPPluginCall) {
         let defaults = UserDefaults(suiteName: suite); defaults?.removeObject(forKey: "stage"); defaults?.removeObject(forKey: "todo_count"); defaults?.removeObject(forKey: "action")
         ["application_id", "token", "api_url"].forEach { defaults?.removeObject(forKey: $0) } // BI_CLIENT_WIDGET_SELF_REFRESH_v675
+        WidgetTokenKeychain.remove() // BI_CLIENT_v789_WIDGET_KEYCHAIN
         publishShortcuts(stage: "Application in progress", count: 0); WidgetCenter.shared.reloadAllTimelines(); call.resolve()
     }
     private func publishShortcuts(stage: String, count: Int) {
@@ -265,6 +273,38 @@ public class ClientWidgetPlugin: CAPPlugin, CAPBridgedPlugin {
         ]
         }
     }
+}
+
+// BI_CLIENT_v789_WIDGET_KEYCHAIN - the widget's copy of the sign-in token, shared with the
+// widget extension through the Keychain with the App Group as access group (the same
+// helper is in ClientWidget.swift). Readable after the first unlock, never migrated.
+enum WidgetTokenKeychain {
+    static let accessGroup = "group.com.boreal.risk.client"
+    static let service = "com.boreal.risk.client.widget-token"
+    static let account = "applicant"
+    private static var query: [String: Any] {
+        [kSecClass as String: kSecClassGenericPassword,
+         kSecAttrService as String: service,
+         kSecAttrAccount as String: account,
+         kSecAttrAccessGroup as String: accessGroup]
+    }
+    static func save(_ token: String) {
+        let attributes: [String: Any] = [kSecValueData as String: Data(token.utf8),
+                                         kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly]
+        if SecItemUpdate(query as CFDictionary, attributes as CFDictionary) == errSecItemNotFound {
+            SecItemAdd(query.merging(attributes) { _, new in new } as CFDictionary, nil)
+        }
+    }
+    static func read() -> String? {
+        var request = query
+        request[kSecReturnData as String] = true
+        request[kSecMatchLimit as String] = kSecMatchLimitOne
+        var result: AnyObject?
+        guard SecItemCopyMatching(request as CFDictionary, &result) == errSecSuccess, let data = result as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+    static func remove() { SecItemDelete(query as CFDictionary) }
+    static func removeLegacyDefaultsToken() { UserDefaults(suiteName: accessGroup)?.removeObject(forKey: "token") }
 }
 
 // BOREAL_SHARE_EXTENSION_v640 - files saved by the share extension (Photos, Files, Mail...)

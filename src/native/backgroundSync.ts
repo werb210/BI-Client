@@ -8,6 +8,7 @@ import { ENV } from "@/env";
 import { readQueue, dequeue, setUploadHanded, type QueuedUpload } from "@/upload/queue";
 import { readOutbox, removeOutboxItem, setOutboxHanded } from "@/offline/offlineStore";
 import { refreshSessionForBackground } from "@/native/deviceSignIn";
+import { currentApplicantId } from "@/auth/token";
 
 type Result = { id: string; status: number };
 interface BackgroundSyncPlugin {
@@ -59,7 +60,9 @@ export function outcomeFor(status: number): "sent" | "refused" | "retry" {
 
 export async function handOffToBackground(): Promise<number> {
   if (!available()) return 0;
-  const uploads = (await readQueue()).filter((q) => !q.handedAt);
+  // BI_CLIENT_v789 - only the signed-in applicant's own uploads are handed over.
+  const applicantId = currentApplicantId();
+  const uploads = (await readQueue()).filter((q) => !q.handedAt && Boolean(applicantId) && q.applicantId === applicantId);
   const saves = (await readOutbox()).filter((i) => !i.handedAt);
   if (!uploads.length && !saves.length) return 0;
   const token = await refreshSessionForBackground(apiRoot());

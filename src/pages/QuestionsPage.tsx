@@ -8,6 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuestions, saveAnswers, type AnswerInput, type Question } from "@/api/questions";
 import { OfflineQueuedError } from "@/offline/offlineStore"; // BI_CLIENT_OFFLINE_v302
+import { HINT_TEXT } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - #4b5563
 
 // BI_CLIENT_SHELL_v21 - width, ground and padding come from chrome.css. The
 // 120px bottom padding stays because the CTA bar below is position:fixed and
@@ -196,7 +197,7 @@ export default function QuestionsPage() {
   return (
     <div className="bi-page" style={wrap}>
       <BackBar />
-      <div style={{ fontSize: 12, color: "#8593aa", marginBottom: 8 }}>
+      <div style={{ fontSize: 12, color: HINT_TEXT, marginBottom: 8 }}>
         Step {step + 1} of {groups.length}
       </div>
       <div style={{ height: 4, background: "#E4EAF2", borderRadius: 8, marginBottom: 20 }}>

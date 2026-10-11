@@ -1,16 +1,24 @@
 // BI_CLIENT_SCAFFOLD_v1
 import { ENV } from "@/env";
-import { clearToken, getCachedToken } from "@/auth/token";
-import { cacheResponse, cachedResponse, enqueueSave, isNetworkError, isQueueable, OFFLINE_COPY, OfflineQueuedError } from "@/offline/offlineStore"; // BI_CLIENT_OFFLINE_v302
+import { expireSession, getCachedToken } from "@/auth/token";
+import { cacheResponse, cachedResponse, enqueueSave, isCacheable, isNetworkError, isQueueable, OFFLINE_COPY, OfflineQueuedError } from "@/offline/offlineStore"; // BI_CLIENT_OFFLINE_v302
 
 export class ApiError extends Error {
   status: number;
   code: string;
-  constructor(status: number, code: string, message?: string) {
+  /** BI_CLIENT_v789 - the server's own words for the applicant, when it sent any. */
+  serverMessage?: string;
+  constructor(status: number, code: string, message?: string, serverMessage?: string) {
     super(message ?? code);
     this.status = status;
     this.code = code;
+    if (serverMessage) this.serverMessage = serverMessage;
   }
+}
+
+// BI_CLIENT_v789 - BI-Server puts a sentence for the applicant in `message`.
+function textField(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
 }
 
 // bi-server's applicant token lasts one hour. A 401 therefore means "expired"
@@ -49,13 +57,17 @@ export async function apiRequest<T>(path: string, init: RequestInit = {}): Promi
   const parsed = text ? JSON.parse(text) : {};
 
   if (res.status === 401) {
-    await clearToken();
-    throw new ApiError(401, String(parsed?.error ?? "unauthorized"));
+    // BI_CLIENT_v789 - an expired session, not a sign-out: queued uploads stay
+    // (sealed, tagged with the applicant) for when the same applicant returns.
+    await expireSession();
+    throw new ApiError(401, String(parsed?.error ?? "unauthorized"), undefined, textField(parsed?.message));
   }
   if (!res.ok) {
-    throw new ApiError(res.status, String(parsed?.error ?? `request_failed_${res.status}`), parsed?.detail);
+    const serverMessage = textField(parsed?.message);
+    throw new ApiError(res.status, String(parsed?.error ?? `request_failed_${res.status}`), parsed?.detail, serverMessage);
   }
-  if (method === "GET") void cacheResponse(path, parsed); // v302
+  // v302; BI_CLIENT_v789 - only the screens that show an offline copy keep one.
+  if (method === "GET" && isCacheable(path)) void cacheResponse(path, parsed);
   return parsed as T;
 }
 

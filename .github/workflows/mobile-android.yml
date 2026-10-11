@@ -8,6 +8,10 @@ on:
 jobs:
   android:
     runs-on: ubuntu-24.04
+    # BI_CLIENT_v789 - the API host is set explicitly, so a build never relies on the
+    # fallback in src/env.ts. Vite reads it at build time.
+    env:
+      VITE_API_BASE: https://bi-server-cse0apamgkheb9d5.canadacentral-01.azurewebsites.net
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -23,5 +27,7 @@ jobs:
         env:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON_BI }}
         run: node "$GITHUB_WORKSPACE/scripts/ensure-google-services.mjs"
+      # BI_CLIENT_v789 - android/app/build.gradle takes versionCode from GITHUB_RUN_NUMBER,
+      # which Actions sets on every run (1 when unset, for local builds).
       - run: ./gradlew assembleDebug
         working-directory: android

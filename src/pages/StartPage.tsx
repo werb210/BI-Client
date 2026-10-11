@@ -8,6 +8,7 @@ import { getPhone } from "@/auth/token";
 import { getEntryIndustry, getEntrySource, setChosenIndustry } from "@/entry/entryContext";
 import BackBar from "@/components/BackBar";
 import { clearDraft, loadDraft, saveDraft } from "@/entry/draft";
+import { HINT_TEXT } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - #4b5563
 
 const DRAFT = { businessName: "", applicantName: "", email: "", country: "CA", industry: "" };
 
@@ -111,7 +112,7 @@ export default function StartPage() {
       <div style={field}>
         <label style={label}>Mobile</label>
         <div className="bi-field" style={readOnly}>{phone ?? "Verified"}</div>
-        <div style={{ fontSize: 12, color: "#8593aa", marginTop: 6 }}>Already confirmed by the code you entered.</div>
+        <div style={{ fontSize: 12, color: HINT_TEXT, marginTop: 6 }}>Already confirmed by the code you entered.</div>
       </div>
       {error && <div style={{ color: "#b91c1c", fontSize: 14, marginBottom: 12 }}>{error}</div>}
       <div style={bar}>

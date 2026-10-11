@@ -3,6 +3,7 @@
 // stage, and a plain action line - "Upload 1 document", "Answer 2 questions" or "Nothing to do".
 import WidgetKit
 import SwiftUI
+import Security
 
 private let suite = "group.com.boreal.risk.client"
 let borealNavy = Color(red: 11 / 255, green: 31 / 255, blue: 58 / 255)
@@ -95,9 +96,10 @@ enum RiskWidgetRefresher {
     }
 
     static func refresh() async {
-        guard let defaults = UserDefaults(suiteName: suite),
-              let id = defaults.string(forKey: "application_id"), !id.isEmpty,
-              let token = defaults.string(forKey: "token"), !token.isEmpty,
+        guard let defaults = UserDefaults(suiteName: suite) else { return }
+        defaults.removeObject(forKey: "token") // BI_CLIENT_v789_WIDGET_KEYCHAIN - never read a token from UserDefaults
+        guard let id = defaults.string(forKey: "application_id"), !id.isEmpty,
+              let token = WidgetTokenKeychain.read(), !token.isEmpty,
               var api = defaults.string(forKey: "api_url"), !api.isEmpty else { return }
         while api.hasSuffix("/") { api.removeLast() }
         let path = id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id
@@ -107,7 +109,7 @@ enum RiskWidgetRefresher {
         guard let result = try? await URLSession.shared.data(for: req) else { return }
         let (data, resp) = result
         let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
-        if status == 401 { defaults.removeObject(forKey: "token"); return }
+        if status == 401 { WidgetTokenKeychain.remove(); return }
         guard status == 200, let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
         let body = (obj["data"] as? [String: Any]) ?? obj
         let items = body["outstanding"] as? [[String: Any]] ?? []
@@ -115,4 +117,27 @@ enum RiskWidgetRefresher {
         defaults.set(max(0, min(99, count)), forKey: "todo_count")
         defaults.set(actionLine(items), forKey: "action")
     }
+}
+
+// BI_CLIENT_v789_WIDGET_KEYCHAIN - reads the sign-in token the app saved in the Keychain with
+// the App Group as access group (same item as WidgetTokenKeychain in AppDelegate.swift).
+enum WidgetTokenKeychain {
+    static let accessGroup = "group.com.boreal.risk.client"
+    static let service = "com.boreal.risk.client.widget-token"
+    static let account = "applicant"
+    private static var query: [String: Any] {
+        [kSecClass as String: kSecClassGenericPassword,
+         kSecAttrService as String: service,
+         kSecAttrAccount as String: account,
+         kSecAttrAccessGroup as String: accessGroup]
+    }
+    static func read() -> String? {
+        var request = query
+        request[kSecReturnData as String] = true
+        request[kSecMatchLimit as String] = kSecMatchLimitOne
+        var result: AnyObject?
+        guard SecItemCopyMatching(request as CFDictionary, &result) == errSecSuccess, let data = result as? Data else { return nil }
+        return String(data: data, encoding: .utf8)
+    }
+    static func remove() { SecItemDelete(query as CFDictionary) }
 }

@@ -38,5 +38,8 @@ export default defineConfig(({ mode }) => ({
     environment: "jsdom",
     globals: true,
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    // BI_CLIENT_v789 - chrome.css is applied in tests, so a test can check the
+    // style a rendered element really gets instead of grepping the stylesheet.
+    css: { include: [/chrome\.css$/] },
   },
 }));

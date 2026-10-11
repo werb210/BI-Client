@@ -49,6 +49,9 @@ export async function updateClientWidget(stage: unknown, toDoCount: unknown, act
     const { getCachedToken } = await import("@/auth/token");
     const { ENV } = await import("@/env");
     const token = getCachedToken();
+    // BI_CLIENT_v789_WIDGET_KEYCHAIN - the native side keeps this in the Keychain
+    // (App Group access group, after first unlock, this device only), never in
+    // shared UserDefaults; clearClientWidget() deletes it.
     if (token) payload.token = token;
     if (ENV.API_BASE) payload.apiUrl = String(ENV.API_BASE).replace(/[/]+$/, "") + ENV.API_PREFIX;
   } catch { /* the widget still shows the app's last values */ }
