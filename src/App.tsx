@@ -8,7 +8,7 @@ import AppRouter from "@/router/AppRouter";
 import Header from "@/components/chrome/Header"; // BI_CLIENT_CHROME_v14
 import Footer from "@/components/chrome/Footer";
 import { captureEntryParams } from "@/entry/entryContext"; // BI_CLIENT_INDUSTRY_v11
-import { restoreToken } from "@/auth/token";
+import { currentApplicantId, restoreToken } from "@/auth/token";
 import NativeBridge from "@/native/NativeBridge";
 import BiometricGate from "@/native/BiometricGate"; // BI_CLIENT_BIOMETRIC_SCANNER_WIRE_v1
 import OfflineBanner from "@/offline/OfflineBanner"; // BI_CLIENT_OFFLINE_v302
@@ -18,10 +18,11 @@ captureEntryParams(typeof window === "undefined" ? "" : window.location.search);
 
 export default function App() {
   // Drains anything stranded by an offline capture. No-op on web.
+  // BI_CLIENT_v789 - only the signed-in applicant's own uploads; others are dropped.
   useQueueDrain(async (item) => {
     const blob = await (await fetch(item.dataUrl)).blob();
     await uploadContract(new File([blob], item.filename, { type: item.mimeType }));
-  });
+  }, currentApplicantId);
   useOutboxDrain(); // BI_CLIENT_OFFLINE_v302
   const [ready, setReady] = useState(false);
   useEffect(() => { void restoreToken().finally(() => setReady(true)); }, []);

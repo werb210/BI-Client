@@ -1,0 +1,13 @@
+{
+  "maxSourceGrepTests": 8,
+  "files": [
+    "src/components/__tests__/ApplicationProgress.v280.test.ts",
+    "src/components/__tests__/accountBar.v337.test.ts",
+    "src/components/onboarding/__tests__/featureTour.v720.test.tsx",
+    "src/native/__tests__/biometricLockSession.v313.test.ts",
+    "src/native/__tests__/coldLaunchDeepLink.v427.test.ts",
+    "src/native/__tests__/enrollReason.v336.test.ts",
+    "src/native/__tests__/faceIdSetting.v330.test.ts",
+    "src/native/__tests__/pushOptIn.v241.test.ts"
+  ]
+}

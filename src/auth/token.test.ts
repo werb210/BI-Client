@@ -3,6 +3,7 @@ import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import * as token from "./token";
+import { DATA_KEY_NAME } from "@/secure/vault";
 
 beforeEach(() => {
   localStorage.clear();
@@ -53,15 +54,39 @@ describe("applicant token storage", () => {
     expect(token.getCachedToken()).toBe("native-token");
   });
 
-  it("removes only the native applicant token and removes the phone", async () => {
+  it("removes only the native applicant token, the data key and the phone (Face ID sign-in stays)", async () => {
     vi.spyOn(Capacitor, "isNativePlatform").mockReturnValue(true);
     const secureRemove = vi.spyOn(SecureStorage, "remove").mockResolvedValue(undefined);
     const preferencesRemove = vi.spyOn(Preferences, "remove").mockResolvedValue(undefined);
     await token.clearToken();
 
-    expect(secureRemove).toHaveBeenCalledOnce();
-    expect(secureRemove).toHaveBeenCalledWith(token.APPLICANT_TOKEN_KEY);
+    // BI_CLIENT_v789 - sign-out also forgets the at-rest encryption key.
+    expect(secureRemove.mock.calls.map((c) => c[0]).sort()).toEqual([token.APPLICANT_TOKEN_KEY, DATA_KEY_NAME].sort());
     expect(preferencesRemove).toHaveBeenCalledWith({ key: token.APPLICANT_PHONE_KEY });
+  });
+
+  it("an expired session (401) drops the token but leaves the data key and queued uploads", async () => {
+    vi.spyOn(Capacitor, "isNativePlatform").mockReturnValue(true);
+    const secureRemove = vi.spyOn(SecureStorage, "remove").mockResolvedValue(undefined);
+    const clear = vi.spyOn(Preferences, "clear");
+    await token.setToken("native-token");
+    await token.expireSession();
+
+    expect(token.getCachedToken()).toBeNull();
+    expect(secureRemove.mock.calls.map((c) => c[0])).toEqual([token.APPLICANT_TOKEN_KEY]);
+    expect(clear).not.toHaveBeenCalled();
+  });
+
+  it("names the applicant a token belongs to", async () => {
+    const jwt = (claims: object) => `h.${btoa(JSON.stringify(claims)).replace(/=+$/, "")}.s`;
+    expect(token.applicantIdFromToken(jwt({ sub: "app-1", exp: 1 }))).toBe("app-1");
+    expect(token.applicantIdFromToken(jwt({ contactId: "c-9" }))).toBe("c-9");
+    expect(token.applicantIdFromToken(jwt({ exp: 1 }))).toBeNull();
+    expect(token.applicantIdFromToken("not-a-jwt")).toBeNull();
+    expect(token.applicantIdFromToken(null)).toBeNull();
+    vi.spyOn(Capacitor, "isNativePlatform").mockReturnValue(false);
+    await token.setToken(jwt({ sub: "app-2" }));
+    expect(token.currentApplicantId()).toBe("app-2");
   });
 
   it("fails closed when native secure storage throws", async () => {

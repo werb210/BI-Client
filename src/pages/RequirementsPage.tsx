@@ -12,6 +12,7 @@ import BackBar from "@/components/BackBar";
 import { getSelection } from "@/api/products";
 // BI_CLIENT_ACTION_CENTER_v200
 import ActionCenter from "@/components/ActionCenter";
+import { HINT_TEXT } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - #4b5563
 
 // BI_CLIENT_SHELL_v20 - width and ground come from chrome.css. No outer card
 // here: this page composes its own panels, and nesting them reads badly.
@@ -165,7 +166,7 @@ export default function RequirementsPage() {
         ))
       )}
       {items.length > 0 && (
-        <div style={{ fontSize: 13, color: "#8593aa", marginTop: 16 }}>
+        <div style={{ fontSize: 13, color: HINT_TEXT, marginTop: 16 }}>
           {outstanding > 0
             ? `${outstanding} still to check.`
             : "All checked. We will show you what is available next."}

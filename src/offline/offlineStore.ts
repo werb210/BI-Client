@@ -8,6 +8,7 @@
 // Submitting, signing in and starting an application still need a connection.
 import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
+import { seal, unseal } from "@/secure/vault"; // BI_CLIENT_v789_AT_REST_ENCRYPTION
 
 const CACHE_PREFIX = "boreal_bi_offline_cache:";
 const CACHE_INDEX = "boreal_bi_offline_cache_index";
@@ -33,22 +34,40 @@ export function isQueueable(method: string, path: string): boolean {
 }
 
 /** fetch rejects with TypeError when there is no connection. */
+// BI_CLIENT_v789 - offline copies are kept only for the screens that show one:
+// progress and to-do list (home), questions, coverage, requirements and review.
+// Messages, account and sign-in answers are never kept.
+const CACHEABLE = [
+  /^\/applicants\/me\/progress$/,
+  /^\/applicants\/action-center\/[^/]+$/,
+  /^\/applicants\/applications\/[^/]+\/(questions|summary|requirements|products)$/,
+  /^\/applicants\/products\?[^/]*$/,
+  /^\/applicants\/industries$/,
+];
+
+export function isCacheable(path: string): boolean {
+  return CACHEABLE.some((re) => re.test(path));
+}
+
 export function isNetworkError(err: unknown): boolean {
   return err instanceof TypeError || (err as { name?: string })?.name === "TypeError" || /network|failed to fetch|load failed/i.test(String((err as Error)?.message ?? ""));
 }
 
+// BI_CLIENT_v789_AT_REST_ENCRYPTION - every value is sealed (AES-GCM, key in
+// the Keychain/Keystore). A value that does not unseal reads as missing.
 const kv = {
   async get(key: string): Promise<string | null> {
     try {
-      if (Capacitor.isNativePlatform()) return (await Preferences.get({ key })).value ?? null;
-      return localStorage.getItem(key);
+      const raw = Capacitor.isNativePlatform() ? (await Preferences.get({ key })).value ?? null : localStorage.getItem(key);
+      return raw === null ? null : await unseal(raw);
     } catch { return null; }
   },
   async set(key: string, value: string): Promise<void> {
     try {
-      if (Capacitor.isNativePlatform()) await Preferences.set({ key, value });
-      else localStorage.setItem(key, value);
-    } catch { /* storage full or blocked */ }
+      const sealed = await seal(value);
+      if (Capacitor.isNativePlatform()) await Preferences.set({ key, value: sealed });
+      else localStorage.setItem(key, sealed);
+    } catch { /* storage full or blocked, or no key: nothing is kept in plaintext */ }
   },
   async remove(key: string): Promise<void> {
     try {
@@ -59,6 +78,7 @@ const kv = {
 };
 
 export async function cacheResponse(path: string, data: unknown): Promise<void> {
+  if (!isCacheable(path)) return;
   await kv.set(CACHE_PREFIX + path, JSON.stringify({ savedAt: Date.now(), data }));
   const index = new Set<string>(JSON.parse((await kv.get(CACHE_INDEX)) ?? "[]"));
   index.add(path);
@@ -133,8 +153,16 @@ export async function removeOutboxItem(id: string): Promise<void> {
 
 /** Sign-out: nothing from this applicant stays on the phone. */
 export async function clearOfflineData(): Promise<void> {
-  const index: string[] = JSON.parse((await kv.get(CACHE_INDEX)) ?? "[]");
-  await Promise.all(index.map((p) => kv.remove(CACHE_PREFIX + p)));
+  let index: string[] = [];
+  try { index = JSON.parse((await kv.get(CACHE_INDEX)) ?? "[]"); } catch { /* unreadable index */ }
+  // Also any cached screen the index lost track of (e.g. sealed under an older key).
+  let stored: string[] = [];
+  try {
+    stored = Capacitor.isNativePlatform() ? (await Preferences.keys()).keys : Object.keys(localStorage);
+  } catch { /* keys unavailable */ }
+  const keys = new Set([...index.map((p) => CACHE_PREFIX + p), ...stored.filter((k) => k.startsWith(CACHE_PREFIX))]);
+  await Promise.all([...keys].map((k) => kv.remove(k)));
   await kv.remove(CACHE_INDEX);
-  await writeOutbox([]);
+  await kv.remove(OUTBOX);
+  try { window.dispatchEvent(new CustomEvent(OUTBOX_CHANGED, { detail: 0 })); } catch { /* not in a browser */ }
 }

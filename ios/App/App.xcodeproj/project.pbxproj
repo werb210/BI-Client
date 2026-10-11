@@ -20,6 +20,8 @@
 		AA000047 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = AA000051 /* CapApp-SPM */; };
 		01ED1EEC2FFC4E67B4AD41BD /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFFFAC248A93C67E700B5CF /* ShareViewController.swift */; };
 		F544AEF3BA97BA0164035946 /* BorealShare.appex in Embed */ = {isa = PBXBuildFile; fileRef = 5956E7A7A89098B6C4C01AE2 /* BorealShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		B6030003 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B6030014 /* PrivacyInfo.xcprivacy */; };
+		C7890002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = C7890001 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +43,8 @@
 		5956E7A7A89098B6C4C01AE2 /* BorealShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BorealShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		29DCBA84EF6ADE1E86025544 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		39344AF411DE0BA018BDAB7C /* BorealShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BorealShare.entitlements; sourceTree = "<group>"; };
+		B6030014 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		C7890001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,7 +70,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B6030020 /* ClientWidgetExtension */ = {isa = PBXGroup; children = (B6030011 /* ClientWidget.swift */, B6030012 /* Info.plist */, B6030013 /* ClientWidgetExtension.entitlements */,); path = ClientWidgetExtension; sourceTree = "<group>"; };
+		B6030020 /* ClientWidgetExtension */ = {isa = PBXGroup; children = (B6030011 /* ClientWidget.swift */, B6030012 /* Info.plist */, B6030013 /* ClientWidgetExtension.entitlements */, B6030014 /* PrivacyInfo.xcprivacy */,); path = ClientWidgetExtension; sourceTree = "<group>"; };
 		AA000003 = {
 			isa = PBXGroup;
 			children = ( E311015A44E3F0E2223CB214 /* BorealShare */,
@@ -101,11 +105,11 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		E311015A44E3F0E2223CB214 /* BorealShare */ = {isa = PBXGroup; children = ( EDFFFAC248A93C67E700B5CF /* ShareViewController.swift */, 29DCBA84EF6ADE1E86025544 /* Info.plist */, 39344AF411DE0BA018BDAB7C /* BorealShare.entitlements */, ); path = BorealShare; sourceTree = "<group>"; };
+		E311015A44E3F0E2223CB214 /* BorealShare */ = {isa = PBXGroup; children = ( EDFFFAC248A93C67E700B5CF /* ShareViewController.swift */, 29DCBA84EF6ADE1E86025544 /* Info.plist */, 39344AF411DE0BA018BDAB7C /* BorealShare.entitlements */, C7890001 /* PrivacyInfo.xcprivacy */, ); path = BorealShare; sourceTree = "<group>"; };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B6030030 /* ClientWidgetExtension */ = {isa = PBXNativeTarget; buildConfigurationList = B6030050; buildPhases = (B6030022 /* Sources */, B6030021 /* Frameworks */,); buildRules = (); dependencies = (); name = ClientWidgetExtension; productName = ClientWidgetExtension; productReference = B6030010 /* ClientWidgetExtension.appex */; productType = "com.apple.product-type.app-extension"; };
+		B6030030 /* ClientWidgetExtension */ = {isa = PBXNativeTarget; buildConfigurationList = B6030050; buildPhases = (B6030022 /* Sources */, B6030021 /* Frameworks */, B6030024 /* Resources */,); buildRules = (); dependencies = (); name = ClientWidgetExtension; productName = ClientWidgetExtension; productReference = B6030010 /* ClientWidgetExtension.appex */; productType = "com.apple.product-type.app-extension"; };
 		AA000010 /* App */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AA000011 /* Build configuration list for PBXNativeTarget "App" */;
@@ -174,7 +178,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BA621ED3F441128DC41BC60C /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = ( ); runOnlyForDeploymentPostprocessing = 0; };
+		BA621ED3F441128DC41BC60C /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = ( C7890002 /* PrivacyInfo.xcprivacy in Resources */, ); runOnlyForDeploymentPostprocessing = 0; };
+		B6030024 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = (B6030003 /* PrivacyInfo.xcprivacy in Resources */,); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */

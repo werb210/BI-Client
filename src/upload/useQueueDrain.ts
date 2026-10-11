@@ -9,10 +9,14 @@ import { Capacitor } from "@capacitor/core";
 import { Network } from "@capacitor/network";
 import { drain, readQueue, type QueuedUpload } from "@/upload/queue";
 
-export function useQueueDrain(send: (item: QueuedUpload) => Promise<void>): void {
+// BI_CLIENT_v789 - `applicant` names who is signed in now; only uploads that
+// applicant queued are sent, the rest are dropped (see drain()).
+export function useQueueDrain(send: (item: QueuedUpload) => Promise<void>, applicant: () => string | null): void {
   const running = useRef(false);
   const sendRef = useRef(send);
   sendRef.current = send;
+  const applicantRef = useRef(applicant);
+  applicantRef.current = applicant;
 
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
@@ -22,8 +26,10 @@ export function useQueueDrain(send: (item: QueuedUpload) => Promise<void>): void
       if (running.current) return;
       if ((await readQueue()).length === 0) return;
       if (!(await Network.getStatus()).connected) return;
+      const applicantId = applicantRef.current();
+      if (!applicantId) return;
       running.current = true;
-      try { await drain((item) => sendRef.current(item)); }
+      try { await drain((item) => sendRef.current(item), applicantId); }
       finally { running.current = false; }
     }
 

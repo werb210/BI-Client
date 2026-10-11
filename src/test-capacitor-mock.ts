@@ -1,7 +1,7 @@
 // BI_CLIENT_SCANNER_AVAILABILITY_v165 — the mock stands in for a web build,
 // where no native plugin is available.
 export const Capacitor = { isNativePlatform: () => false, convertFileSrc: (path: string) => path, getPlatform: () => "web", isPluginAvailable: (_name: string) => false };
-export const Preferences = { get: async () => ({ value: null }), set: async () => undefined, remove: async () => undefined };
+export const Preferences = { get: async (_o?: unknown) => ({ value: null as string | null }), set: async (_o?: unknown) => undefined, remove: async (_o?: unknown) => undefined, clear: async () => undefined, keys: async () => ({ keys: [] as string[] }) };
 export const SecureStorage = { get: async (_key: string): Promise<string | null> => null, set: async (_key: string, _value: string) => undefined, remove: async (_key: string) => undefined };
 export const App = { addListener: async () => ({ remove: async () => undefined }), exitApp: async () => undefined };
 export enum KeyboardResize { Body = "body", Ionic = "ionic", Native = "native", None = "none" }

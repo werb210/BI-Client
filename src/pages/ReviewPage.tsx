@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSummary, submitApplication, type Summary } from "@/api/summary";
 import { ApiError } from "@/api/client"; // BI_CLIENT_OFFLINE_v302
+import { HINT_TEXT } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - #4b5563
 
 // BI_CLIENT_SHELL_v21 - width, ground and padding come from chrome.css. The
 // 120px bottom padding stays because the CTA bar below is position:fixed and
@@ -142,7 +143,7 @@ export default function ReviewPage() {
           <div key={c.code} style={line}>
             {c.display_name}
             {c.source === "contract" && (
-              <span style={{ color: "#8593aa", fontSize: 12 }}> — required by your contract</span>
+              <span style={{ color: HINT_TEXT, fontSize: 12 }}>{" \u2014 required by your contract"}</span>
             )}
           </div>
         ))}

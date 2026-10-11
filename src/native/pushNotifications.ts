@@ -1,4 +1,5 @@
 import { Capacitor } from "@capacitor/core";
+import { Preferences } from "@capacitor/preferences";
 import { PushNotifications } from "@capacitor/push-notifications";
 // BI_CLIENT_PUSH_REGISTER_v159
 import { api } from "@/api/client";
@@ -30,6 +31,27 @@ export const serverRegistration: DeviceRegistrationAdapter = {
   },
 };
 
+// BI_CLIENT_v789_SIGN_OUT_WIPE - sign-out unregisters this phone's push token
+// on BI-Server, so the token handed to it is remembered (it is a device
+// address, not applicant data).
+const DEVICE_TOKEN_KEY = "boreal_bi_push_device_token";
+let deviceToken: string | null = null;
+
+export async function rememberPushDeviceToken(token: string): Promise<void> {
+  deviceToken = token;
+  try { await Preferences.set({ key: DEVICE_TOKEN_KEY, value: token }); } catch { /* memory copy still works */ }
+}
+
+export async function registeredPushDeviceToken(): Promise<string | null> {
+  if (deviceToken) return deviceToken;
+  try { return (await Preferences.get({ key: DEVICE_TOKEN_KEY })).value || null; } catch { return null; }
+}
+
+export async function forgetPushDeviceToken(): Promise<void> {
+  deviceToken = null;
+  try { await Preferences.remove({ key: DEVICE_TOKEN_KEY }); } catch { /* nothing stored */ }
+}
+
 type Handle = { remove: () => Promise<void> };
 export async function initializePushNotifications(
   onUrl: (url: string) => void,
@@ -44,6 +66,7 @@ export async function initializePushNotifications(
     const token = String(event?.value ?? "").trim();
     const platform = devicePlatform();
     if (!token || !platform) return;
+    void rememberPushDeviceToken(token);
     void adapter.register({ token, platform }).catch(() => undefined);
   }));
   handles.push(await PushNotifications.addListener("registrationError", (error) => console.error("Push registration failed", error)));

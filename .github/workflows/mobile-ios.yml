@@ -8,6 +8,10 @@ on:
 jobs:
   ios:
     runs-on: macos-latest
+    # BI_CLIENT_v789 - the API host is set explicitly, so a build never relies on the
+    # fallback in src/env.ts. Vite reads it at build time.
+    env:
+      VITE_API_BASE: https://bi-server-cse0apamgkheb9d5.canadacentral-01.azurewebsites.net
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -123,6 +127,7 @@ jobs:
             -resolvePackageDependencies \
             -project ios/App/App.xcodeproj \
             -scheme App
+      # BI_CLIENT_v789 - the build number comes from the run number; the project keeps 1 for local builds.
       - name: Build unsigned iOS Simulator app
         run: |
           xcodebuild \
@@ -133,4 +138,5 @@ jobs:
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
+            CURRENT_PROJECT_VERSION="${GITHUB_RUN_NUMBER:-1}" \
             clean build
