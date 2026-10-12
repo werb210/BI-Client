@@ -260,7 +260,7 @@ export default function QuestionsPage() {
             )}
             {gap && (
               <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 8 }}>
-                {!a?.value
+                {!a?.value?.trim() // BI_CLIENT_v791 - spaces only is still unanswered
                   ? "Please answer this one."
                   : fieldError(q, a.value, answers)
                     ? "Please correct this one."
