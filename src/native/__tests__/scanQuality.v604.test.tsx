@@ -59,6 +59,8 @@ describe("the upload page after a scan", () => {
     vi.mocked(scanContractAsPdfWithQuality).mockResolvedValue({ file, quality: blurry });
     vi.mocked(uploadContract).mockResolvedValue({ applicationId: "app-9", documentId: "d1", requirements: [] });
     renderPage();
+    // BI_CLIENT_v791 - the applicant now confirms before a poor scan is sent.
+    fireEvent.click(await screen.findByRole("button", { name: "Upload anyway" }));
     expect(await screen.findByText("requirements for app-9")).toBeTruthy();
     expect(scanContractAsPdfWithQuality).toHaveBeenCalledTimes(1);
     expect(uploadContract).toHaveBeenCalledWith(file);
@@ -71,6 +73,10 @@ describe("the upload page after a scan", () => {
     renderPage();
     const warning = await screen.findByTestId("upload-warning");
     expect(warning.textContent).toBe("Scanned page: This looks blurry. Hold steady and try again in better light.");
+    fireEvent.click(screen.getByRole("button", { name: "Upload anyway" }));
+    expect(await screen.findByText("That upload did not go through. Please try again.")).toBeTruthy();
+    // BI_CLIENT_v791 - the scan warning is still on screen beside the failure.
+    expect(screen.getByTestId("upload-warning").textContent).toContain("Scanned page:");
     expect(uploadContract).toHaveBeenCalledWith(file);
   });
 

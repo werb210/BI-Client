@@ -19,10 +19,16 @@ import { HINT_TEXT } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - #4b
 
 const ACCEPT = ".pdf,.doc,.docx,.png,.jpg,.jpeg";
 
+// BI_CLIENT_v791 - the local check in normalize.ts throws a plain Error whose
+// message is the same code the server sends, so both read the code here.
+// The type list matches ACCEPT above and EXTENSIONS in normalize.ts.
+export const UNSUPPORTED_TYPE_MESSAGE = "That file type isn't supported. Use PDF, Word, JPG or PNG.";
+export const TOO_LARGE_MESSAGE = "That file is over 25 MB. Please choose a smaller file.";
+
 function message(err: unknown): string {
-  const code = err instanceof ApiError ? err.code : "";
-  if (code === "unsupported_file_type") return "We can read PDF, Word and photos. Please try one of those.";
-  if (code === "file_too_large") return "That file is over 25 MB. Please upload a smaller copy.";
+  const code = err instanceof ApiError ? err.code : err instanceof Error ? err.message : "";
+  if (code === "unsupported_file_type") return UNSUPPORTED_TYPE_MESSAGE;
+  if (code === "file_too_large") return TOO_LARGE_MESSAGE;
   if (code === "no_text_found") {
     return "We could not read any text from that file. If it is a scan, a clearer copy or the original PDF usually works.";
   }
@@ -48,12 +54,18 @@ export default function UploadContractPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
+  // BI_CLIENT_v791 - a poor scan waits here, with its warning on screen, until
+  // the applicant picks "Upload anyway" or "Retake". Previously the warning was
+  // set after send() had already navigated on, so it was only ever seen when
+  // the upload failed or was queued.
+  const [pendingScan, setPendingScan] = useState<File | null>(null);
   const native = Capacitor.isNativePlatform();
 
-  async function send(file: File) {
+  async function send(file: File, keepWarning: string | null = null) {
     setBusy(true);
     setError(null);
-    setWarning(null);
+    setWarning(keepWarning); // BI_CLIENT_v791 - a scan warning stays up if this upload fails
+    setPendingScan(null); // BI_CLIENT_v791 - a newer file replaces a scan awaiting a choice
     try {
       normalizeBrowserFile(file);
 
@@ -143,8 +155,17 @@ export default function UploadContractPage() {
     try {
       // BI_CLIENT_BLOCK_v604_SCAN_QUALITY - scanned pages are checked too.
       const { file, quality } = await scanContractAsPdfWithQuality();
-      if (file) await send(file);
-      if (quality && !quality.ok) setWarning(`Scanned page: ${quality.issues.map((issue) => ISSUE_MESSAGES[issue]).join(" ")}`);
+      setPendingScan(null);
+      setError(null);
+      if (!file) return;
+      if (quality && !quality.ok) {
+        // BI_CLIENT_v791 - warn first; nothing is sent until the applicant chooses.
+        setWarning(`Scanned page: ${quality.issues.map((issue) => ISSUE_MESSAGES[issue]).join(" ")}`);
+        setPendingScan(file);
+        return;
+      }
+      setWarning(null);
+      await send(file);
     } catch (err) {
       // BI_CLIENT_SCANNER_AVAILABILITY_v165 — the scanner plugin is not linked
       // under SPM. Say so plainly and point at the route that still works,
@@ -197,6 +218,19 @@ export default function UploadContractPage() {
       {error && <div style={{ color: "#b91c1c", fontSize: 13, marginTop: 12 }}>{error}</div>}
       {warning && (
         <p data-testid="upload-warning" style={{ color: "#8A6D1F", marginTop: 12 }}>{warning}</p>
+      )}
+      {pendingScan && (
+        // BI_CLIENT_v791 - the choice for a poor scan, shown before anything is sent.
+        <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
+          <button type="button" style={button} disabled={busy}
+            onClick={() => { const file = pendingScan; setPendingScan(null); void send(file, warning); }}>
+            Upload anyway
+          </button>
+          <button type="button" disabled={busy}
+            onClick={() => { setPendingScan(null); setWarning(null); void scanDocument(); }}>
+            Retake
+          </button>
+        </div>
       )}
       <div style={{ marginTop: 20 }}>
         <button type="button" style={button} disabled={busy} onClick={() => native ? void chooseNativeFile() : inputRef.current?.click()}>

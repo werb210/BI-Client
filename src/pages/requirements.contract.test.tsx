@@ -93,8 +93,9 @@ describe("BI_CLIENT_CONTRACT_UPLOAD_v1", () => {
   describe("tells the applicant which upload failures they can act on", () => {
     const cases: Array<[string, RegExp]> = [
       ["no_text_found", /We could not read any text from that file\. If it is a scan, a clearer copy or the original PDF usually works\./],
-      ["unsupported_file_type", /We can read PDF, Word and photos\. Please try one of those\./],
-      ["file_too_large", /That file is over 25 MB\. Please upload a smaller copy\./],
+      // BI_CLIENT_v791 - same sentences as the local check gives.
+      ["unsupported_file_type", /That file type isn't supported\. Use PDF, Word, JPG or PNG\./],
+      ["file_too_large", /That file is over 25 MB\. Please choose a smaller file\./],
     ];
     for (const [code, shown] of cases) {
       it(`explains ${code} from the server`, async () => {
@@ -112,8 +113,8 @@ describe("BI_CLIENT_CONTRACT_UPLOAD_v1", () => {
       renderPage(<UploadContractPage />, { routePath: "/upload", url: "/upload" });
       const file = new File(["MZ"], "setup.exe", { type: "application/octet-stream" });
       fireEvent.change(screen.getByTestId("contract-file-input"), { target: { files: [file] } });
-      // The local check rejects it with the generic sentence; nothing is sent.
-      await screen.findByText("That upload did not go through. Please try again.");
+      // BI_CLIENT_v791 - the local check names the reason; nothing is sent.
+      await screen.findByText("That file type isn't supported. Use PDF, Word, JPG or PNG.");
       expect(api.calls).toHaveLength(0);
     });
     it("goes on to the requirements once the upload is read", async () => {
