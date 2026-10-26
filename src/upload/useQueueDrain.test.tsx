@@ -163,6 +163,8 @@ describe("queue drain on resume", () => {
       throw new TypeError("Failed to fetch");
     }));
     vi.mocked(uploadContract).mockReset().mockResolvedValue({ applicationId: "app-1", documentId: "d1", requirements: [] });
+    // Vitest 4: restoreAllMocks no longer clears vi.fn() call history, so drop the earlier tests' calls.
+    vi.mocked(useQueueDrain).mockClear();
     render(<App />);
     expect(await screen.findByRole("button", { name: "Send code" })).toBeTruthy();
     expect(useQueueDrain).toHaveBeenCalledWith(expect.any(Function), currentApplicantId);

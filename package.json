@@ -44,13 +44,20 @@
     "@capacitor/cli": "^8.0.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.20.5",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
     "jsdom": "^25.0.1",
     "typescript": "^5.6.3",
-    "vite": "^5.4.14",
-    "vite-plugin-pwa": "^0.20.0",
-    "vitest": "^2.1.9"
-  }
+    "vite": "^6.4.5",
+    "vite-plugin-pwa": "^0.21.2",
+    "vitest": "^4.1.12"
+  },
+  "overrides": {
+    "xcode": {
+      "uuid": "^11.1.1"
+    }
+  },
+  "x-v859": "BI_CLIENT_v859_DEP_SECURITY"
 }
