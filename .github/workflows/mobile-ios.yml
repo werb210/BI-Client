@@ -35,12 +35,20 @@ jobs:
               ;;
           esac
 
-          npm install \
+          # BI_CLIENT_v861_IOS_NPM - npm 10 crashes on the vitest 4 tree ("reading 'edgesOut'"), so use npm 11, and
+          # install the darwin packages at the exact versions already in node_modules (they follow the lockfile).
+          ROLLUP_VERSION="$(node -p "require('rollup/package.json').version")"
+          ESBUILD_VERSION="$(node -p "require('esbuild/package.json').version")"
+          echo "rollup ${ROLLUP_VERSION}, esbuild ${ESBUILD_VERSION}, arch ${ARCH}"
+
+          npx -y npm@11.21.1 install \
             --no-save \
             --package-lock=false \
             --ignore-scripts \
-            "@rollup/rollup-darwin-${ARCH}@4.62.4" \
-            "@esbuild/darwin-${ARCH}@0.21.5"
+            --no-audit \
+            --no-fund \
+            "@rollup/rollup-darwin-${ARCH}@${ROLLUP_VERSION}" \
+            "@esbuild/darwin-${ARCH}@${ESBUILD_VERSION}"
       - name: Verify macOS native build dependencies
         shell: bash
         run: |
