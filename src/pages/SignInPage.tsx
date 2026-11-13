@@ -17,7 +17,7 @@ const SIGN_IN_MESSAGES: Record<string, string> = {
   invalid_otp: "That code was not right. Check it and try again.",
   invalid_phone: "That does not look like a mobile number.",
   otp_verify_failed: "We could not check that code just now. Please try again.",
-  unsupported_country: "Boreal Risk sign-in works with Canadian and US mobile numbers only.",
+  unsupported_country: "Boreal Risk sign-in works with US and Canadian mobile numbers only.",
   otp_phone_daily_limit: "This number has had too many codes today. Try again tomorrow.",
   otp_busy: "We are sending a lot of codes right now. Wait a minute and try again.",
   missing_code: "Enter the 6-digit code we texted you.",
