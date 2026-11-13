@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="bi-chrome-footer">
       <div className="bi-chrome-footer__inner">
         <div className="bi-chrome-footer__grid">
-          <div><div className="bi-chrome-footer__brand"><span>Boreal Risk Management</span></div><p>Personal Guarantee Insurance for Canadian and United States Business Owners.</p></div>
+          <div><div className="bi-chrome-footer__brand"><span>Boreal Risk Management</span></div><p>Personal Guarantee Insurance for United States and Canadian Business Owners.</p></div>
           <div><h2>Help</h2><ul><li><a href="https://www.boreal.insure/faq" target="_blank" rel="noopener noreferrer">FAQ</a></li><li><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li></ul></div>
           <div><h2>Legal</h2><ul><li><a href="https://www.boreal.insure/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a></li><li><a href="https://www.boreal.insure/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a></li></ul></div>
         </div>

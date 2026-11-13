@@ -10,7 +10,7 @@ import BackBar from "@/components/BackBar";
 import { clearDraft, loadDraft, saveDraft } from "@/entry/draft";
 import { HINT_TEXT } from "@/theme/palette"; // BI_CLIENT_v789_READABILITY - #4b5563
 
-const DRAFT = { businessName: "", applicantName: "", email: "", country: "CA", industry: "" };
+const DRAFT = { businessName: "", applicantName: "", email: "", country: "US", industry: "" }; // BI_CLIENT_US_FIRST_v1 - starts on the United States
 
 // Mobile-first: one field per row, 56px targets, sticky CTA. 88% of applicants
 // are on a phone.
@@ -42,7 +42,7 @@ export default function StartPage() {
   const [businessName, setBusinessName] = useState(initial.businessName);
   const [applicantName, setApplicantName] = useState(initial.applicantName);
   const [email, setEmail] = useState(initial.email);
-  const [country, setCountry] = useState<"CA" | "US">(initial.country === "US" ? "US" : "CA");
+  const [country, setCountry] = useState<"CA" | "US">(initial.country === "CA" ? "CA" : "US");
   const [industries, setIndustries] = useState<Industry[]>([]);
   const [industry, setIndustry] = useState(getEntryIndustry() || initial.industry);
   const [busy, setBusy] = useState(false);
@@ -105,8 +105,8 @@ export default function StartPage() {
       <div style={field}>
         <label style={label} htmlFor="country">Where do you work?</label>
         <select id="country" name="country" autoComplete="country" className="bi-field" style={input} value={country} onChange={(e) => setCountry(e.target.value === "US" ? "US" : "CA")}>
-          <option value="CA">Canada</option>
           <option value="US">United States</option>
+          <option value="CA">Canada</option>
         </select>
       </div>
       <div style={field}>

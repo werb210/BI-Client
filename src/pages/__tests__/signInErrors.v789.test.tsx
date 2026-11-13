@@ -19,7 +19,7 @@ describe("sign-in error text", () => {
   });
 
   it.each([
-    ["unsupported_country", /Canadian and US mobile numbers/],
+    ["unsupported_country", /US and Canadian mobile numbers/],
     ["otp_phone_daily_limit", /too many codes today/],
     ["otp_busy", /sending a lot of codes/],
     ["missing_code", /Enter the 6-digit code/],

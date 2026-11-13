@@ -87,9 +87,9 @@ describe("step 1 collects exactly the fields we do not already have", () => {
     renderStart();
     const country = screen.getByLabelText("Where do you work?") as HTMLSelectElement;
     const options = Array.from(country.options).map((o) => [o.value, o.textContent]);
-    expect(options).toEqual([["CA", "Canada"], ["US", "United States"]]);
-    fireEvent.change(country, { target: { value: "US" } });
-    expect(country.value).toBe("US");
+    expect(options).toEqual([["US", "United States"], ["CA", "Canada"]]);
+    fireEvent.change(country, { target: { value: "CA" } });
+    expect(country.value).toBe("CA");
     await screen.findByRole("option", { name: "Construction" });
   });
 });
@@ -221,7 +221,7 @@ describe("mobile-first, per locked ruling 23", () => {
     fireEvent.click(saving);
     expect(post).toHaveBeenCalledTimes(1);
     expect(post).toHaveBeenCalledWith("/applicants/profile", expect.objectContaining({
-      businessName: "Acme Builders", applicantName: "Jo Smith", email: "jo@acme.ca", country: "CA", industry: "construction",
+      businessName: "Acme Builders", applicantName: "Jo Smith", email: "jo@acme.ca", country: "US", industry: "construction",
     }));
 
     await act(async () => { finish({ applicationId: "app-1", phone: "+17805551212", wantsContract: true }); });
